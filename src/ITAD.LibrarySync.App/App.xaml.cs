@@ -7,6 +7,7 @@ using ITAD.LibrarySync.App.ViewModels;
 using ITAD.LibrarySync.Core.Api;
 using ITAD.LibrarySync.Core.Auth;
 using ITAD.LibrarySync.Core.Launchers;
+using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Profiles;
 using ITAD.LibrarySync.Core.Scheduling;
 using ITAD.LibrarySync.Core.Sync;
@@ -116,6 +117,7 @@ public partial class App : Application
         services.AddSingleton<IReadOnlyList<ILauncherReader>>(_ => LauncherReaderFactory.CreateAll());
 
         services.AddSingleton<SyncOrchestrator>();
+        services.AddSingleton<FileLogger>();
         services.AddSingleton<NotificationService>();
         services.AddSingleton<TrayIconService>();
         services.AddSingleton<ISyncOrchestrator, TrayAwareSyncOrchestrator>();

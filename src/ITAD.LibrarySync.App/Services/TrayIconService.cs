@@ -8,6 +8,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 using ITAD.LibrarySync.App.ViewModels;
 using ITAD.LibrarySync.App.Views;
 using ITAD.LibrarySync.Core.Auth;
+using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Sync;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,11 +32,6 @@ public sealed class TrayIconService(
     NotificationService notifications,
     IServiceProvider serviceProvider) : IDisposable
 {
-    private static readonly string LogsDirectory = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "ITADLibrarySync",
-        "logs");
-
     private TaskbarIcon? _trayIcon;
     private SettingsWindow? _settingsWindow;
     private TraySyncState _state = TraySyncState.Idle;
@@ -207,12 +203,9 @@ public sealed class TrayIconService(
 
     private static void OpenLastSyncLog()
     {
-        Directory.CreateDirectory(LogsDirectory);
+        Directory.CreateDirectory(FileLogger.LogsDirectory);
 
-        var latestLog = Directory
-            .EnumerateFiles(LogsDirectory, "*.log", SearchOption.TopDirectoryOnly)
-            .OrderByDescending(File.GetLastWriteTimeUtc)
-            .FirstOrDefault();
+        var latestLog = FileLogger.GetLatestLogPath();
 
         if (latestLog is not null)
         {
@@ -226,7 +219,7 @@ public sealed class TrayIconService(
 
         Process.Start(new ProcessStartInfo
         {
-            FileName = LogsDirectory,
+            FileName = FileLogger.LogsDirectory,
             UseShellExecute = true
         });
     }
