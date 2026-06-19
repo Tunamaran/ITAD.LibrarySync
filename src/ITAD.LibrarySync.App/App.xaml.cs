@@ -114,10 +114,12 @@ public partial class App : Application
 
         services.AddSingleton<IReadOnlyList<ILauncherReader>>(_ => LauncherReaderFactory.CreateAll());
 
-        services.AddSingleton<ISyncOrchestrator, SyncOrchestrator>();
+        services.AddSingleton<SyncOrchestrator>();
+        services.AddSingleton<NotificationService>();
+        services.AddSingleton<TrayIconService>();
+        services.AddSingleton<ISyncOrchestrator, TrayAwareSyncOrchestrator>();
         services.AddSingleton<SyncScheduler>();
         services.AddSingleton<OAuthFlowService>();
-        services.AddSingleton<TrayIconService>();
 
         return services.BuildServiceProvider();
     }
