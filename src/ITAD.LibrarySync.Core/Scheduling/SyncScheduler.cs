@@ -37,7 +37,7 @@ public sealed class SyncScheduler(ISyncOrchestrator orchestrator) : IDisposable
         try
         {
             while (await _timer.WaitForNextTickAsync(ct))
-                await orchestrator.SyncAllAsync(cancellationToken: ct);
+                await orchestrator.SyncAllAsync(ct: ct);
         }
         catch (OperationCanceledException)
         {
