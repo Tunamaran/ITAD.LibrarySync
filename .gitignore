@@ -1,0 +1,18 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+## Worktrees
+.worktrees/
+
+## OS
+Thumbs.db
+Desktop.ini
+
+## App secrets (local dev)
+appsettings.Development.json
