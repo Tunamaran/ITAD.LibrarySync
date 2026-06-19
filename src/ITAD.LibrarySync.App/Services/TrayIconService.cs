@@ -5,9 +5,12 @@ using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
+using ITAD.LibrarySync.App.ViewModels;
+using ITAD.LibrarySync.App.Views;
 using ITAD.LibrarySync.Core.Auth;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Sync;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ITAD.LibrarySync.App.Services;
 
@@ -25,7 +28,8 @@ public sealed class TrayIconService(
     ISyncOrchestrator orchestrator,
     OAuthFlowService oauthFlow,
     TokenStorage tokenStorage,
-    NotificationService notifications) : IDisposable
+    NotificationService notifications,
+    IServiceProvider serviceProvider) : IDisposable
 {
     private static readonly string LogsDirectory = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -33,6 +37,7 @@ public sealed class TrayIconService(
         "logs");
 
     private TaskbarIcon? _trayIcon;
+    private SettingsWindow? _settingsWindow;
     private TraySyncState _state = TraySyncState.Idle;
 
     public void Initialize()
@@ -183,22 +188,20 @@ public sealed class TrayIconService(
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            var settingsType = Type.GetType("ITAD.LibrarySync.App.Views.SettingsWindow, ITAD.LibrarySync.App");
-            if (settingsType is null)
+            if (_settingsWindow is { IsVisible: true })
             {
-                MessageBox.Show(
-                    "Settings will be available in a future update.",
-                    "ITAD Library Sync",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                _settingsWindow.Activate();
                 return;
             }
 
-            if (Activator.CreateInstance(settingsType) is Window window)
+            var viewModel = serviceProvider.GetRequiredService<SettingsViewModel>();
+            _settingsWindow = new SettingsWindow(viewModel)
             {
-                window.Show();
-                window.Activate();
-            }
+                Owner = Application.Current.MainWindow
+            };
+            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
+            _settingsWindow.Show();
+            _settingsWindow.Activate();
         });
     }
 

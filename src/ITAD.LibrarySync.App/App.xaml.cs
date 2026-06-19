@@ -3,6 +3,7 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ITAD.LibrarySync.App.Services;
+using ITAD.LibrarySync.App.ViewModels;
 using ITAD.LibrarySync.Core.Api;
 using ITAD.LibrarySync.Core.Auth;
 using ITAD.LibrarySync.Core.Launchers;
@@ -120,6 +121,7 @@ public partial class App : Application
         services.AddSingleton<ISyncOrchestrator, TrayAwareSyncOrchestrator>();
         services.AddSingleton<SyncScheduler>();
         services.AddSingleton<OAuthFlowService>();
+        services.AddTransient<SettingsViewModel>();
 
         return services.BuildServiceProvider();
     }

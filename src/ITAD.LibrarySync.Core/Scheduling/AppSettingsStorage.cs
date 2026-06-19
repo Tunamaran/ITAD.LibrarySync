@@ -1,12 +1,25 @@
 using System.Text.Json;
+using ITAD.LibrarySync.Core.Models;
 
 namespace ITAD.LibrarySync.Core.Scheduling;
+
+public enum AppLogLevel
+{
+    Debug,
+    Info,
+    Warning,
+    Error
+}
 
 public sealed class AppSettings
 {
     public SyncInterval Interval { get; set; } = SyncInterval.Disabled;
     public bool SyncOnStartup { get; set; }
     public bool HasCompletedFirstRun { get; set; }
+    public bool StartWithWindows { get; set; }
+    public bool ShowNotifications { get; set; } = true;
+    public AppLogLevel LogLevel { get; set; } = AppLogLevel.Info;
+    public Dictionary<LauncherId, bool> EnabledLaunchers { get; set; } = CreateDefaultEnabledLaunchers();
 
     public SyncScheduleOptions ToSyncScheduleOptions() => new()
     {
@@ -19,6 +32,15 @@ public sealed class AppSettings
         Interval = options.Interval;
         SyncOnStartup = options.SyncOnStartup;
     }
+
+    public bool IsLauncherEnabled(LauncherId launcher) =>
+        !EnabledLaunchers.TryGetValue(launcher, out var enabled) || enabled;
+
+    public IReadOnlyList<LauncherId> GetEnabledLaunchers() =>
+        Enum.GetValues<LauncherId>().Where(IsLauncherEnabled).ToList();
+
+    private static Dictionary<LauncherId, bool> CreateDefaultEnabledLaunchers() =>
+        Enum.GetValues<LauncherId>().ToDictionary(id => id, _ => true);
 }
 
 public sealed class AppSettingsStorage
