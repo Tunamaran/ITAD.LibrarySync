@@ -7,7 +7,7 @@ namespace ITAD.LibrarySync.Core.Sync;
 public sealed class WaitlistCleanupService(
     IItadApiClient api,
     ItadOAuthService oauth,
-    ShopIdResolver shopIds)
+    ShopIdResolver shopIds) : IWaitlistCleanupService
 {
     public async Task<int> RemoveOwnedFromGlobalWaitlistAsync(
         IReadOnlyList<StoreGame> allOwned,

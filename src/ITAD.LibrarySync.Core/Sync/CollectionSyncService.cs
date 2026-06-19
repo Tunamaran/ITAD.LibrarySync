@@ -9,7 +9,7 @@ public sealed class CollectionSyncService(
     IItadApiClient api,
     ItadOAuthService oauth,
     ProfileManager profiles,
-    SyncPayloadBuilder payloadBuilder)
+    SyncPayloadBuilder payloadBuilder) : ICollectionSyncService
 {
     public async Task<ItadSyncResponse?> SyncAsync(
         LauncherReadResult read,

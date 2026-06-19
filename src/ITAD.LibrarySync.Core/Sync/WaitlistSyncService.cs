@@ -9,7 +9,7 @@ public sealed class WaitlistSyncService(
     IItadApiClient api,
     ItadOAuthService oauth,
     ProfileManager profiles,
-    SyncPayloadBuilder payloadBuilder)
+    SyncPayloadBuilder payloadBuilder) : IWaitlistSyncService
 {
     public async Task<ItadSyncResponse?> SyncAsync(
         LauncherReadResult read,
