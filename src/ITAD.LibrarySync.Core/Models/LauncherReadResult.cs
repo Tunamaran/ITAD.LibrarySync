@@ -6,4 +6,5 @@ public sealed record LauncherReadResult(
     bool IsLoggedIn,
     IReadOnlyList<StoreGame> Owned,
     IReadOnlyList<StoreGame> Wishlist,
+    bool WishlistReadable,
     string? Error = null);

@@ -41,6 +41,7 @@ internal static class LauncherReadHelper
             IsLoggedIn: isLoggedIn,
             Owned: owned,
             Wishlist: [],
+            WishlistReadable: false,
             Error: error);
     }
 
@@ -58,10 +59,10 @@ internal static class LauncherReadHelper
             ToLastPlayed(lastRun));
 
     internal static LauncherReadResult NotDetected(LauncherId launcher) =>
-        new(launcher, false, false, [], [], "Launcher install not found.");
+        new(launcher, false, false, [], [], WishlistReadable: false, "Launcher install not found.");
 
     internal static LauncherReadResult FromException(LauncherId launcher, Exception ex) =>
-        new(launcher, false, false, [], [], ex.Message);
+        new(launcher, false, false, [], [], WishlistReadable: false, ex.Message);
 
     private static int? ToPlaytimeMinutes(TimeSpan? runTime) =>
         runTime is { } value ? (int)Math.Round(value.TotalMinutes) : null;
