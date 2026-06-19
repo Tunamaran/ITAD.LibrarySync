@@ -1,0 +1,186 @@
+<Window x:Class="ITAD.LibrarySync.App.Views.FirstRunWizard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ITAD.LibrarySync.App.ViewModels"
+        Title="ITAD Library Sync — Setup"
+        Height="480"
+        Width="620"
+        MinHeight="420"
+        MinWidth="560"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock FontSize="12" Foreground="Gray" Text="{Binding StepNumber, StringFormat=Step {0} of 4}" />
+            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding StepTitle}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:WizardStep.Welcome}">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock FontSize="14" TextWrapping="Wrap"
+                           Text="Welcome to ITAD Library Sync. This wizard will help you connect your IsThereAnyDeal account, detect installed game launchers, and optionally run your first sync." />
+                <TextBlock Margin="0,16,0,0" Foreground="Gray" TextWrapping="Wrap"
+                           Text="The app runs in the system tray. After setup, it keeps your ITAD Collection and Waitlist in sync with Epic, Ubisoft Connect, Battle.net, and Xbox libraries." />
+            </StackPanel>
+
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:WizardStep.ItadOAuth}">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="Connect your IsThereAnyDeal account to sync your game libraries."
+                           TextWrapping="Wrap" />
+                <TextBlock Margin="0,16,0,4" Text="Status" Foreground="Gray" />
+                <TextBlock FontSize="13">
+                    <Run Text="Connection: " />
+                    <Run Text="{Binding ConnectionStatus}" />
+                </TextBlock>
+                <TextBlock Margin="0,8,0,0" FontSize="13">
+                    <Run Text="Account: " />
+                    <Run Text="{Binding AccountName}" />
+                </TextBlock>
+                <Button Margin="0,20,0,0"
+                        HorizontalAlignment="Left"
+                        Width="120"
+                        Content="Connect"
+                        Command="{Binding ConnectCommand}" />
+                <TextBlock Margin="0,16,0,0"
+                           Foreground="Gray"
+                           TextWrapping="Wrap"
+                           Text="A browser window will open for ITAD authorization. You must connect before continuing." />
+            </StackPanel>
+
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:WizardStep.LauncherScan}">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           Margin="0,0,0,12"
+                           TextWrapping="Wrap"
+                           Text="Scanning your installed launchers. Results appear below as each launcher is checked." />
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding LauncherStatuses}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Launcher"
+                                            Binding="{Binding DisplayName}"
+                                            Width="*"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Header="Status"
+                                            Binding="{Binding DetectionStatus}"
+                                            Width="110"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Header="Games Found"
+                                            Binding="{Binding LastReadResult}"
+                                            Width="*"
+                                            IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:WizardStep.FirstSync}">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="You're all set. ITAD Library Sync will run in the system tray."
+                           TextWrapping="Wrap" />
+                <CheckBox Margin="0,20,0,0"
+                          Content="Sync Now"
+                          IsChecked="{Binding RunSyncOnFinish}" />
+                <TextBlock Margin="0,12,0,0"
+                           Foreground="Gray"
+                           TextWrapping="Wrap"
+                           Text="When checked, all enabled launchers will sync to your ITAD Collection and Waitlist when you finish setup. You can change sync settings later from the tray menu." />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    HorizontalAlignment="Left"
+                    Width="90"
+                    Content="Back"
+                    Command="{Binding BackCommand}" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Width="90"
+                        Margin="0,0,8,0"
+                        Content="Next"
+                        Command="{Binding NextCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLastStep}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Width="90"
+                        Content="Finish"
+                        IsDefault="True"
+                        Command="{Binding FinishCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLastStep}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
