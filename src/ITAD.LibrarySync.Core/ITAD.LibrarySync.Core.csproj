@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GameCollector.StoreHandlers.BattleNet" Version="4.4.0.1" />
+    <PackageReference Include="GameCollector.StoreHandlers.EGS" Version="4.4.0.1" />
+    <PackageReference Include="GameCollector.StoreHandlers.Ubisoft" Version="4.4.0.1" />
+    <PackageReference Include="GameCollector.StoreHandlers.Xbox" Version="4.4.0.1" />
+  </ItemGroup>
+
+</Project>
