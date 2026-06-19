@@ -116,6 +116,7 @@ public partial class App : Application
 
         services.AddSingleton<ISyncOrchestrator, SyncOrchestrator>();
         services.AddSingleton<SyncScheduler>();
+        services.AddSingleton<OAuthFlowService>();
         services.AddSingleton<TrayIconService>();
 
         return services.BuildServiceProvider();

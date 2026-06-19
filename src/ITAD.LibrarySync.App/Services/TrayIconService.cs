@@ -2,11 +2,15 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
+using ITAD.LibrarySync.Core.Auth;
 using ITAD.LibrarySync.Core.Sync;
 
 namespace ITAD.LibrarySync.App.Services;
 
-public sealed class TrayIconService(ISyncOrchestrator orchestrator) : IDisposable
+public sealed class TrayIconService(
+    ISyncOrchestrator orchestrator,
+    OAuthFlowService oauthFlow,
+    TokenStorage tokenStorage) : IDisposable
 {
     private TaskbarIcon? _trayIcon;
 
@@ -24,6 +28,14 @@ public sealed class TrayIconService(ISyncOrchestrator orchestrator) : IDisposabl
     {
         var menu = new ContextMenu();
 
+        if (tokenStorage.Load() is null)
+        {
+            var connect = new MenuItem { Header = "Connect to ITAD" };
+            connect.Click += async (_, _) => await ConnectAsync();
+            menu.Items.Add(connect);
+            menu.Items.Add(new Separator());
+        }
+
         var syncNow = new MenuItem { Header = "Sync Now" };
         syncNow.Click += async (_, _) => await SyncNowAsync();
         menu.Items.Add(syncNow);
@@ -39,6 +51,25 @@ public sealed class TrayIconService(ISyncOrchestrator orchestrator) : IDisposabl
         menu.Items.Add(exit);
 
         return menu;
+    }
+
+    private async Task ConnectAsync()
+    {
+        try
+        {
+            await oauthFlow.ConnectAsync();
+            _trayIcon?.ShowBalloonTip(
+                "Connected",
+                "Successfully connected to IsThereAnyDeal.",
+                BalloonIcon.Info);
+        }
+        catch (Exception ex)
+        {
+            _trayIcon?.ShowBalloonTip(
+                "Connection Failed",
+                ex.Message,
+                BalloonIcon.Error);
+        }
     }
 
     private async Task SyncNowAsync()

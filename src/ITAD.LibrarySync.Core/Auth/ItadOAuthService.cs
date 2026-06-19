@@ -17,12 +17,14 @@ public sealed class ItadOAuthService(HttpClient httpClient, ItadOptions options,
 
     private string? _pendingCodeVerifier;
 
-    public string BuildAuthorizeUrl()
+    public string BuildAuthorizeUrl(string? state = null) =>
+        BuildAuthorizeUrl(state, GenerateCodeVerifier());
+
+    public string BuildAuthorizeUrl(string? state, string codeVerifier)
     {
-        var codeVerifier = GenerateCodeVerifier();
         _pendingCodeVerifier = codeVerifier;
 
-        return BuildUrl(AuthorizeUrl, new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["client_id"] = options.ClientId,
             ["redirect_uri"] = options.RedirectUri,
@@ -30,7 +32,12 @@ public sealed class ItadOAuthService(HttpClient httpClient, ItadOptions options,
             ["scope"] = Scopes,
             ["code_challenge"] = GenerateCodeChallenge(codeVerifier),
             ["code_challenge_method"] = "S256"
-        });
+        };
+
+        if (!string.IsNullOrEmpty(state))
+            query["state"] = state;
+
+        return BuildUrl(AuthorizeUrl, query);
     }
 
     public async Task<OAuthTokens> ExchangeCodeAsync(string code, CancellationToken ct = default)
