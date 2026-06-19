@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="GameCollector.StoreHandlers.BattleNet" Version="4.4.0.1" />
     <PackageReference Include="GameCollector.StoreHandlers.EGS" Version="4.4.0.1" />
     <PackageReference Include="GameCollector.StoreHandlers.Ubisoft" Version="4.4.0.1" />
