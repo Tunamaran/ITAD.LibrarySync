@@ -8,6 +8,10 @@ namespace ITAD.LibrarySync.Core.Api;
 
 public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
 {
+    public static bool IsProfileNotFound(HttpRequestException exception) =>
+        exception.Message.Contains("404", StringComparison.Ordinal) &&
+        exception.Message.Contains("/profiles/", StringComparison.OrdinalIgnoreCase);
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -98,8 +102,20 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
         IReadOnlyList<string> shopGameIds,
         CancellationToken ct = default)
     {
+        var lookup = await LookupShopGameIdsAsync(shopId, shopGameIds, ct);
+        return lookup.Values
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => id!)
+            .ToList();
+    }
+
+    public async Task<IReadOnlyDictionary<string, string?>> LookupShopGameIdsAsync(
+        int shopId,
+        IReadOnlyList<string> shopGameIds,
+        CancellationToken ct = default)
+    {
         if (shopGameIds.Count == 0)
-            return [];
+            return new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         using var response = await httpClient.PostAsJsonAsync(
             $"/lookup/id/shop/{shopId}/v1",
@@ -108,13 +124,23 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
             ct);
         await EnsureSuccessAsync(response, $"lookup ITAD game IDs for shop {shopId}", ct);
 
-        var lookup = await response.Content.ReadFromJsonAsync<Dictionary<string, string?>>(JsonOptions, ct)
-            ?? [];
+        return await response.Content.ReadFromJsonAsync<Dictionary<string, string?>>(JsonOptions, ct)
+            ?? new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+    }
 
-        return lookup.Values
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Select(id => id!)
-            .ToList();
+    public async Task<ItadUserInfo> GetUserInfoAsync(string accessToken, CancellationToken ct = default)
+    {
+        using var request = CreateAuthorizedRequest(HttpMethod.Get, "/user/info/v2", accessToken);
+        using var response = await httpClient.SendAsync(request, ct);
+        await EnsureSuccessAsync(response, "get user info", ct);
+
+        var payload = await response.Content.ReadFromJsonAsync<UserInfoResponse>(JsonOptions, ct)
+            ?? throw new InvalidOperationException("ITAD API get user info returned an empty response.");
+
+        if (string.IsNullOrWhiteSpace(payload.Username))
+            throw new InvalidOperationException("ITAD API get user info did not return a username.");
+
+        return new ItadUserInfo(payload.Username);
     }
 
     private async Task<ItadSyncResponse> SyncGamesAsync(
@@ -125,7 +151,9 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
         CancellationToken ct)
     {
         using var request = CreateAuthorizedRequest(HttpMethod.Put, path, accessToken);
-        request.Headers.Add("ITAD-Profile", profileToken);
+        if (!request.Headers.TryAddWithoutValidation("ITAD-Profile", profileToken))
+            throw new InvalidOperationException("Failed to attach ITAD-Profile header.");
+
         request.Content = JsonContent.Create(
             games.Select(ToSyncGameJson).ToList(),
             options: JsonOptions);
@@ -143,6 +171,7 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
     {
         var request = new HttpRequestMessage(method, path);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         return request;
     }
 
@@ -164,6 +193,13 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
             ? $"ITAD API {operation} failed with {(int)response.StatusCode} {response.ReasonPhrase}."
             : $"ITAD API {operation} failed with {(int)response.StatusCode} {response.ReasonPhrase}: {body}";
 
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound &&
+            operation.Contains("/profiles/", StringComparison.OrdinalIgnoreCase))
+        {
+            message +=
+                " The linked ITAD profile was not found. Disconnect and reconnect your ITAD account in Settings, then sync again. If this persists, ensure your OAuth app is registered at isthereanydeal.com/my/apps/ with the profiles scope enabled.";
+        }
+
         throw new HttpRequestException(message);
     }
 
@@ -174,6 +210,8 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
     private sealed record WaitlistGameResponse(string Id);
 
     private sealed record ShopMapEntryResponse(int Id, string Title);
+
+    private sealed record UserInfoResponse(string Username);
 
     private sealed record SyncGameJsonPayload(
         int Shop,

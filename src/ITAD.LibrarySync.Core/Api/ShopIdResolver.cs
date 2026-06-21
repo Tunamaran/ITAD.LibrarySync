@@ -9,17 +9,21 @@ public sealed class ShopIdResolver
     {
         [LauncherId.Epic] = ["Epic Game Store", "Epic Games Store"],
         [LauncherId.Ubisoft] = ["Ubisoft Store", "Ubisoft Connect"],
-        [LauncherId.BattleNet] = ["Battle.net", "Blizzard Shop"],
+        [LauncherId.BattleNet] = ["Blizzard", "Battle.net", "Blizzard Shop"],
         [LauncherId.Xbox] = ["Microsoft Store", "Xbox Store"]
     };
 
     public void LoadFromShopMap(IReadOnlyDictionary<string, int> shopMapByTitle)
     {
+        var lookup = shopMapByTitle
+            .GroupBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First().Value, StringComparer.OrdinalIgnoreCase);
+
         foreach (var (launcher, names) in FallbackNames)
         {
             foreach (var name in names)
             {
-                if (shopMapByTitle.TryGetValue(name, out var id))
+                if (lookup.TryGetValue(name, out var id))
                 {
                     _map[launcher] = id;
                     break;
@@ -27,6 +31,9 @@ public sealed class ShopIdResolver
             }
         }
     }
+
+    public bool TryGetShopId(LauncherId launcher, out int shopId) =>
+        _map.TryGetValue(launcher, out shopId!);
 
     public int GetShopId(LauncherId launcher) =>
         _map.TryGetValue(launcher, out var id)

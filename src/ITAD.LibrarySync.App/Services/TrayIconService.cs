@@ -4,12 +4,15 @@ using System.IO;
 using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using ITAD.LibrarySync.App.ViewModels;
 using ITAD.LibrarySync.App.Views;
 using ITAD.LibrarySync.Core.Auth;
+using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Scheduling;
 using ITAD.LibrarySync.Core.Sync;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,9 +29,13 @@ public enum TraySyncState
 
 [SupportedOSPlatform("windows")]
 public sealed class TrayIconService(
-    ISyncOrchestrator orchestrator,
     OAuthFlowService oauthFlow,
     TokenStorage tokenStorage,
+    ProfileTokenStorage profileTokenStorage,
+    AppSettingsStorage appSettingsStorage,
+    SyncConfirmationService syncConfirmation,
+    SyncStatusService syncStatusService,
+    ItadAccountService itadAccountService,
     NotificationService notifications,
     IServiceProvider serviceProvider) : IDisposable
 {
@@ -36,14 +43,19 @@ public sealed class TrayIconService(
     private SettingsWindow? _settingsWindow;
     private TraySyncState _state = TraySyncState.Idle;
 
+    private ISyncOrchestrator Orchestrator =>
+        serviceProvider.GetRequiredService<ISyncOrchestrator>();
+
     public void Initialize()
     {
         _trayIcon = new TaskbarIcon
         {
             Icon = GetIconForState(TraySyncState.Idle),
-            ToolTipText = GetToolTipForState(TraySyncState.Idle),
+            ToolTipText = BuildToolTip(TraySyncState.Idle),
             ContextMenu = CreateContextMenu()
         };
+        _trayIcon.TrayMouseDoubleClick += (_, _) => OpenSettings();
+        syncStatusService.SyncCompleted += (_, _) => UpdateTrayAppearance();
     }
 
     public void SetState(TraySyncState state)
@@ -53,6 +65,27 @@ public sealed class TrayIconService(
     }
 
     public void SetSyncing() => SetState(TraySyncState.Syncing);
+
+    public bool IsSyncing => _state == TraySyncState.Syncing;
+
+    public void Activate() => OpenSettings();
+
+    public void RequestExit()
+    {
+        if (IsSyncing)
+        {
+            var result = MessageBox.Show(
+                "A sync is in progress. Exit anyway?",
+                "Exit ITAD Library Sync",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+        }
+
+        Application.Current.Shutdown();
+    }
 
     public void RefreshContextMenu()
     {
@@ -65,27 +98,29 @@ public sealed class TrayIconService(
         if (_trayIcon is null)
             return;
 
-        _trayIcon.ToolTipText = GetToolTipForState(_state);
+        _trayIcon.ToolTipText = BuildToolTip(_state);
         _trayIcon.Icon = GetIconForState(_state);
     }
 
-    private static string GetToolTipForState(TraySyncState state) => state switch
+    private string BuildToolTip(TraySyncState state)
     {
-        TraySyncState.Syncing => "ITAD Library Sync — Syncing…",
-        TraySyncState.Success => "ITAD Library Sync — Last sync successful",
-        TraySyncState.Partial => "ITAD Library Sync — Last sync completed with errors",
-        TraySyncState.Error => "ITAD Library Sync — Last sync failed",
-        _ => "ITAD Library Sync — Idle"
-    };
+        var baseText = state switch
+        {
+            TraySyncState.Syncing => "ITAD Library Sync — Syncing…",
+            TraySyncState.Success => "ITAD Library Sync — Last sync successful",
+            TraySyncState.Partial => "ITAD Library Sync — Last sync completed with errors",
+            TraySyncState.Error => "ITAD Library Sync — Last sync failed",
+            _ => "ITAD Library Sync — Idle"
+        };
 
-    private static Icon GetIconForState(TraySyncState state) => state switch
-    {
-        TraySyncState.Syncing => SystemIcons.Information,
-        TraySyncState.Success => SystemIcons.Application,
-        TraySyncState.Partial => SystemIcons.Warning,
-        TraySyncState.Error => SystemIcons.Error,
-        _ => SystemIcons.Application
-    };
+        if (state == TraySyncState.Syncing)
+            return baseText;
+
+        var summary = syncStatusService.GetTrayTooltipSuffix();
+        return summary is null ? baseText : $"{baseText}{summary}";
+    }
+
+    private static Icon GetIconForState(TraySyncState state) => TrayIconResources.GetIcon(state);
 
     private ContextMenu CreateContextMenu()
     {
@@ -96,12 +131,14 @@ public sealed class TrayIconService(
         syncNow.Click += async (_, _) => await RunSyncAsync();
         menu.Items.Add(syncNow);
 
-        menu.Items.Add(new Separator());
+        var enabledLaunchers = appSettingsStorage.Load().GetEnabledLaunchers();
+        if (enabledLaunchers.Count > 0)
+        {
+            menu.Items.Add(new Separator());
 
-        menu.Items.Add(CreateLauncherSyncItem("Sync Epic", LauncherId.Epic));
-        menu.Items.Add(CreateLauncherSyncItem("Sync Ubisoft", LauncherId.Ubisoft));
-        menu.Items.Add(CreateLauncherSyncItem("Sync Battle.net", LauncherId.BattleNet));
-        menu.Items.Add(CreateLauncherSyncItem("Sync Microsoft", LauncherId.Xbox));
+            foreach (var launcher in enabledLaunchers.OrderBy(l => l))
+                menu.Items.Add(CreateLauncherSyncItem($"Sync {GetLauncherMenuLabel(launcher)}", launcher));
+        }
 
         menu.Items.Add(new Separator());
 
@@ -131,11 +168,20 @@ public sealed class TrayIconService(
         menu.Items.Add(new Separator());
 
         var exit = new MenuItem { Header = "Exit" };
-        exit.Click += (_, _) => Application.Current.Shutdown();
+        exit.Click += (_, _) => RequestExit();
         menu.Items.Add(exit);
 
         return menu;
     }
+
+    private static string GetLauncherMenuLabel(LauncherId launcher) => launcher switch
+    {
+        LauncherId.Epic => "Epic",
+        LauncherId.Ubisoft => "Ubisoft",
+        LauncherId.BattleNet => "Battle.net",
+        LauncherId.Xbox => "Microsoft",
+        _ => LauncherDisplayNames.Get(launcher)
+    };
 
     private MenuItem CreateLauncherSyncItem(string header, LauncherId launcher)
     {
@@ -146,9 +192,14 @@ public sealed class TrayIconService(
 
     private async Task RunSyncAsync(IReadOnlyList<LauncherId>? launchers = null)
     {
+        var toSync = launchers ?? appSettingsStorage.Load().GetEnabledLaunchers();
+
+        if (!syncConfirmation.Confirm(toSync))
+            return;
+
         try
         {
-            await orchestrator.SyncAllAsync(launchers);
+            await Orchestrator.SyncAllAsync(toSync);
         }
         catch
         {
@@ -161,6 +212,8 @@ public sealed class TrayIconService(
         try
         {
             await oauthFlow.ConnectAsync();
+            await itadAccountService.RefreshAsync();
+            profileTokenStorage.Clear();
             SetState(TraySyncState.Idle);
             RefreshContextMenu();
             notifications.ShowConnected();
@@ -175,6 +228,8 @@ public sealed class TrayIconService(
     private void Disconnect()
     {
         tokenStorage.Clear();
+        profileTokenStorage.Clear();
+        itadAccountService.Clear();
         SetState(TraySyncState.Idle);
         RefreshContextMenu();
         notifications.ShowDisconnected();
@@ -182,23 +237,50 @@ public sealed class TrayIconService(
 
     private void OpenSettings()
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        // Defer until after the tray context menu closes; opening synchronously often fails silently.
+        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, OpenSettingsCore);
+    }
+
+    private void OpenSettingsCore()
+    {
+        try
         {
-            if (_settingsWindow is { IsVisible: true })
+            if (_settingsWindow is { IsLoaded: true })
             {
-                _settingsWindow.Activate();
+                if (_settingsWindow.WindowState == WindowState.Minimized)
+                    _settingsWindow.WindowState = WindowState.Normal;
+
+                _settingsWindow.Show();
+                BringToFront(_settingsWindow);
                 return;
             }
 
             var viewModel = serviceProvider.GetRequiredService<SettingsViewModel>();
             _settingsWindow = new SettingsWindow(viewModel)
             {
-                Owner = Application.Current.MainWindow
+                ShowInTaskbar = true,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
             _settingsWindow.Show();
-            _settingsWindow.Activate();
-        });
+            BringToFront(_settingsWindow);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.Message,
+                "Could Not Open Settings",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private static void BringToFront(Window window)
+    {
+        window.Activate();
+        window.Focus();
+        window.Topmost = true;
+        window.Topmost = false;
     }
 
     private static void OpenLastSyncLog()

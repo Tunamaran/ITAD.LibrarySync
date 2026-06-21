@@ -10,14 +10,7 @@ public sealed partial class LauncherSettingsItem : ObservableObject
     {
         Reader = reader;
         Launcher = reader.Launcher;
-        DisplayName = Launcher switch
-        {
-            LauncherId.Epic => "Epic Games Store",
-            LauncherId.Ubisoft => "Ubisoft Connect",
-            LauncherId.BattleNet => "Battle.net",
-            LauncherId.Xbox => "Xbox / Microsoft Store",
-            _ => reader.Launcher.ToString()
-        };
+        DisplayName = LauncherDisplayNames.Get(reader.Launcher);
         _isEnabled = isEnabled;
     }
 
@@ -41,4 +34,9 @@ public sealed partial class LauncherSettingsItem : ObservableObject
 
     [ObservableProperty]
     private bool _isTestReadRunning;
+
+    [ObservableProperty]
+    private LauncherReadResult? _lastReadCache;
+
+    public bool HasPreviewData => LastReadCache is not null;
 }

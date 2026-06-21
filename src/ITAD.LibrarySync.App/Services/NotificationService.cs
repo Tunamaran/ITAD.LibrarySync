@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Models;
 using Microsoft.Toolkit.Uwp.Notifications;
 
@@ -90,10 +91,16 @@ public sealed class NotificationService
     {
         var lines = results
             .Where(r => !r.Success)
-            .Select(r => $"{FormatLauncher(r.Launcher)}: {r.Error ?? "Unknown error"}");
+            .Select(r => $"{FormatLauncher(r.Launcher)}: {FormatLauncherError(r)}");
 
         return string.Join("\n", lines);
     }
+
+    private static string FormatLauncherError(SyncResult result) =>
+        result.Launcher == LauncherId.Xbox
+        && string.Equals(result.Error, XboxReader.XboxConnectMessage, StringComparison.Ordinal)
+            ? "Reconnect Xbox in Settings"
+            : result.Error ?? "Unknown error";
 
     private static string FormatLauncher(LauncherId launcher) => launcher switch
     {

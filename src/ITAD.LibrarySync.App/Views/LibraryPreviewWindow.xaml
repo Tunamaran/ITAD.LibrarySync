@@ -1,0 +1,110 @@
+<Window x:Class="ITAD.LibrarySync.App.Views.LibraryPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding LauncherName, StringFormat={}{0} — Library Preview}"
+        Height="560"
+        Width="760"
+        MinHeight="420"
+        MinWidth="640"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock FontWeight="SemiBold" FontSize="14" Text="{Binding LauncherName}" />
+            <TextBlock Margin="0,4,0,0"
+                       Foreground="Gray"
+                       Text="{Binding Summary, StringFormat=Summary: {0}}" />
+            <TextBlock Margin="0,2,0,0"
+                       Foreground="Gray"
+                       Text="{Binding Status, StringFormat=Status: {0}}" />
+            <TextBlock Margin="0,8,0,0"
+                       Foreground="DarkOrange"
+                       TextWrapping="Wrap"
+                       Text="{Binding PreviewWarning}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasWarning}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Expander Margin="0,8,0,0"
+                      Header="{Binding DetailsHeader}"
+                      IsExpanded="False">
+                <Expander.Style>
+                    <Style TargetType="Expander">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasDetails}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Expander.Style>
+                <ListBox ItemsSource="{Binding DetailLines}"
+                         MaxHeight="160"
+                         BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+            </Expander>
+        </StackPanel>
+
+        <TextBlock Grid.Row="1"
+                   Margin="0,12,0,4"
+                   Foreground="Gray"
+                   Text="Search" />
+
+        <TextBox Grid.Row="2"
+                 Margin="0,0,0,12"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="Filter by title or store ID" />
+
+        <TabControl Grid.Row="3">
+            <TabItem Header="{Binding OwnedCount, StringFormat=Owned ({0})}">
+                <DataGrid ItemsSource="{Binding OwnedGames}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*" />
+                        <DataGridTextColumn Header="Store ID" Binding="{Binding StoreId}" Width="180" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="{Binding WishlistCount, StringFormat=Wishlist ({0})}">
+                <DataGrid ItemsSource="{Binding WishlistGames}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*" />
+                        <DataGridTextColumn Header="Store ID" Binding="{Binding StoreId}" Width="180" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+
+        <Button Grid.Row="4"
+                Margin="0,12,0,0"
+                HorizontalAlignment="Right"
+                Width="80"
+                Content="Close"
+                IsDefault="True"
+                Click="CloseButton_Click" />
+    </Grid>
+</Window>

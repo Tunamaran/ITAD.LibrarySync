@@ -5,6 +5,8 @@ namespace ITAD.LibrarySync.Core.Logging;
 
 public sealed partial class FileLogger
 {
+    public event Action<SyncLogEntry>? EntryWritten;
+
     private static readonly object WriteLock = new();
 
     private readonly string _logsDirectory;
@@ -81,6 +83,8 @@ public sealed partial class FileLogger
         {
             File.AppendAllText(path, line);
         }
+
+        EntryWritten?.Invoke(new SyncLogEntry(DateTimeOffset.Now, level, sanitized));
     }
 
     private string GetLogPathForToday() =>

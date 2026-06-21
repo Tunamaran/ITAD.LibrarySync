@@ -11,6 +11,8 @@ public interface IItadApiClient
     Task DeleteWaitlistGamesAsync(string accessToken, IReadOnlyList<string> gameIds, CancellationToken ct = default);
     Task<IReadOnlyDictionary<string, int>> GetShopMapAsync(CancellationToken ct = default);
     Task<IReadOnlyList<string>> LookupGameIdsByShopIdsAsync(int shopId, IReadOnlyList<string> shopGameIds, CancellationToken ct = default);
+    Task<IReadOnlyDictionary<string, string?>> LookupShopGameIdsAsync(int shopId, IReadOnlyList<string> shopGameIds, CancellationToken ct = default);
+    Task<ItadUserInfo> GetUserInfoAsync(string accessToken, CancellationToken ct = default);
 }
 
 public sealed record ItadSyncResponse(int Total, int Added, int Removed);

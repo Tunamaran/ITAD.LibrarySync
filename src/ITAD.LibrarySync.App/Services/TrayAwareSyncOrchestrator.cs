@@ -1,30 +1,45 @@
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Scheduling;
 using ITAD.LibrarySync.Core.Sync;
 
 namespace ITAD.LibrarySync.App.Services;
 
 public sealed class TrayAwareSyncOrchestrator(
     SyncOrchestrator inner,
+    AppSettingsStorage appSettingsStorage,
+    SyncStatusService syncStatusService,
     TrayIconService trayIcon,
     NotificationService notifications,
+    SyncProgressService syncProgress,
     FileLogger logger) : ISyncOrchestrator
 {
     public async Task<IReadOnlyList<SyncResult>> SyncAllAsync(
         IReadOnlyList<LauncherId>? launchers = null,
         CancellationToken ct = default)
     {
+        var resolved = launchers ?? appSettingsStorage.Load().GetEnabledLaunchers();
+
+        if (resolved.Count == 0)
+        {
+            logger.LogInfo("Sync skipped: no enabled launchers.");
+            return Array.Empty<SyncResult>();
+        }
+
         trayIcon.SetSyncing();
-        logger.LogInfo(launchers is { Count: > 0 }
-            ? $"Sync started for {string.Join(", ", launchers)}"
-            : "Sync started for all launchers");
+        syncProgress.BeginSync();
+        logger.LogInfo(resolved.Count == Enum.GetValues<LauncherId>().Length
+            ? "Sync started for all enabled launchers."
+            : $"Sync started for {string.Join(", ", resolved)}.");
 
         try
         {
-            var results = await inner.SyncAllAsync(launchers, ct);
+            var results = await inner.SyncAllAsync(resolved, ct);
+            syncStatusService.RecordResults(results, resolved);
             var state = DetermineState(results);
             trayIcon.SetState(state);
             logger.LogSyncResults(results);
+            syncProgress.CompleteSync(results);
             notifications.ShowSyncComplete(results);
             return results;
         }
@@ -32,6 +47,7 @@ public sealed class TrayAwareSyncOrchestrator(
         {
             trayIcon.SetState(TraySyncState.Error);
             logger.LogError($"Sync failed: {ex.Message}");
+            syncProgress.FailSync(ex.Message);
             notifications.ShowSyncFailed(ex.Message);
             throw;
         }

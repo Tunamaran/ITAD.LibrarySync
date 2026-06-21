@@ -12,6 +12,11 @@
     <PackageReference Include="GameCollector.StoreHandlers.EGS" Version="4.4.0.1" />
     <PackageReference Include="GameCollector.StoreHandlers.Ubisoft" Version="4.4.0.1" />
     <PackageReference Include="GameCollector.StoreHandlers.Xbox" Version="4.4.0.1" />
+    <PackageReference Include="YamlDotNet" Version="15.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ITAD.LibrarySync.Core.Tests" />
   </ItemGroup>
 
 </Project>

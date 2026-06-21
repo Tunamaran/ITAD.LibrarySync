@@ -2,8 +2,11 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ITAD.LibrarySync.App.Launchers;
 using ITAD.LibrarySync.App.Services;
+using ITAD.LibrarySync.App.Views;
 using ITAD.LibrarySync.Core.Auth;
+using ITAD.LibrarySync.Core.Auth.Xbox;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Scheduling;
@@ -14,29 +17,54 @@ namespace ITAD.LibrarySync.App.ViewModels;
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly OAuthFlowService _oauthFlow;
+    private readonly XboxOAuthFlowService _xboxOAuthFlow;
+    private readonly XboxOAuthService _xboxOAuthService;
     private readonly TokenStorage _tokenStorage;
+    private readonly ProfileTokenStorage _profileTokenStorage;
     private readonly AppSettingsStorage _appSettingsStorage;
     private readonly SyncScheduler _syncScheduler;
     private readonly ISyncOrchestrator _syncOrchestrator;
+    private readonly SyncStatusService _syncStatusService;
+    private readonly SyncConfirmationService _syncConfirmation;
+    private readonly WindowsStartupService _windowsStartupService;
+    private readonly ItadAccountService _itadAccountService;
+    private readonly TrayIconService _trayIconService;
     private readonly AppSettings _settings;
 
     public SettingsViewModel(
         OAuthFlowService oauthFlow,
+        XboxOAuthFlowService xboxOAuthFlow,
+        XboxOAuthService xboxOAuthService,
         TokenStorage tokenStorage,
+        ProfileTokenStorage profileTokenStorage,
         AppSettingsStorage appSettingsStorage,
         SyncScheduler syncScheduler,
         ISyncOrchestrator syncOrchestrator,
+        SyncStatusService syncStatusService,
+        SyncConfirmationService syncConfirmation,
+        WindowsStartupService windowsStartupService,
+        ItadAccountService itadAccountService,
+        TrayIconService trayIconService,
         IReadOnlyList<ILauncherReader> readers)
     {
         _oauthFlow = oauthFlow;
+        _xboxOAuthFlow = xboxOAuthFlow;
+        _xboxOAuthService = xboxOAuthService;
         _tokenStorage = tokenStorage;
+        _profileTokenStorage = profileTokenStorage;
         _appSettingsStorage = appSettingsStorage;
         _syncScheduler = syncScheduler;
         _syncOrchestrator = syncOrchestrator;
+        _syncStatusService = syncStatusService;
+        _syncConfirmation = syncConfirmation;
+        _windowsStartupService = windowsStartupService;
+        _itadAccountService = itadAccountService;
+        _trayIconService = trayIconService;
         _settings = appSettingsStorage.Load();
 
         SelectedInterval = _settings.Interval;
         SyncOnStartup = _settings.SyncOnStartup;
+        ConfirmBeforeSync = _settings.ConfirmBeforeSync;
         StartWithWindows = _settings.StartWithWindows;
         ShowNotifications = _settings.ShowNotifications;
         SelectedLogLevel = _settings.LogLevel;
@@ -54,6 +82,10 @@ public sealed partial class SettingsViewModel : ObservableObject
             };
 
         RefreshConnectionState();
+        RefreshXboxConnectionState();
+        ApplySyncStatsFromService();
+        _syncStatusService.SyncCompleted += (_, _) => ApplySyncStatsFromService();
+        _itadAccountService.AccountInfoChanged += (_, _) => RefreshAccountName();
     }
 
     public ObservableCollection<LauncherSettingsItem> LauncherStatuses { get; }
@@ -77,6 +109,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private bool _syncOnStartup;
 
     [ObservableProperty]
+    private bool _confirmBeforeSync;
+
+    [ObservableProperty]
     private bool _startWithWindows;
 
     [ObservableProperty]
@@ -91,6 +126,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSyncing;
 
+    [ObservableProperty]
+    private string _xboxConnectionStatus = "Not connected";
+
+    [ObservableProperty]
+    private bool _isXboxConnecting;
+
     public string ConnectionStatus => IsConnected ? "Connected" : "Not connected";
 
     [RelayCommand(CanExecute = nameof(CanConnect))]
@@ -100,6 +141,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         try
         {
             await _oauthFlow.ConnectAsync();
+            _profileTokenStorage.Clear();
+            await _itadAccountService.RefreshAsync();
             RefreshConnectionState();
         }
         catch (Exception ex)
@@ -122,32 +165,66 @@ public sealed partial class SettingsViewModel : ObservableObject
     private void Disconnect()
     {
         _tokenStorage.Clear();
+        _profileTokenStorage.Clear();
+        _itadAccountService.Clear();
         RefreshConnectionState();
     }
 
     private bool CanDisconnect() => IsConnected;
 
-    [RelayCommand(CanExecute = nameof(CanSyncNow))]
-    private async Task SyncNowAsync()
+    [RelayCommand]
+    private async Task ConnectXboxAsync()
     {
-        IsSyncing = true;
+        IsXboxConnecting = true;
         try
         {
-            var enabledLaunchers = LauncherStatuses
-                .Where(l => l.IsEnabled)
-                .Select(l => l.Launcher)
-                .ToList();
-
-            var results = await _syncOrchestrator.SyncAllAsync(enabledLaunchers);
-            UpdateLauncherSyncStats(results);
+            await _xboxOAuthFlow.ConnectAsync();
+            RefreshXboxConnectionState();
         }
         catch (Exception ex)
         {
             MessageBox.Show(
                 ex.Message,
-                "Sync Failed",
+                "Xbox Connection Failed",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsXboxConnecting = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DisconnectXboxAsync()
+    {
+        await _xboxOAuthService.ClearAsync();
+        RefreshXboxConnectionState();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSyncNow))]
+    private async Task SyncNowAsync()
+    {
+        var enabledLaunchers = LauncherStatuses
+            .Where(l => l.IsEnabled)
+            .Select(l => l.Launcher)
+            .ToList();
+
+        var previews = LauncherStatuses.ToDictionary(
+            item => item.Launcher,
+            item => item.LastReadCache);
+
+        if (!_syncConfirmation.Confirm(enabledLaunchers, previews))
+            return;
+
+        IsSyncing = true;
+        try
+        {
+            await _syncOrchestrator.SyncAllAsync(enabledLaunchers);
+        }
+        catch
+        {
+            // Errors are shown in the sync progress window and tray notification.
         }
         finally
         {
@@ -169,18 +246,37 @@ public sealed partial class SettingsViewModel : ObservableObject
         try
         {
             var result = await launcher.Reader.ReadAsync();
-            launcher.DetectionStatus = result switch
-            {
-                { IsDetected: false } => "Not detected",
-                { IsLoggedIn: false } => "Not logged in",
-                { Error: not null } => "Error",
-                _ => "Ready"
-            };
 
-            var total = result.Owned.Count + result.Wishlist.Count;
-            launcher.LastReadResult = result.Error is null
-                ? $"{total} games ({result.Owned.Count} owned, {result.Wishlist.Count} wishlist)"
-                : result.Error;
+            if (launcher.Launcher == LauncherId.Xbox && !result.IsLoggedIn &&
+                await PromptConnectXboxAsync())
+            {
+                await ConnectXboxAsync();
+                result = await launcher.Reader.ReadAsync();
+            }
+
+            ApplyReadResult(launcher, result);
+        }
+        catch (XboxAuthRequiredException)
+        {
+            if (launcher.Launcher == LauncherId.Xbox && await PromptConnectXboxAsync())
+            {
+                try
+                {
+                    await ConnectXboxAsync();
+                    var result = await launcher.Reader.ReadAsync();
+                    ApplyReadResult(launcher, result);
+                    return;
+                }
+                catch (Exception retryEx)
+                {
+                    launcher.DetectionStatus = "Error";
+                    launcher.LastReadResult = retryEx.Message;
+                    return;
+                }
+            }
+
+            launcher.DetectionStatus = "Not logged in";
+            launcher.LastReadResult = "Xbox authentication is required.";
         }
         catch (Exception ex)
         {
@@ -192,6 +288,42 @@ public sealed partial class SettingsViewModel : ObservableObject
             launcher.IsTestReadRunning = false;
         }
     }
+
+    private static void ApplyReadResult(LauncherSettingsItem launcher, LauncherReadResult result)
+    {
+        launcher.LastReadCache = result;
+        launcher.DetectionStatus = LauncherReadResultDisplay.GetDetectionStatus(result);
+        launcher.LastReadResult = LauncherReadResultDisplay.FormatScanSummary(result);
+    }
+
+    [RelayCommand]
+    private async Task ViewDetailsAsync(LauncherSettingsItem? launcher)
+    {
+        if (launcher is null)
+            return;
+
+        if (launcher.LastReadCache is null)
+            await TestReadAsync(launcher);
+
+        if (launcher.LastReadCache is null)
+            return;
+
+        var viewModel = new LibraryPreviewViewModel(launcher.DisplayName, launcher.LastReadCache);
+        var window = new LibraryPreviewWindow(viewModel)
+        {
+            Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+                     ?? Application.Current.MainWindow
+        };
+        window.ShowDialog();
+    }
+
+    private static Task<bool> PromptConnectXboxAsync() =>
+        Task.FromResult(
+            MessageBox.Show(
+                    "Connect Xbox account now?",
+                    "Xbox Not Connected",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) == MessageBoxResult.Yes);
 
     partial void OnSelectedIntervalChanged(SyncInterval value)
     {
@@ -207,10 +339,17 @@ public sealed partial class SettingsViewModel : ObservableObject
         _syncScheduler.Apply(_settings.ToSyncScheduleOptions());
     }
 
+    partial void OnConfirmBeforeSyncChanged(bool value)
+    {
+        _settings.ConfirmBeforeSync = value;
+        PersistSettings();
+    }
+
     partial void OnStartWithWindowsChanged(bool value)
     {
         _settings.StartWithWindows = value;
         PersistSettings();
+        _windowsStartupService.Apply(value);
     }
 
     partial void OnShowNotificationsChanged(bool value)
@@ -243,6 +382,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             item => item.Launcher,
             item => item.IsEnabled);
         PersistSettings();
+        _trayIconService.RefreshContextMenu();
     }
 
     private void PersistSettings() => _appSettingsStorage.Save(_settings);
@@ -250,21 +390,27 @@ public sealed partial class SettingsViewModel : ObservableObject
     private void RefreshConnectionState()
     {
         IsConnected = _tokenStorage.Load() is not null;
-        AccountName = IsConnected ? "ITAD Account" : "—";
+        RefreshAccountName();
+
+        if (IsConnected)
+            _ = _itadAccountService.RefreshAsync();
     }
 
-    private void UpdateLauncherSyncStats(IReadOnlyList<SyncResult> results)
+    private void RefreshAccountName()
+    {
+        AccountName = IsConnected ? _itadAccountService.GetDisplayName() : "—";
+    }
+
+    private void RefreshXboxConnectionState()
+    {
+        XboxConnectionStatus = _xboxOAuthService.IsAuthenticated()
+            ? _xboxOAuthService.GetGamertag() ?? "Connected"
+            : "Not connected";
+    }
+
+    private void ApplySyncStatsFromService()
     {
         foreach (var launcher in LauncherStatuses)
-        {
-            var result = results.FirstOrDefault(r => r.Launcher == launcher.Launcher);
-            launcher.LastSyncStats = result switch
-            {
-                null => "Skipped",
-                { Success: false } => $"Failed: {result.Error ?? "Unknown error"}",
-                _ => $"Collection {result.CollectionTotal} (+{result.CollectionAdded}/-{result.CollectionRemoved}), " +
-                     $"Waitlist {result.WaitlistTotal} (+{result.WaitlistAdded}/-{result.WaitlistRemoved})"
-            };
-        }
+            launcher.LastSyncStats = _syncStatusService.GetStats(launcher.Launcher);
     }
 }

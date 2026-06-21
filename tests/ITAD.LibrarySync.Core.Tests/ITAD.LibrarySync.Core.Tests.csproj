@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\src\ITAD.LibrarySync.Core\ITAD.LibrarySync.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="fixtures\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

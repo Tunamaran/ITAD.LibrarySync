@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ITAD Library Sync — Settings"
         Height="520"
-        Width="640"
+        Width="720"
         MinHeight="420"
-        MinWidth="560"
+        MinWidth="620"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize">
     <Grid Margin="16">
@@ -19,14 +19,11 @@
                 <StackPanel Margin="12">
                     <TextBlock Text="IsThereAnyDeal Account" FontWeight="SemiBold" FontSize="14" />
                     <TextBlock Margin="0,12,0,4" Text="Status" Foreground="Gray" />
-                    <TextBlock FontSize="13">
-                        <Run Text="Connection: " />
-                        <Run Text="{Binding ConnectionStatus}" />
-                    </TextBlock>
-                    <TextBlock Margin="0,8,0,0" FontSize="13">
-                        <Run Text="Account: " />
-                        <Run Text="{Binding AccountName}" />
-                    </TextBlock>
+                    <TextBlock FontSize="13"
+                               Text="{Binding ConnectionStatus, Mode=OneWay, StringFormat=Connection: {0}}" />
+                    <TextBlock Margin="0,8,0,0"
+                               FontSize="13"
+                               Text="{Binding AccountName, Mode=OneWay, StringFormat=Account: {0}}" />
 
                     <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
                         <Button Content="Connect"
@@ -50,44 +47,67 @@
             </TabItem>
 
             <TabItem Header="Launchers">
-                <DataGrid Margin="8"
-                          ItemsSource="{Binding LauncherStatuses}"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          HeadersVisibility="Column">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Launcher"
-                                            Binding="{Binding DisplayName}"
-                                            Width="*"
-                                            IsReadOnly="True" />
-                        <DataGridCheckBoxColumn Header="Enabled"
-                                               Binding="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"
-                                               Width="70" />
-                        <DataGridTextColumn Header="Status"
-                                            Binding="{Binding DetectionStatus}"
-                                            Width="100"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="Last Sync"
-                                            Binding="{Binding LastSyncStats}"
-                                            Width="*"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="Read Result"
-                                            Binding="{Binding LastReadResult}"
-                                            Width="*"
-                                            IsReadOnly="True" />
-                        <DataGridTemplateColumn Header="Test Read" Width="90">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="Test"
-                                            Padding="8,2"
-                                            Command="{Binding DataContext.TestReadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                            CommandParameter="{Binding}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <DockPanel>
+                    <DataGrid DockPanel.Dock="Top"
+                              Margin="8"
+                              ItemsSource="{Binding LauncherStatuses}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Launcher"
+                                                Binding="{Binding DisplayName}"
+                                                Width="*"
+                                                IsReadOnly="True" />
+                            <DataGridCheckBoxColumn Header="Enabled"
+                                                   Binding="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"
+                                                   Width="70" />
+                            <DataGridTextColumn Header="Status"
+                                                Binding="{Binding DetectionStatus}"
+                                                Width="100"
+                                                IsReadOnly="True" />
+                            <DataGridTextColumn Header="Last Sync"
+                                                Binding="{Binding LastSyncStats}"
+                                                Width="*"
+                                                IsReadOnly="True" />
+                            <DataGridTextColumn Header="Read Result"
+                                                Binding="{Binding LastReadResult}"
+                                                Width="*"
+                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="Test Read" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Test"
+                                                Padding="8,2"
+                                                Command="{Binding DataContext.TestReadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Detay" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Detay"
+                                                Padding="8,2"
+                                                Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Margin="8,0,8,8">
+                        <TextBlock Text="Xbox / Microsoft Store account" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding XboxConnectionStatus, Mode=OneWay}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="Connect Xbox" Command="{Binding ConnectXboxCommand}" Margin="0,0,8,0"/>
+                            <Button Content="Disconnect Xbox" Command="{Binding DisconnectXboxCommand}"/>
+                        </StackPanel>
+                        <TextBlock Foreground="Gray" TextWrapping="Wrap" Margin="0,8,0,0"
+                            Text="Xbox library uses Microsoft Store license checks on your play history. Only titles with a confirmed Store entitlement are synced."/>
+                    </StackPanel>
+                </DockPanel>
             </TabItem>
 
             <TabItem Header="Sync Settings">
@@ -103,10 +123,14 @@
                               Content="Sync on startup"
                               IsChecked="{Binding SyncOnStartup}" />
 
+                    <CheckBox Margin="0,8,0,0"
+                              Content="Confirm before manual sync"
+                              IsChecked="{Binding ConfirmBeforeSync}" />
+
                     <TextBlock Margin="0,16,0,0"
                                Foreground="Gray"
                                TextWrapping="Wrap"
-                               Text="When enabled, the app syncs all enabled launchers automatically at the selected interval or when the app starts." />
+                               Text="When enabled, the app syncs all enabled launchers automatically at the selected interval or when the app starts. Manual sync from the tray or Settings can ask for confirmation first." />
                 </StackPanel>
             </TabItem>
 

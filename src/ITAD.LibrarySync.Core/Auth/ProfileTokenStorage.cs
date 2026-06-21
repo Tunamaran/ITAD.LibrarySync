@@ -33,6 +33,21 @@ public sealed class ProfileTokenStorage
         SaveAll(profiles);
     }
 
+    public void Remove(LauncherId launcher)
+    {
+        var profiles = LoadAll();
+        if (!profiles.Remove(launcher))
+            return;
+
+        if (profiles.Count == 0)
+        {
+            Clear();
+            return;
+        }
+
+        SaveAll(profiles);
+    }
+
     public void Clear()
     {
         if (File.Exists(_path))

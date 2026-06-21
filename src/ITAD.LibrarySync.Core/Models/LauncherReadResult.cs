@@ -7,4 +7,8 @@ public sealed record LauncherReadResult(
     IReadOnlyList<StoreGame> Owned,
     IReadOnlyList<StoreGame> Wishlist,
     bool WishlistReadable,
-    string? Error = null);
+    string? Error = null,
+    IReadOnlyList<string>? Warnings = null)
+{
+    public IReadOnlyList<string> WarningMessages { get; } = Warnings ?? [];
+}

@@ -1,0 +1,26 @@
+{
+  "xuid": "2535412345678901",
+  "titles": [
+    {
+      "titleId": "1234567890",
+      "name": "Halo Infinite",
+      "pfn": "Microsoft.Halo_8wekyb3d8bbwe",
+      "modernTitleId": "9NBLGGH4R2Q6",
+      "type": "Game"
+    },
+    {
+      "titleId": "9876543210",
+      "name": "Forza Horizon 5",
+      "pfn": "",
+      "modernTitleId": "9NBLGGH4R2Q7",
+      "type": "Game"
+    },
+    {
+      "titleId": "1111111111",
+      "name": "   ",
+      "pfn": "Microsoft.Empty_8wekyb3d8bbwe",
+      "modernTitleId": "9NEMPTY",
+      "type": "Game"
+    }
+  ]
+}

@@ -26,7 +26,9 @@ public sealed class WaitlistCleanupService(
 
         foreach (var group in allOwned.GroupBy(g => g.Launcher))
         {
-            var shopId = shopIds.GetShopId(group.Key);
+            if (!shopIds.TryGetShopId(group.Key, out var shopId))
+                continue;
+
             var storeIds = group.Select(g => g.StoreId).ToList();
             var itadIds = await api.LookupGameIdsByShopIdsAsync(shopId, storeIds, ct);
 

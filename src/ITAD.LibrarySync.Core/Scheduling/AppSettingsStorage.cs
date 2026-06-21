@@ -18,8 +18,13 @@ public sealed class AppSettings
     public bool HasCompletedFirstRun { get; set; }
     public bool StartWithWindows { get; set; }
     public bool ShowNotifications { get; set; } = true;
+    public bool ConfirmBeforeSync { get; set; } = true;
     public AppLogLevel LogLevel { get; set; } = AppLogLevel.Info;
     public Dictionary<LauncherId, bool> EnabledLaunchers { get; set; } = CreateDefaultEnabledLaunchers();
+    public Dictionary<LauncherId, string> LastSyncStatsByLauncher { get; set; } = new();
+    public string? ItadUsername { get; set; }
+    public DateTimeOffset? LastSyncAt { get; set; }
+    public string? LastSyncSummary { get; set; }
 
     public SyncScheduleOptions ToSyncScheduleOptions() => new()
     {

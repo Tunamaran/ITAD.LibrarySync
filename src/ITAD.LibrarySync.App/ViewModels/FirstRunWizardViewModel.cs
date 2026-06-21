@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITAD.LibrarySync.App.Services;
 using ITAD.LibrarySync.Core.Auth;
+using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Scheduling;
 using ITAD.LibrarySync.Core.Sync;
 
@@ -22,8 +23,8 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
     private readonly OAuthFlowService _oauthFlow;
     private readonly TokenStorage _tokenStorage;
     private readonly AppSettingsStorage _appSettingsStorage;
-    private readonly SyncScheduler _syncScheduler;
     private readonly ISyncOrchestrator _syncOrchestrator;
+    private readonly ItadAccountService _itadAccountService;
     private readonly AppSettings _settings;
     private bool _hasScannedLaunchers;
 
@@ -31,15 +32,15 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
         OAuthFlowService oauthFlow,
         TokenStorage tokenStorage,
         AppSettingsStorage appSettingsStorage,
-        SyncScheduler syncScheduler,
         ISyncOrchestrator syncOrchestrator,
+        ItadAccountService itadAccountService,
         IReadOnlyList<Core.Launchers.ILauncherReader> readers)
     {
         _oauthFlow = oauthFlow;
         _tokenStorage = tokenStorage;
         _appSettingsStorage = appSettingsStorage;
-        _syncScheduler = syncScheduler;
         _syncOrchestrator = syncOrchestrator;
+        _itadAccountService = itadAccountService;
         _settings = appSettingsStorage.Load();
 
         LauncherStatuses = new ObservableCollection<LauncherSettingsItem>(
@@ -49,6 +50,7 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
 
         RefreshConnectionState();
         UpdateNavigationState();
+        _itadAccountService.AccountInfoChanged += (_, _) => RefreshAccountName();
     }
 
     public ObservableCollection<LauncherSettingsItem> LauncherStatuses { get; }
@@ -149,13 +151,16 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
                 item => item.Launcher,
                 item => item.IsEnabled);
             _appSettingsStorage.Save(_settings);
-            _syncScheduler.Apply(_settings.ToSyncScheduleOptions());
 
+            var initialSyncRan = false;
             if (RunSyncOnFinish)
+            {
                 await _syncOrchestrator.SyncAllAsync();
+                initialSyncRan = true;
+            }
 
             IsCompleted = true;
-            WizardCompleted?.Invoke(this, EventArgs.Empty);
+            WizardCompleted?.Invoke(this, new WizardCompletedEventArgs { InitialSyncRan = initialSyncRan });
         }
         catch (Exception ex)
         {
@@ -173,7 +178,7 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
 
     private bool CanFinish() => IsLastStep && !IsFinishing;
 
-    public event EventHandler? WizardCompleted;
+    public event EventHandler<WizardCompletedEventArgs>? WizardCompleted;
 
     partial void OnCurrentStepChanged(WizardStep value)
     {
@@ -247,18 +252,9 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
         try
         {
             var result = await launcher.Reader.ReadAsync();
-            launcher.DetectionStatus = result switch
-            {
-                { IsDetected: false } => "Not detected",
-                { IsLoggedIn: false } => "Not logged in",
-                { Error: not null } => "Error",
-                _ => "Ready"
-            };
-
-            var total = result.Owned.Count + result.Wishlist.Count;
-            launcher.LastReadResult = result.Error is null
-                ? $"{total} games ({result.Owned.Count} owned, {result.Wishlist.Count} wishlist)"
-                : result.Error;
+            launcher.LastReadCache = result;
+            launcher.DetectionStatus = LauncherReadResultDisplay.GetDetectionStatus(result);
+            launcher.LastReadResult = LauncherReadResultDisplay.FormatScanSummary(result);
         }
         catch (Exception ex)
         {
@@ -274,6 +270,14 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
     private void RefreshConnectionState()
     {
         IsConnected = _tokenStorage.Load() is not null;
-        AccountName = IsConnected ? "ITAD Account" : "—";
+        RefreshAccountName();
+
+        if (IsConnected)
+            _ = _itadAccountService.RefreshAsync();
+    }
+
+    private void RefreshAccountName()
+    {
+        AccountName = IsConnected ? _itadAccountService.GetDisplayName() : "—";
     }
 }

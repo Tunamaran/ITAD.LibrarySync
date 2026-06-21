@@ -37,7 +37,7 @@ Native ITAD sync exists for Steam, GOG, Humble Store, and Fanatical. Epic, Ubiso
 | Launchers v1 | Epic, Ubisoft Connect, Battle.net, Microsoft/Xbox — all four |
 | Sync trigger | Hybrid: manual default + optional scheduler |
 | Tech stack | .NET 8 + WPF |
-| Launcher access | Local cache only (launcher installed + logged in) |
+| Launcher access | Local cache (launcher installed + logged in); Microsoft/Xbox also uses Xbox OAuth (TitleHub) |
 | Waitlist + Collection | Both synced; owned games excluded from waitlist permanently |
 
 ## Architecture
@@ -138,7 +138,9 @@ This handles cross-store cases (e.g., owned on Epic, still on ITAD waitlist from
 | Epic Games | Full (owned + not-installed) | Best-effort from local cache | Always |
 | Ubisoft Connect | Full | Not available (no local wishlist) | Always |
 | Battle.net | Full | Not available | Always |
-| Microsoft/Xbox | Full | Not available | Always |
+| Microsoft/Xbox | Full (TitleHub OAuth + local cache merge) | Not available | Always |
+
+**Microsoft/Xbox limitation:** TitleHub reflects title history, not every unplayed purchase; Game Pass titles may appear in the library.
 
 ### Empty-list protection
 
@@ -176,7 +178,7 @@ Windows Toast for sync results, partial errors, token expiry
 | Situation | Behavior |
 |-----------|----------|
 | Launcher not installed | Skip; show "Not detected" |
-| Launcher installed, not logged in | Skip; toast prompt to log in |
+| Launcher installed, not logged in | Skip; toast prompt to log in (Microsoft/Xbox: prompt Xbox OAuth connect in Settings) |
 | ITAD token expired | Refresh; on failure prompt reconnect |
 | ITAD rate limit | Exponential backoff, max 3 retries |
 | Game not matched on ITAD | ITAD uses title fallback; log as unmatched |
@@ -210,7 +212,8 @@ ITAD.LibrarySync/
 
 ## Security
 
-- OAuth tokens encrypted with Windows DPAPI (`%AppData%/ITADLibrarySync/tokens.dat`)
+- ITAD OAuth tokens encrypted with Windows DPAPI (`%AppData%/ITADLibrarySync/tokens.dat`)
+- Xbox OAuth tokens stored separately in DPAPI files (`xbox-login.dat`, `xbox-xsts.dat` under `%AppData%/ITADLibrarySync/`), distinct from ITAD tokens
 - Public OAuth client (no embedded client secret)
 - Launcher files read-only; data sent only to ITAD API
 - No tokens or PII in logs

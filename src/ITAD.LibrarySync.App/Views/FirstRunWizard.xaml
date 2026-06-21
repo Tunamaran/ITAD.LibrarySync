@@ -17,8 +17,12 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock FontSize="12" Foreground="Gray" Text="{Binding StepNumber, StringFormat=Step {0} of 4}" />
-            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding StepTitle}" />
+            <TextBlock FontSize="12" Foreground="Gray">
+                <Run Text="Step " />
+                <Run Text="{Binding StepNumber, Mode=OneWay}" />
+                <Run Text=" of 4" />
+            </TextBlock>
+            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding StepTitle, Mode=OneWay}" />
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -53,14 +57,11 @@
                 <TextBlock Text="Connect your IsThereAnyDeal account to sync your game libraries."
                            TextWrapping="Wrap" />
                 <TextBlock Margin="0,16,0,4" Text="Status" Foreground="Gray" />
-                <TextBlock FontSize="13">
-                    <Run Text="Connection: " />
-                    <Run Text="{Binding ConnectionStatus}" />
-                </TextBlock>
-                <TextBlock Margin="0,8,0,0" FontSize="13">
-                    <Run Text="Account: " />
-                    <Run Text="{Binding AccountName}" />
-                </TextBlock>
+                <TextBlock FontSize="13"
+                           Text="{Binding ConnectionStatus, Mode=OneWay, StringFormat=Connection: {0}}" />
+                <TextBlock Margin="0,8,0,0"
+                           FontSize="13"
+                           Text="{Binding AccountName, Mode=OneWay, StringFormat=Account: {0}}" />
                 <Button Margin="0,20,0,0"
                         HorizontalAlignment="Left"
                         Width="120"
@@ -147,13 +148,13 @@
                     HorizontalAlignment="Left"
                     Width="90"
                     Content="Back"
-                    Command="{Binding BackCommand}" />
+                    Command="{Binding GoBackCommand}" />
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Width="90"
                         Margin="0,0,8,0"
                         Content="Next"
-                        Command="{Binding NextCommand}">
+                        Command="{Binding GoNextCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Visibility" Value="Visible" />

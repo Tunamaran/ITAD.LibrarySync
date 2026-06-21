@@ -21,7 +21,13 @@ public sealed class BattleNetReader : ILauncherReader
         try
         {
             var handler = new BattleNetHandler(FileSystem.Shared, WindowsRegistry.Shared);
-            var clientPath = handler.FindClient();
+            var clientPath = LauncherClientDetection.NormalizeClientPath(
+                handler.FindClient(),
+                FileSystem.Shared);
+            var isInstalled = LauncherClientDetection.IsBattleNetInstalled(
+                handler,
+                FileSystem.Shared,
+                clientPath);
             var results = handler.FindAllGames(OwnedGamesSettings);
 
             return Task.FromResult(LauncherReadHelper.ReadOwnedGames(
@@ -31,10 +37,11 @@ public sealed class BattleNetReader : ILauncherReader
                 results,
                 game => LauncherReadHelper.MapGame(
                     LauncherId.BattleNet,
-                    game.GameId,
-                    game.GameName,
-                    game.RunTime,
-                    game.LastRunDate ?? game.LastPlayed)));
+                    game.ProductId.Value,
+                    game.DirName,
+                    null,
+                    game.LastPlayed),
+                treatAsInstalled: isInstalled));
         }
         catch (Exception ex)
         {

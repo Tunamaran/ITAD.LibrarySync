@@ -1,6 +1,7 @@
 using FluentAssertions;
 using ITAD.LibrarySync.Core.Api;
 using ITAD.LibrarySync.Core.Launchers;
+using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Sync;
 using Moq;
@@ -15,6 +16,7 @@ public class SyncOrchestratorTests
     private readonly Mock<IWaitlistSyncService> _waitlistSync = new();
     private readonly Mock<IWaitlistCleanupService> _waitlistCleanup = new();
     private readonly Mock<IDelayProvider> _delay = new();
+    private readonly FileLogger _logger = new(Path.Combine(Path.GetTempPath(), "ITADLibrarySyncTests", Guid.NewGuid().ToString("N")));
 
     public SyncOrchestratorTests()
     {
@@ -183,7 +185,8 @@ public class SyncOrchestratorTests
             _collectionSync.Object,
             _waitlistSync.Object,
             _waitlistCleanup.Object,
-            _delay.Object);
+            _delay.Object,
+            _logger);
 
     private static Mock<ILauncherReader> CreateReader(LauncherId launcher, LauncherReadResult result)
     {

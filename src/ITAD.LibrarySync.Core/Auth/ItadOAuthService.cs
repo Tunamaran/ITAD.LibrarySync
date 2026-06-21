@@ -12,7 +12,7 @@ public sealed class ItadOAuthService(HttpClient httpClient, ItadOptions options,
 {
     private const string AuthorizeUrl = "https://isthereanydeal.com/oauth/authorize/";
     private const string TokenUrl = "https://isthereanydeal.com/oauth/token/";
-    private const string Scopes = "profiles wait_read wait_write coll_read coll_write";
+    private const string Scopes = "user_info profiles wait_read wait_write coll_read coll_write";
     private const int ExpiryBufferSeconds = 60;
 
     private string? _pendingCodeVerifier;
