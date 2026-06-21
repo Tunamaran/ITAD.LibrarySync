@@ -15,7 +15,7 @@ Windows WPF tray application that syncs your game libraries from Epic Games, Ubi
 
 - **Windows 10 or later** (64-bit)
 - **[Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)** — required for ITAD OAuth sign-in (preinstalled on Windows 11; install manually on Windows 10 if needed)
-- **.NET 8 runtime** — only required when running a framework-dependent build; [GitHub Releases](https://github.com/OWNER/REPO/releases) are self-contained and do not need a separate runtime install
+- **.NET 8 runtime** — only required when running a framework-dependent build; [GitHub Releases](https://github.com/Tunamaran/ITAD.LibrarySync/releases) are self-contained and do not need a separate runtime install
 - **Game launchers installed and signed in** — Epic Games, Ubisoft Connect, Battle.net, and/or Xbox/Microsoft Store as needed for the stores you want to sync
 - **Xbox / Microsoft Store** — connect your Xbox account in Settings for library sync beyond locally installed games (see [Xbox account](#xbox-account-microsoft-store) below)
 
