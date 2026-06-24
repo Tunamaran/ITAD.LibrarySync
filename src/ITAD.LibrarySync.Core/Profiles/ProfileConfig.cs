@@ -10,6 +10,7 @@ public static class ProfileConfig
         LauncherId.Ubisoft => ("ubisoft", "Ubisoft Connect Library"),
         LauncherId.BattleNet => ("battlenet", "Battle.net Library"),
         LauncherId.Xbox => ("xbox", "Microsoft Store Library"),
+        LauncherId.Ea => ("ea", "EA App Library"),
         _ => throw new ArgumentOutOfRangeException(nameof(launcher))
     };
 }

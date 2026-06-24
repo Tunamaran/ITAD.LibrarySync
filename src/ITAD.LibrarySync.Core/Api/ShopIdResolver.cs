@@ -10,7 +10,8 @@ public sealed class ShopIdResolver
         [LauncherId.Epic] = ["Epic Game Store", "Epic Games Store"],
         [LauncherId.Ubisoft] = ["Ubisoft Store", "Ubisoft Connect"],
         [LauncherId.BattleNet] = ["Blizzard", "Battle.net", "Blizzard Shop"],
-        [LauncherId.Xbox] = ["Microsoft Store", "Xbox Store"]
+        [LauncherId.Xbox] = ["Microsoft Store", "Xbox Store"],
+        [LauncherId.Ea] = ["EA Store", "Origin"]
     };
 
     public void LoadFromShopMap(IReadOnlyDictionary<string, int> shopMapByTitle)

@@ -11,6 +11,7 @@ public static class LauncherReaderFactory
         new EpicReader(),
         new UbisoftReader(),
         new BattleNetReader(),
-        new XboxReader(storeLibraryReader)
+        new XboxReader(storeLibraryReader),
+        new EaReader()
     ];
 }

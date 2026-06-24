@@ -37,6 +37,7 @@ public static class SyncSummaryDisplay
         LauncherId.Ubisoft => "Ubisoft",
         LauncherId.BattleNet => "Battle.net",
         LauncherId.Xbox => "Microsoft",
+        LauncherId.Ea => "EA",
         _ => LauncherDisplayNames.Get(launcher)
     };
 }

@@ -10,6 +10,7 @@ public static class LauncherDisplayNames
         LauncherId.Ubisoft => "Ubisoft Connect",
         LauncherId.BattleNet => "Battle.net",
         LauncherId.Xbox => "Xbox / Microsoft Store",
+        LauncherId.Ea => "EA App",
         _ => launcher.ToString()
     };
 }

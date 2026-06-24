@@ -15,13 +15,15 @@ public class ShopIdResolverTests
             ["Blizzard"] = 4,
             ["Epic Game Store"] = 16,
             ["Microsoft Store"] = 48,
-            ["Ubisoft Store"] = 62
+            ["Ubisoft Store"] = 62,
+            ["EA Store"] = 52
         });
 
         resolver.GetShopId(LauncherId.BattleNet).Should().Be(4);
         resolver.GetShopId(LauncherId.Epic).Should().Be(16);
         resolver.GetShopId(LauncherId.Xbox).Should().Be(48);
         resolver.GetShopId(LauncherId.Ubisoft).Should().Be(62);
+        resolver.GetShopId(LauncherId.Ea).Should().Be(52);
     }
 
     [Fact]

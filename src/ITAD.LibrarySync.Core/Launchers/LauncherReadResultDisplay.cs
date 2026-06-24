@@ -1,3 +1,4 @@
+using ITAD.LibrarySync.Core.Launchers.Ea;
 using ITAD.LibrarySync.Core.Models;
 
 namespace ITAD.LibrarySync.Core.Launchers;
@@ -9,6 +10,8 @@ public static class LauncherReadResultDisplay
         {
             { IsDetected: false } => "Not detected",
             { Launcher: LauncherId.Xbox, IsLoggedIn: false } => "Not logged in",
+            { Launcher: LauncherId.Ea, Owned.Count: 0, Error: not null } when
+                EaReadErrorFormatter.IsDecryptOrHardwareFailureMessage(result.Error) => "Error",
             { Owned.Count: > 0 } => "Ready",
             { Launcher: LauncherId.Xbox, IsLoggedIn: true, Error: not null } => "Limited",
             _ => "Ready"
@@ -28,6 +31,9 @@ public static class LauncherReadResultDisplay
             if (result.Launcher == LauncherId.BattleNet)
                 return summary + " — Battle.net local cache may omit uninstalled owned titles";
 
+            if (result.Launcher == LauncherId.Ea && result.WarningMessages.Count > 0)
+                return summary + " — installed games only (local EA cache unavailable)";
+
             return summary;
         }
 
@@ -44,6 +50,12 @@ public static class LauncherReadResultDisplay
 
         if (result.IsDetected && result.Launcher == LauncherId.Xbox)
             return $"0 games — {LauncherMessageSanitizer.SanitizeLine(result.Error)}";
+
+        if (result.Launcher == LauncherId.Ea &&
+            EaReadErrorFormatter.IsDecryptOrHardwareFailureMessage(result.Error))
+        {
+            return $"0 games — {LauncherMessageSanitizer.SanitizeLine(result.Error)}";
+        }
 
         if (result.IsDetected)
             return "0 games — launcher detected, no readable library entries";

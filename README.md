@@ -1,6 +1,6 @@
 # ITAD Library Sync
 
-Windows WPF tray application that syncs your game libraries from Epic Games, Ubisoft Connect, Battle.net, and Microsoft/Xbox to [IsThereAnyDeal](https://isthereanydeal.com/) Collection and Waitlist via the official Custom Profiles API.
+Windows WPF tray application that syncs your game libraries from Epic Games, Ubisoft Connect, Battle.net, Microsoft/Xbox, and EA App to [IsThereAnyDeal](https://isthereanydeal.com/) Collection and Waitlist via the official Custom Profiles API.
 
 ## Features
 
@@ -16,7 +16,7 @@ Windows WPF tray application that syncs your game libraries from Epic Games, Ubi
 - **Windows 10 or later** (64-bit)
 - **[Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)** — required for ITAD OAuth sign-in (preinstalled on Windows 11; install manually on Windows 10 if needed)
 - **.NET 8 runtime** — only required when running a framework-dependent build; [GitHub Releases](https://github.com/Tunamaran/ITAD.LibrarySync/releases) are self-contained and do not need a separate runtime install
-- **Game launchers installed and signed in** — Epic Games, Ubisoft Connect, Battle.net, and/or Xbox/Microsoft Store as needed for the stores you want to sync
+- **Game launchers installed and signed in** — Epic Games, Ubisoft Connect, Battle.net, EA App, and/or Xbox/Microsoft Store as needed for the stores you want to sync
 - **Xbox / Microsoft Store** — connect your Xbox account in Settings for library sync beyond locally installed games (see [Xbox account](#xbox-account-microsoft-store) below)
 
 ## Download
@@ -138,12 +138,22 @@ To disconnect, click **Disconnect Xbox**. Xbox tokens are stored separately from
 
 **Important:** The synced Microsoft library reflects Store license verification combined with title history — not every played title and not every purchase you have never launched. Use **Detay** to see exactly what will sync.
 
+#### EA App
+
+EA App sync reads your owned games from EA’s encrypted local library cache (no EA password stored):
+
+1. Install and sign in to **EA App** on this PC
+2. Enable **EA App** under **Settings → Launchers**
+3. Use **Test** and **Detay** to verify the game list before syncing
+
+If library read fails with a decrypt error, open EA App while signed in so it can refresh its local cache. Hardware changes can invalidate EA’s encryption key until the cache is rebuilt.
+
 ### Sync behavior
 
 For each **enabled** launcher the app:
 
 1. **Reads** owned games (and wishlist where available)
-2. **Syncs Collection** — `PUT /profiles/sync/collection/v1` to the store’s ITAD custom profile (Epic, Ubisoft, Battle.net, Xbox)
+2. **Syncs Collection** — `PUT /profiles/sync/collection/v1` to the store’s ITAD custom profile (Epic, Ubisoft, Battle.net, Xbox, EA App)
 3. **Syncs Waitlist** — pushes local wishlist to the profile waitlist when data is available; owned games are filtered out before upload
 4. **Global waitlist cleanup** — after all profiles, removes any ITAD waitlist entry that matches a game you own (including cross-store matches)
 
@@ -156,8 +166,9 @@ Sync runs are spaced ~30 seconds apart between stores to respect ITAD rate limit
 ## Limitations
 
 - **Microsoft / Xbox library** — requires Xbox OAuth in Settings. Synced titles are filtered by Microsoft Store license checks on your PC; title history alone is not used as the final owned list. See [Xbox account](#xbox-account-microsoft-store) above.
-- **Waitlist import** is **Epic-only, best-effort** — read from Epic’s local cache when available. Ubisoft Connect, Battle.net, and Xbox do not expose local wishlists; waitlist sync is skipped for those stores, but global waitlist cleanup still runs.
+- **Waitlist import** is **Epic-only, best-effort** — read from Epic’s local cache when available. Ubisoft Connect, Battle.net, EA App, and Xbox do not expose local wishlists; waitlist sync is skipped for those stores, but global waitlist cleanup still runs.
 - **Battle.net** — local cache may omit uninstalled owned titles.
+- **EA App** — reads EA’s encrypted local library cache via GameCollector. The EA App UI may show your full online library, but sync uses the local `IS` cache file only (no EA OAuth in v1.1). If decryption fails, try **Help → App recovery** in EA App, sign in again, and retry. Installed-game registry fallback is used when available. Uninstalled owned titles may be missing.
 - **GameCollector 4.4.0.1** — launcher reading depends on [GameCollector](https://www.nuget.org/packages/GameCollector.StoreHandlers.EGS) store handlers; behavior may change if launcher cache formats change.
 - **ITAD matching** — games are matched by store ID with title fallback; unmatched titles are logged but may not appear on ITAD.
 - **Windows only** — reads local launcher data paths; not supported on macOS or Linux.

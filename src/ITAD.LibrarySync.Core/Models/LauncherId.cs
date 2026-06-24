@@ -5,5 +5,6 @@ public enum LauncherId
     Epic,
     Ubisoft,
     BattleNet,
-    Xbox
+    Xbox,
+    Ea
 }

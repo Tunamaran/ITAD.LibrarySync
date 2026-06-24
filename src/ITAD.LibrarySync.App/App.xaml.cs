@@ -326,6 +326,7 @@ public partial class App : Application
         services.AddSingleton<IMicrosoftStoreCatalogClient>(sp => sp.GetRequiredService<DisplayCatalogClient>());
         services.AddSingleton<XboxStoreIdNormalizer>();
         services.AddSingleton<MicrosoftStoreSyncPayloadPreparer>();
+        services.AddSingleton<EaStoreSyncPayloadPreparer>();
         services.AddSingleton<CollectionSyncFaultIsolator>();
 
         services.AddSingleton<StoreLicenseFilter>();

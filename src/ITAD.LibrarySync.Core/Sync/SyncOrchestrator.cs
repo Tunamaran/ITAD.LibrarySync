@@ -162,6 +162,7 @@ public sealed class SyncOrchestrator(
         LauncherId.Ubisoft => "Ubisoft",
         LauncherId.BattleNet => "Battle.net",
         LauncherId.Xbox => "Microsoft",
+        LauncherId.Ea => "EA",
         _ => launcher.ToString()
     };
 }
