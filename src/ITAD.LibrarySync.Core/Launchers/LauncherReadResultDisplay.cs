@@ -10,8 +10,9 @@ public static class LauncherReadResultDisplay
         {
             { IsDetected: false } => "Not detected",
             { Launcher: LauncherId.Xbox, IsLoggedIn: false } => "Not logged in",
+            { Launcher: LauncherId.Ea, IsLoggedIn: false, Owned.Count: 0 } => "Not logged in",
             { Launcher: LauncherId.Ea, Owned.Count: 0, Error: not null } when
-                EaReadErrorFormatter.IsDecryptOrHardwareFailureMessage(result.Error) => "Error",
+                EaReadErrorFormatter.IsDecryptOrHardwareFailureMessage(result.Error) => "Not logged in",
             { Owned.Count: > 0 } => "Ready",
             { Launcher: LauncherId.Xbox, IsLoggedIn: true, Error: not null } => "Limited",
             _ => "Ready"
@@ -32,7 +33,10 @@ public static class LauncherReadResultDisplay
                 return summary + " — Battle.net local cache may omit uninstalled owned titles";
 
             if (result.Launcher == LauncherId.Ea && result.WarningMessages.Count > 0)
-                return summary + " — installed games only (local EA cache unavailable)";
+                return summary + " — partial library (local fallback)";
+
+            if (result.Launcher == LauncherId.Ea && result.IsLoggedIn && result.Owned.Count > 0)
+                return summary + " — online EA library";
 
             return summary;
         }
@@ -54,7 +58,7 @@ public static class LauncherReadResultDisplay
         if (result.Launcher == LauncherId.Ea &&
             EaReadErrorFormatter.IsDecryptOrHardwareFailureMessage(result.Error))
         {
-            return $"0 games — {LauncherMessageSanitizer.SanitizeLine(result.Error)}";
+            return $"0 games — {EaOnlineLibraryReader.ConnectEaMessage}";
         }
 
         if (result.IsDetected)

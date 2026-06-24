@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using Microsoft.Web.WebView2.Core;
 
@@ -6,15 +7,18 @@ namespace ITAD.LibrarySync.App.Views;
 public partial class OAuthWebViewWindow : Window
 {
     private readonly string _authorizeUrl;
-    private readonly string _redirectUriPrefix;
+    private readonly string _redirectUri;
 
     public event EventHandler<AuthorizationCodeReceivedEventArgs>? AuthorizationCodeReceived;
     public event EventHandler<OAuthErrorEventArgs>? ErrorOccurred;
 
-    public OAuthWebViewWindow(string authorizeUrl, string redirectUri)
+    public OAuthWebViewWindow(string authorizeUrl, string redirectUri, string? title = null)
     {
         _authorizeUrl = authorizeUrl;
-        _redirectUriPrefix = NormalizeRedirectPrefix(redirectUri);
+        _redirectUri = redirectUri;
+
+        if (!string.IsNullOrWhiteSpace(title))
+            Title = title;
 
         InitializeComponent();
         Loaded += OnLoadedAsync;
@@ -24,9 +28,23 @@ public partial class OAuthWebViewWindow : Window
     {
         try
         {
-            await OAuthWebView.EnsureCoreWebView2Async();
-            OAuthWebView.CoreWebView2.NavigationStarting += OnNavigationStarting;
-            OAuthWebView.Source = new Uri(_authorizeUrl);
+            var userDataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "ITADLibrarySync",
+                "OAuthWebView");
+            Directory.CreateDirectory(userDataFolder);
+
+            var environment = await CoreWebView2Environment.CreateAsync(
+                browserExecutableFolder: null,
+                userDataFolder: userDataFolder);
+
+            await OAuthWebView.EnsureCoreWebView2Async(environment);
+
+            var core = OAuthWebView.CoreWebView2
+                       ?? throw new InvalidOperationException("WebView2 failed to initialize.");
+
+            core.NavigationStarting += OnNavigationStarting;
+            core.Navigate(_authorizeUrl);
         }
         catch (Exception ex)
         {
@@ -45,8 +63,8 @@ public partial class OAuthWebViewWindow : Window
         if (!string.IsNullOrEmpty(error))
         {
             var message = string.IsNullOrWhiteSpace(errorDescription)
-                ? $"ITAD authorization failed: {error}."
-                : $"ITAD authorization failed: {error} ({errorDescription}).";
+                ? $"Authorization failed: {error}."
+                : $"Authorization failed: {error} ({errorDescription}).";
             ErrorOccurred?.Invoke(this, new OAuthErrorEventArgs(message));
             Close();
             return;
@@ -54,7 +72,7 @@ public partial class OAuthWebViewWindow : Window
 
         if (string.IsNullOrWhiteSpace(code))
         {
-            ErrorOccurred?.Invoke(this, new OAuthErrorEventArgs("ITAD authorization callback did not include an authorization code."));
+            ErrorOccurred?.Invoke(this, new OAuthErrorEventArgs("Authorization callback did not include an authorization code."));
             Close();
             return;
         }
@@ -69,14 +87,10 @@ public partial class OAuthWebViewWindow : Window
         error = null;
         errorDescription = null;
 
-        if (!uri.StartsWith(_redirectUriPrefix, StringComparison.OrdinalIgnoreCase))
+        if (!IsRedirectUri(uri))
             return false;
 
-        var queryIndex = uri.IndexOf('?', _redirectUriPrefix.Length - 1);
-        if (queryIndex < 0)
-            return true;
-
-        var query = uri[(queryIndex + 1)..];
+        var query = ExtractQueryString(uri);
         foreach (var part in query.Split('&', StringSplitOptions.RemoveEmptyEntries))
         {
             var separator = part.IndexOf('=');
@@ -101,6 +115,33 @@ public partial class OAuthWebViewWindow : Window
         }
 
         return true;
+    }
+
+    private bool IsRedirectUri(string uri)
+    {
+        if (_redirectUri.StartsWith("qrc:", StringComparison.OrdinalIgnoreCase))
+        {
+            return uri.StartsWith("qrc:", StringComparison.OrdinalIgnoreCase) &&
+                   uri.Contains("login_successful.html", StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (uri.StartsWith("https://www.ea.com/login_check", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return uri.StartsWith(NormalizeRedirectPrefix(_redirectUri), StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ExtractQueryString(string uri)
+    {
+        var queryIndex = uri.IndexOf('?', StringComparison.Ordinal);
+        if (queryIndex >= 0)
+            return uri[(queryIndex + 1)..];
+
+        var fragmentIndex = uri.IndexOf('#', StringComparison.Ordinal);
+        if (fragmentIndex >= 0)
+            return uri[(fragmentIndex + 1)..];
+
+        return string.Empty;
     }
 
     private static string NormalizeRedirectPrefix(string redirectUri)

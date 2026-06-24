@@ -8,10 +8,7 @@ internal static class EaReadErrorFormatter
     {
         if (IsDecryptOrHardwareFailure(exception))
         {
-            return "EA App library sync is unavailable on this PC. " +
-                   "The EA App window shows your online library, but the encrypted local cache could not be read " +
-                   "and no installed EA games were found on this system. " +
-                   "Full EA library sync requires EA account sign-in (planned for a future release).";
+            return EaOnlineLibraryReader.ConnectEaMessage;
         }
 
         return LauncherMessageSanitizer.SanitizeLine(exception.Message);
@@ -31,10 +28,7 @@ internal static class EaReadErrorFormatter
 
     internal static string FormatFromReadError(string error) =>
         IsDecryptOrHardwareFailureMessage(error)
-            ? "EA App library sync is unavailable on this PC. " +
-              "The EA App window shows your online library, but the encrypted local cache could not be read " +
-              "and no installed EA games were found on this system. " +
-              "Full EA library sync requires EA account sign-in (planned for a future release)."
+            ? EaOnlineLibraryReader.ConnectEaMessage
             : LauncherMessageSanitizer.SanitizeLine(error);
 
     internal static bool IsDecryptOrHardwareFailureMessage(string? message)
@@ -45,6 +39,6 @@ internal static class EaReadErrorFormatter
         return message.Contains("decrypt", StringComparison.OrdinalIgnoreCase) ||
                message.Contains("hardware", StringComparison.OrdinalIgnoreCase) ||
                message.Contains("HardwareInfo", StringComparison.OrdinalIgnoreCase) ||
-               message.Contains("EA App library sync is unavailable on this PC", StringComparison.OrdinalIgnoreCase);
+               message.Contains(EaOnlineLibraryReader.ConnectEaMessage, StringComparison.OrdinalIgnoreCase);
     }
 }

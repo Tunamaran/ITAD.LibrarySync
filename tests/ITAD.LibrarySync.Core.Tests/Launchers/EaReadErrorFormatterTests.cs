@@ -10,7 +10,7 @@ public class EaReadErrorFormatterTests
     {
         EaReadErrorFormatter.Format(new InvalidOperationException("Failed to decrypt EA library file"))
             .Should()
-            .Contain("EA App library sync is unavailable on this PC");
+            .Contain("Connect your EA account in Settings");
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class EaReadErrorFormatterTests
         EaReadErrorFormatter.FormatFromReadError(
                 "Unable to read library: Exception while decrypting file C:/ProgramData/EA Desktop/IS")
             .Should()
-            .Contain("EA App library sync is unavailable on this PC");
+            .Contain("Connect your EA account in Settings");
     }
 
     [Fact]

@@ -14,6 +14,7 @@
     <PackageReference Include="GameCollector.StoreHandlers.Ubisoft" Version="4.4.0.1" />
     <PackageReference Include="GameCollector.StoreHandlers.Xbox" Version="4.4.0.1" />
     <PackageReference Include="SHA3.Net" Version="2.0.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.3.0" />
   </ItemGroup>
 

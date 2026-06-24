@@ -6,7 +6,7 @@ internal static class EaReadResultMerger
 {
     internal const string RegistryFallbackWarning =
         "EA App local library cache could not be decrypted; syncing installed EA games detected from Windows only. " +
-        "Your full EA App online library cannot be read without EA account OAuth (planned for a future release).";
+        "Connect your EA account in Settings for your full online library.";
 
     internal static LauncherReadResult MergeRegistryFallback(LauncherReadResult result)
     {

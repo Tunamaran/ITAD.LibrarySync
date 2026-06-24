@@ -18,9 +18,13 @@ using ITAD.LibrarySync.Core.Api;
 
 using ITAD.LibrarySync.Core.Auth;
 
+using ITAD.LibrarySync.Core.Auth.Ea;
+
 using ITAD.LibrarySync.Core.Auth.Xbox;
 
 using ITAD.LibrarySync.Core.Launchers;
+
+using ITAD.LibrarySync.Core.Launchers.Ea;
 
 using ITAD.LibrarySync.Core.Launchers.Xbox;
 
@@ -308,7 +312,23 @@ public partial class App : Application
 
         services.AddSingleton<XboxOAuthFlowService>();
 
-
+        services.AddSingleton(EaOAuthOptions.CreateWebFallback());
+        services.AddSingleton<EaTokenStorage>();
+        services.AddSingleton<EaOAuthService>(sp =>
+        {
+            var httpClient = new HttpClient();
+            return new EaOAuthService(
+                httpClient,
+                sp.GetRequiredService<EaOAuthOptions>(),
+                sp.GetRequiredService<EaTokenStorage>());
+        });
+        services.AddSingleton<EaJunoClient>(sp => new EaJunoClient(
+            new HttpClient(),
+            sp.GetRequiredService<EaOAuthOptions>(),
+            sp.GetRequiredService<EaOAuthService>()));
+        services.AddSingleton<EaOnlineLibraryReader>();
+        services.AddSingleton<EaReader>();
+        services.AddSingleton<EaOAuthFlowService>();
 
         services.AddSingleton<ProfileManager>();
 
@@ -338,8 +358,9 @@ public partial class App : Application
         services.AddSingleton<IMicrosoftStoreLibraryReader, XboxApiLibraryReader>();
 
         services.AddSingleton<IReadOnlyList<ILauncherReader>>(sp =>
-
-            LauncherReaderFactory.CreateAll(sp.GetRequiredService<IMicrosoftStoreLibraryReader>()));
+            LauncherReaderFactory.CreateAll(
+                sp.GetRequiredService<IMicrosoftStoreLibraryReader>(),
+                sp.GetRequiredService<EaReader>()));
 
 
 

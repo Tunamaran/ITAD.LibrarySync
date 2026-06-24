@@ -106,6 +106,14 @@
                         </StackPanel>
                         <TextBlock Foreground="Gray" TextWrapping="Wrap" Margin="0,8,0,0"
                             Text="Xbox library uses Microsoft Store license checks on your play history. Only titles with a confirmed Store entitlement are synced."/>
+                        <TextBlock Text="EA App account" FontWeight="SemiBold" Margin="0,16,0,0"/>
+                        <TextBlock Text="{Binding EaConnectionStatus, Mode=OneWay}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="Connect EA" Command="{Binding ConnectEaCommand}" Margin="0,0,8,0"/>
+                            <Button Content="Disconnect EA" Command="{Binding DisconnectEaCommand}"/>
+                        </StackPanel>
+                        <TextBlock Foreground="Gray" TextWrapping="Wrap" Margin="0,8,0,0"
+                            Text="EA library uses your EA account online library. Local cache is used when available without sign-in."/>
                     </StackPanel>
                 </DockPanel>
             </TabItem>

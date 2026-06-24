@@ -6,6 +6,7 @@ using ITAD.LibrarySync.App.Launchers;
 using ITAD.LibrarySync.App.Services;
 using ITAD.LibrarySync.App.Views;
 using ITAD.LibrarySync.Core.Auth;
+using ITAD.LibrarySync.Core.Auth.Ea;
 using ITAD.LibrarySync.Core.Auth.Xbox;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Models;
@@ -19,6 +20,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly OAuthFlowService _oauthFlow;
     private readonly XboxOAuthFlowService _xboxOAuthFlow;
     private readonly XboxOAuthService _xboxOAuthService;
+    private readonly EaOAuthFlowService _eaOAuthFlow;
+    private readonly EaOAuthService _eaOAuthService;
     private readonly TokenStorage _tokenStorage;
     private readonly ProfileTokenStorage _profileTokenStorage;
     private readonly AppSettingsStorage _appSettingsStorage;
@@ -35,6 +38,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         OAuthFlowService oauthFlow,
         XboxOAuthFlowService xboxOAuthFlow,
         XboxOAuthService xboxOAuthService,
+        EaOAuthFlowService eaOAuthFlow,
+        EaOAuthService eaOAuthService,
         TokenStorage tokenStorage,
         ProfileTokenStorage profileTokenStorage,
         AppSettingsStorage appSettingsStorage,
@@ -50,6 +55,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         _oauthFlow = oauthFlow;
         _xboxOAuthFlow = xboxOAuthFlow;
         _xboxOAuthService = xboxOAuthService;
+        _eaOAuthFlow = eaOAuthFlow;
+        _eaOAuthService = eaOAuthService;
         _tokenStorage = tokenStorage;
         _profileTokenStorage = profileTokenStorage;
         _appSettingsStorage = appSettingsStorage;
@@ -83,6 +90,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         RefreshConnectionState();
         RefreshXboxConnectionState();
+        RefreshEaConnectionState();
         ApplySyncStatsFromService();
         _syncStatusService.SyncCompleted += (_, _) => ApplySyncStatsFromService();
         _itadAccountService.AccountInfoChanged += (_, _) => RefreshAccountName();
@@ -131,6 +139,12 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isXboxConnecting;
+
+    [ObservableProperty]
+    private string _eaConnectionStatus = "Not connected";
+
+    [ObservableProperty]
+    private bool _isEaConnecting;
 
     public string ConnectionStatus => IsConnected ? "Connected" : "Not connected";
 
@@ -202,6 +216,36 @@ public sealed partial class SettingsViewModel : ObservableObject
         RefreshXboxConnectionState();
     }
 
+    [RelayCommand]
+    private async Task ConnectEaAsync()
+    {
+        IsEaConnecting = true;
+        try
+        {
+            await _eaOAuthFlow.ConnectAsync();
+            RefreshEaConnectionState();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.Message,
+                "EA Connection Failed",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsEaConnecting = false;
+        }
+    }
+
+    [RelayCommand]
+    private void DisconnectEa()
+    {
+        _eaOAuthService.Disconnect();
+        RefreshEaConnectionState();
+    }
+
     [RelayCommand(CanExecute = nameof(CanSyncNow))]
     private async Task SyncNowAsync()
     {
@@ -251,6 +295,14 @@ public sealed partial class SettingsViewModel : ObservableObject
                 await PromptConnectXboxAsync())
             {
                 await ConnectXboxAsync();
+                result = await launcher.Reader.ReadAsync();
+            }
+
+            if (launcher.Launcher == LauncherId.Ea &&
+                result is { Owned.Count: 0, IsLoggedIn: false } &&
+                await PromptConnectEaAsync())
+            {
+                await ConnectEaAsync();
                 result = await launcher.Reader.ReadAsync();
             }
 
@@ -322,6 +374,14 @@ public sealed partial class SettingsViewModel : ObservableObject
             MessageBox.Show(
                     "Connect Xbox account now?",
                     "Xbox Not Connected",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) == MessageBoxResult.Yes);
+
+    private static Task<bool> PromptConnectEaAsync() =>
+        Task.FromResult(
+            MessageBox.Show(
+                    "Connect your EA account now?",
+                    "EA Not Connected",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question) == MessageBoxResult.Yes);
 
@@ -405,6 +465,13 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         XboxConnectionStatus = _xboxOAuthService.IsAuthenticated()
             ? _xboxOAuthService.GetGamertag() ?? "Connected"
+            : "Not connected";
+    }
+
+    private void RefreshEaConnectionState()
+    {
+        EaConnectionStatus = _eaOAuthService.IsAuthenticated()
+            ? _eaOAuthService.GetStoredSession()?.DisplayName ?? "Connected"
             : "Not connected";
     }
 
