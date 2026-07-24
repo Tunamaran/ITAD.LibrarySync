@@ -103,10 +103,7 @@ public sealed class UpdateCheckerService(HttpClient httpClient, FileLogger? logg
             CreateNoWindow = true
         });
 
-        System.Windows.Application.Current.Dispatcher.Invoke(() =>
-        {
-            System.Windows.Application.Current.Shutdown();
-        });
+        Environment.Exit(0);
     }
 
     public static string GetCurrentAssemblyVersion()
