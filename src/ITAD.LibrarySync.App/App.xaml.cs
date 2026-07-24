@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 
 using System.Windows;
 
@@ -33,6 +33,8 @@ using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Profiles;
 
 using ITAD.LibrarySync.Core.Scheduling;
+
+using ITAD.LibrarySync.Core.Services;
 
 using ITAD.LibrarySync.Core.Sync;
 
@@ -181,9 +183,29 @@ public partial class App : Application
 
 
         if (settings.SyncOnStartup && !skipSyncOnStartup)
-
             _ = RunStartupSyncAsync();
 
+        _ = CheckUpdateOnStartupAsync();
+    }
+
+    private async Task CheckUpdateOnStartupAsync()
+    {
+        try
+        {
+            var checker = _serviceProvider?.GetService<IUpdateCheckerService>();
+            if (checker is null) return;
+            var result = await checker.CheckForUpdatesAsync();
+            if (result.HasUpdate)
+            {
+                _serviceProvider?.GetService<NotificationService>()?.ShowNotification(
+                    "ITAD Library Sync — Güncelleme Mevcut",
+                    $"Yeni bir sürüm mevcut ({result.LatestVersion}). İndirmek için Ayarlar'ı açın.");
+            }
+        }
+        catch
+        {
+            // Ignore startup update check errors
+        }
     }
 
 
@@ -364,9 +386,12 @@ public partial class App : Application
 
 
 
-        services.AddSingleton<SyncOrchestrator>();
-
         services.AddSingleton<FileLogger>();
+        services.AddSingleton<IUnmatchedTitlesService, UnmatchedTitlesService>();
+        services.AddSingleton<ICustomMappingService, CustomMappingService>();
+        services.AddSingleton<ILogReaderService, LogReaderService>();
+        services.AddSingleton<IUpdateCheckerService>(sp =>
+            new UpdateCheckerService(new HttpClient(), sp.GetService<FileLogger>()));
 
         services.AddSingleton<SyncProgressService>();
 

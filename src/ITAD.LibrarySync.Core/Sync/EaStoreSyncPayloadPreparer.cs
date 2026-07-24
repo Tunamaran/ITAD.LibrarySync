@@ -2,10 +2,15 @@ using ITAD.LibrarySync.Core.Api;
 using ITAD.LibrarySync.Core.Launchers.Ea;
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Services;
 
 namespace ITAD.LibrarySync.Core.Sync;
 
-public sealed class EaStoreSyncPayloadPreparer(IItadApiClient api, FileLogger logger)
+public sealed class EaStoreSyncPayloadPreparer(
+    IItadApiClient api,
+    FileLogger logger,
+    IUnmatchedTitlesService? unmatchedTitles = null,
+    ICustomMappingService? customMappings = null)
 {
     private const string UnknownProductIdPrefix = "itadlibsync/";
 
@@ -27,26 +32,56 @@ public sealed class EaStoreSyncPayloadPreparer(IItadApiClient api, FileLogger lo
             : new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         var prepared = new List<SyncGamePayload>(payloads.Count);
+        var unmatchedList = new List<UnmatchedTitle>();
+
         foreach (var payload in payloads)
         {
-            var id = ResolveSyncId(payload, lookup);
+            var custom = customMappings != null ? await customMappings.GetMappingAsync(LauncherId.Ea, payload.Id, ct) : null;
+            string id;
+            bool isUnmatched;
+
+            if (custom != null && !string.IsNullOrWhiteSpace(custom.MappedId))
+            {
+                id = custom.MappedId;
+                isUnmatched = false;
+            }
+            else
+            {
+                (id, isUnmatched) = ResolveSyncIdWithStatus(payload, lookup);
+            }
+
             var title = SyncTitleSanitizer.Sanitize(payload.Title);
             prepared.Add(payload with { Id = id, Title = title });
+
+            if (isUnmatched)
+            {
+                unmatchedList.Add(new UnmatchedTitle(
+                    LauncherId.Ea,
+                    payload.Id,
+                    payload.Title,
+                    "Not in ITAD EA Store catalog (using tracking ID)",
+                    DateTime.Now));
+            }
+        }
+
+        if (unmatchedList.Count > 0 && unmatchedTitles is not null)
+        {
+            await unmatchedTitles.AddRangeAsync(unmatchedList, ct);
         }
 
         return prepared;
     }
 
-    private string ResolveSyncId(SyncGamePayload payload, IReadOnlyDictionary<string, string?> lookup)
+    private (string Id, bool IsUnmatched) ResolveSyncIdWithStatus(SyncGamePayload payload, IReadOnlyDictionary<string, string?> lookup)
     {
         var knownId = FindKnownShopGameId(payload.Id, lookup);
         if (knownId is not null)
-            return knownId;
+            return (knownId, false);
 
         var fallbackId = UnknownProductIdPrefix + payload.Id.ToLowerInvariant();
         logger.LogInfo(
             $"EA: '{payload.Title}' ({payload.Id}) is not in ITAD's EA Store catalog; syncing with tracking id '{fallbackId}'.");
-        return fallbackId;
+        return (fallbackId, true);
     }
 
     internal static string? FindKnownShopGameId(

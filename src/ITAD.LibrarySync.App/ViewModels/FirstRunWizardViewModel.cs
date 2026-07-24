@@ -87,16 +87,16 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLastStep;
 
-    public string ConnectionStatus => IsConnected ? "Connected" : "Not connected";
+    public string ConnectionStatus => IsConnected ? "Bağlandı" : "Bağlı Değil";
 
     public int StepNumber => (int)CurrentStep + 1;
 
     public string StepTitle => CurrentStep switch
     {
-        WizardStep.Welcome => "Welcome",
-        WizardStep.ItadOAuth => "Connect ITAD Account",
-        WizardStep.LauncherScan => "Launcher Detection",
-        WizardStep.FirstSync => "Ready to Sync",
+        WizardStep.Welcome => "Hoş Geldiniz",
+        WizardStep.ItadOAuth => "ITAD Hesabını Bağla",
+        WizardStep.LauncherScan => "Platform Tespiti",
+        WizardStep.FirstSync => "Senkronizasyona Hazır",
         _ => string.Empty
     };
 

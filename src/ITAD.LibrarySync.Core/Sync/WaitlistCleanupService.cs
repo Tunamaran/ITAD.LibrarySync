@@ -1,13 +1,15 @@
 using ITAD.LibrarySync.Core.Api;
 using ITAD.LibrarySync.Core.Auth;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Services;
 
 namespace ITAD.LibrarySync.Core.Sync;
 
 public sealed class WaitlistCleanupService(
     IItadApiClient api,
     ItadOAuthService oauth,
-    ShopIdResolver shopIds) : IWaitlistCleanupService
+    ShopIdResolver shopIds,
+    ICustomMappingService? customMappings = null) : IWaitlistCleanupService
 {
     public async Task<int> RemoveOwnedFromGlobalWaitlistAsync(
         IReadOnlyList<StoreGame> allOwned,
@@ -24,6 +26,23 @@ public sealed class WaitlistCleanupService(
         var waitlistSet = waitlistIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var toRemove = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        // Check custom mappings
+        if (customMappings != null)
+        {
+            var userMappings = await customMappings.GetAllAsync(ct);
+            foreach (var mapping in userMappings)
+            {
+                if (allOwned.Any(g => g.Launcher == mapping.Launcher && string.Equals(g.StoreId, mapping.StoreId, StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (waitlistSet.Contains(mapping.MappedId))
+                    {
+                        toRemove.Add(mapping.MappedId);
+                    }
+                }
+            }
+        }
+
+        // Check shop catalog lookups
         foreach (var group in allOwned.GroupBy(g => g.Launcher))
         {
             if (!shopIds.TryGetShopId(group.Key, out var shopId))

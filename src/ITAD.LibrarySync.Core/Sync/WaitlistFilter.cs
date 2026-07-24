@@ -6,10 +6,11 @@ public static class WaitlistFilter
 {
     public static IReadOnlyList<StoreGame> RemoveOwnedGames(
         IReadOnlyList<StoreGame> wishlist,
-        IReadOnlyList<StoreGame> owned)
+        IReadOnlyList<StoreGame> owned,
+        bool ignoreLauncher = true)
     {
         return wishlist
-            .Where(w => !owned.Any(o => GameMatcher.IsSameGame(w, o)))
+            .Where(w => !owned.Any(o => GameMatcher.IsSameGame(w, o, ignoreLauncher)))
             .ToList();
     }
 

@@ -13,6 +13,7 @@ using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Scheduling;
+using ITAD.LibrarySync.Core.Services;
 using ITAD.LibrarySync.Core.Sync;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -127,7 +128,7 @@ public sealed class TrayIconService(
         var menu = new ContextMenu();
         var isConnected = tokenStorage.Load() is not null;
 
-        var syncNow = new MenuItem { Header = "Sync Now" };
+        var syncNow = new MenuItem { Header = "Şimdi Senkronize Et" };
         syncNow.Click += async (_, _) => await RunSyncAsync();
         menu.Items.Add(syncNow);
 
@@ -137,37 +138,41 @@ public sealed class TrayIconService(
             menu.Items.Add(new Separator());
 
             foreach (var launcher in enabledLaunchers.OrderBy(l => l))
-                menu.Items.Add(CreateLauncherSyncItem($"Sync {GetLauncherMenuLabel(launcher)}", launcher));
+                menu.Items.Add(CreateLauncherSyncItem($"{GetLauncherMenuLabel(launcher)} Senkronize Et", launcher));
         }
 
         menu.Items.Add(new Separator());
 
-        var settings = new MenuItem { Header = "Settings…" };
+        var settings = new MenuItem { Header = "Ayarlar…" };
         settings.Click += (_, _) => OpenSettings();
         menu.Items.Add(settings);
 
-        var viewLog = new MenuItem { Header = "View Last Sync Log" };
+        var viewLog = new MenuItem { Header = "Son Log Dosyasını Aç" };
         viewLog.Click += (_, _) => OpenLastSyncLog();
         menu.Items.Add(viewLog);
+
+        var checkUpdates = new MenuItem { Header = "Güncellemeleri Kontrol Et…" };
+        checkUpdates.Click += async (_, _) => await CheckForUpdatesFromTrayAsync();
+        menu.Items.Add(checkUpdates);
 
         menu.Items.Add(new Separator());
 
         if (isConnected)
         {
-            var disconnect = new MenuItem { Header = "Disconnect from ITAD" };
+            var disconnect = new MenuItem { Header = "ITAD Bağlantısını Kes" };
             disconnect.Click += (_, _) => Disconnect();
             menu.Items.Add(disconnect);
         }
         else
         {
-            var connect = new MenuItem { Header = "Connect to ITAD" };
+            var connect = new MenuItem { Header = "ITAD'a Bağlan" };
             connect.Click += async (_, _) => await ConnectAsync();
             menu.Items.Add(connect);
         }
 
         menu.Items.Add(new Separator());
 
-        var exit = new MenuItem { Header = "Exit" };
+        var exit = new MenuItem { Header = "Çıkış" };
         exit.Click += (_, _) => RequestExit();
         menu.Items.Add(exit);
 
@@ -305,6 +310,49 @@ public sealed class TrayIconService(
             FileName = FileLogger.LogsDirectory,
             UseShellExecute = true
         });
+    }
+
+    private async Task CheckForUpdatesFromTrayAsync()
+    {
+        try
+        {
+            var updateChecker = serviceProvider.GetRequiredService<IUpdateCheckerService>();
+            var result = await updateChecker.CheckForUpdatesAsync();
+
+            if (result.HasUpdate)
+            {
+                var prompt = MessageBox.Show(
+                    $"Yeni bir güncelleme mevcut ({result.LatestVersion})!\n\nİndirme sayfasını açmak ister misiniz?",
+                    "Güncelleme Mevcut",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Information);
+
+                if (prompt == MessageBoxResult.Yes)
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = result.ReleaseNotesUrl,
+                        UseShellExecute = true
+                    });
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                    $"Uygulamanız en güncel sürümde ({result.CurrentVersion}).",
+                    "Güncelleme Kontrolü",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Güncelleme kontrolü yapılamadı: {ex.Message}",
+                "Hata",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 
     public void Dispose()

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,6 +12,7 @@ using ITAD.LibrarySync.Core.Auth.Xbox;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Scheduling;
+using ITAD.LibrarySync.Core.Services;
 using ITAD.LibrarySync.Core.Sync;
 
 namespace ITAD.LibrarySync.App.ViewModels;
@@ -32,6 +34,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly WindowsStartupService _windowsStartupService;
     private readonly ItadAccountService _itadAccountService;
     private readonly TrayIconService _trayIconService;
+    private readonly IUnmatchedTitlesService _unmatchedTitlesService;
+    private readonly IUpdateCheckerService _updateCheckerService;
+    private readonly ICustomMappingService _customMappingService;
+    private readonly ILogReaderService _logReaderService;
     private readonly AppSettings _settings;
 
     public SettingsViewModel(
@@ -50,7 +56,11 @@ public sealed partial class SettingsViewModel : ObservableObject
         WindowsStartupService windowsStartupService,
         ItadAccountService itadAccountService,
         TrayIconService trayIconService,
-        IReadOnlyList<ILauncherReader> readers)
+        IReadOnlyList<ILauncherReader> readers,
+        IUnmatchedTitlesService unmatchedTitlesService,
+        IUpdateCheckerService updateCheckerService,
+        ICustomMappingService customMappingService,
+        ILogReaderService logReaderService)
     {
         _oauthFlow = oauthFlow;
         _xboxOAuthFlow = xboxOAuthFlow;
@@ -67,7 +77,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         _windowsStartupService = windowsStartupService;
         _itadAccountService = itadAccountService;
         _trayIconService = trayIconService;
+        _unmatchedTitlesService = unmatchedTitlesService;
+        _updateCheckerService = updateCheckerService;
+        _customMappingService = customMappingService;
+        _logReaderService = logReaderService;
         _settings = appSettingsStorage.Load();
+
+        VersionInfo = $"v{UpdateCheckerService.GetCurrentAssemblyVersion()}";
+        UpdateStatusText = "Sürümünüz güncel tutuluyor.";
 
         SelectedInterval = _settings.Interval;
         SyncOnStartup = _settings.SyncOnStartup;
@@ -94,15 +111,31 @@ public sealed partial class SettingsViewModel : ObservableObject
         ApplySyncStatsFromService();
         _syncStatusService.SyncCompleted += (_, _) => ApplySyncStatsFromService();
         _itadAccountService.AccountInfoChanged += (_, _) => RefreshAccountName();
+        _ = LoadUnmatchedTitlesAsync();
+        _ = LoadCustomMappingsAsync();
+        _ = RefreshLogsAsync();
+        RefreshInsights();
     }
 
     public ObservableCollection<LauncherSettingsItem> LauncherStatuses { get; }
+
+    public ObservableCollection<UnmatchedTitle> UnmatchedTitles { get; } = [];
+
+    public ObservableCollection<UnmatchedTitle> FilteredUnmatchedTitles { get; } = [];
+
+    public ObservableCollection<CustomGameMapping> CustomMappings { get; } = [];
+
+    public ObservableCollection<LogEntry> Logs { get; } = [];
+
+    public ObservableCollection<LogEntry> FilteredLogs { get; } = [];
 
     public IReadOnlyList<SyncInterval> IntervalOptions { get; } =
         Enum.GetValues<SyncInterval>().Cast<SyncInterval>().ToArray();
 
     public IReadOnlyList<AppLogLevel> LogLevelOptions { get; } =
         Enum.GetValues<AppLogLevel>().Cast<AppLogLevel>().ToArray();
+
+    public IReadOnlyList<string> LogFilterOptions { get; } = ["ALL", "INFO", "ERROR"];
 
     [ObservableProperty]
     private bool _isConnected;
@@ -145,6 +178,46 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isEaConnecting;
+
+    [ObservableProperty]
+    private string _versionInfo = string.Empty;
+
+    [ObservableProperty]
+    private string _updateStatusText = string.Empty;
+
+    [ObservableProperty]
+    private bool _isCheckingUpdates;
+
+    [ObservableProperty]
+    private bool _isDownloadingUpdate;
+
+    [ObservableProperty]
+    private double _downloadProgress;
+
+    [ObservableProperty]
+    private string _downloadUrl = string.Empty;
+
+    [ObservableProperty]
+    private int _totalSyncedGamesCount;
+
+    [ObservableProperty]
+    private double _matchRatePercentage = 100.0;
+
+    [ObservableProperty]
+    private int _enabledLaunchersCount;
+
+    [ObservableProperty]
+    private string _logSearchText = string.Empty;
+
+    [ObservableProperty]
+    private string _selectedLogFilter = "ALL";
+
+    public bool CanCheckUpdates => !IsCheckingUpdates;
+
+    partial void OnIsCheckingUpdatesChanged(bool value) => OnPropertyChanged(nameof(CanCheckUpdates));
+
+    [ObservableProperty]
+    private string _unmatchedSearchText = string.Empty;
 
     public string ConnectionStatus => IsConnected ? "Connected" : "Not connected";
 
@@ -479,5 +552,225 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         foreach (var launcher in LauncherStatuses)
             launcher.LastSyncStats = _syncStatusService.GetStats(launcher.Launcher);
+    }
+
+    partial void OnUnmatchedSearchTextChanged(string value) => ApplyUnmatchedFilter();
+
+    [RelayCommand]
+    public async Task LoadUnmatchedTitlesAsync()
+    {
+        var items = await _unmatchedTitlesService.GetAllAsync();
+        UnmatchedTitles.Clear();
+        foreach (var item in items)
+        {
+            UnmatchedTitles.Add(item);
+        }
+        ApplyUnmatchedFilter();
+    }
+
+    [RelayCommand]
+    public async Task ClearUnmatchedTitlesAsync()
+    {
+        if (MessageBox.Show(
+                "Eşleşmeyen oyunlar listesi temizlensin mi?",
+                "Listeyi Temizle",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            await _unmatchedTitlesService.ClearAsync();
+            await LoadUnmatchedTitlesAsync();
+        }
+    }
+
+    [RelayCommand]
+    public async Task FixMatchAsync(UnmatchedTitle? title)
+    {
+        if (title is null) return;
+
+        var vm = new FixMatchViewModel(_customMappingService, title);
+        var window = new FixMatchWindow(vm)
+        {
+            Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+                     ?? Application.Current.MainWindow
+        };
+
+        if (window.ShowDialog() == true)
+        {
+            await LoadCustomMappingsAsync();
+            await LoadUnmatchedTitlesAsync();
+            RefreshInsights();
+        }
+    }
+
+    [RelayCommand]
+    public async Task LoadCustomMappingsAsync()
+    {
+        var list = await _customMappingService.GetAllAsync();
+        CustomMappings.Clear();
+        foreach (var item in list)
+        {
+            CustomMappings.Add(item);
+        }
+    }
+
+    [RelayCommand]
+    public async Task RemoveCustomMappingAsync(CustomGameMapping? mapping)
+    {
+        if (mapping is null) return;
+        await _customMappingService.RemoveMappingAsync(mapping.Launcher, mapping.StoreId);
+        await LoadCustomMappingsAsync();
+        RefreshInsights();
+    }
+
+    [RelayCommand]
+    public async Task CheckForUpdatesAsync()
+    {
+        IsCheckingUpdates = true;
+        UpdateStatusText = "Güncellemeler kontrol ediliyor…";
+        DownloadUrl = string.Empty;
+
+        try
+        {
+            var result = await _updateCheckerService.CheckForUpdatesAsync();
+            if (result.HasUpdate)
+            {
+                DownloadUrl = result.DownloadUrl;
+                UpdateStatusText = $"Yeni sürüm mevcut: {result.LatestVersion}";
+                if (MessageBox.Show(
+                        $"Yeni sürüm mevcut ({result.LatestVersion})!\n\nŞimdi arka planda indirip uygulamayı güncellemek ister misiniz?",
+                        "Yeni Sürüm Mevcut",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information) == MessageBoxResult.Yes)
+                {
+                    await DownloadAndApplyUpdateAsync();
+                }
+            }
+            else
+            {
+                UpdateStatusText = $"En güncel sürümü kullanıyorsunuz ({result.CurrentVersion}).";
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatusText = $"Güncelleme kontrolü başarısız: {ex.Message}";
+        }
+        finally
+        {
+            IsCheckingUpdates = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task DownloadAndApplyUpdateAsync()
+    {
+        if (string.IsNullOrWhiteSpace(DownloadUrl))
+        {
+            await CheckForUpdatesAsync();
+            if (string.IsNullOrWhiteSpace(DownloadUrl)) return;
+        }
+
+        IsDownloadingUpdate = true;
+        DownloadProgress = 0;
+        UpdateStatusText = "Güncelleme indiriliyor…";
+
+        try
+        {
+            var progress = new Progress<double>(p => DownloadProgress = p);
+            var downloadedFile = await _updateCheckerService.DownloadUpdateAsync(DownloadUrl, progress);
+            UpdateStatusText = "İndirme tamamlandı, uygulama yeniden başlatılıyor…";
+            _updateCheckerService.ApplyUpdateAndRestart(downloadedFile);
+        }
+        catch (Exception ex)
+        {
+            UpdateStatusText = $"Güncelleme indirmesi başarısız: {ex.Message}";
+            IsDownloadingUpdate = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task RefreshLogsAsync()
+    {
+        var entries = await _logReaderService.GetRecentLogsAsync();
+        Logs.Clear();
+        foreach (var entry in entries)
+        {
+            Logs.Add(entry);
+        }
+        ApplyLogFilter();
+    }
+
+    [RelayCommand]
+    public void OpenLogFolder()
+    {
+        var logsDir = FileLogger.LogsDirectory;
+        Directory.CreateDirectory(logsDir);
+        Process.Start(new ProcessStartInfo { FileName = logsDir, UseShellExecute = true });
+    }
+
+    partial void OnLogSearchTextChanged(string value) => ApplyLogFilter();
+    partial void OnSelectedLogFilterChanged(string value) => ApplyLogFilter();
+
+    private void ApplyLogFilter()
+    {
+        FilteredLogs.Clear();
+        var query = LogSearchText.Trim();
+        var filterLevel = SelectedLogFilter;
+
+        var matches = Logs.Where(l =>
+        {
+            if (filterLevel != "ALL" && !l.Level.Equals(filterLevel, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            if (!string.IsNullOrWhiteSpace(query) &&
+                !l.Message.Contains(query, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            return true;
+        });
+
+        foreach (var match in matches)
+        {
+            FilteredLogs.Add(match);
+        }
+    }
+
+    public void RefreshInsights()
+    {
+        EnabledLaunchersCount = LauncherStatuses.Count(l => l.IsEnabled);
+
+        var totalRead = LauncherStatuses
+            .Where(l => l.IsEnabled && l.LastReadCache is not null)
+            .Sum(l => l.LastReadCache!.Owned.Count);
+
+        TotalSyncedGamesCount = totalRead;
+
+        var unmatchedCount = UnmatchedTitles.Count;
+        if (totalRead > 0)
+        {
+            var matched = Math.Max(0, totalRead - unmatchedCount);
+            MatchRatePercentage = Math.Round((double)matched / totalRead * 100.0, 1);
+        }
+        else
+        {
+            MatchRatePercentage = 100.0;
+        }
+    }
+
+    private void ApplyUnmatchedFilter()
+    {
+        FilteredUnmatchedTitles.Clear();
+        var query = UnmatchedSearchText.Trim();
+        var matches = string.IsNullOrWhiteSpace(query)
+            ? UnmatchedTitles
+            : UnmatchedTitles.Where(u =>
+                u.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                u.StoreId.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                u.Launcher.ToString().Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                u.Reason.Contains(query, StringComparison.OrdinalIgnoreCase));
+
+        foreach (var match in matches)
+        {
+            FilteredUnmatchedTitles.Add(match);
+        }
     }
 }
