@@ -57,71 +57,61 @@ public partial class App : Application
 
 
     protected override void OnStartup(StartupEventArgs e)
-
     {
-
         base.OnStartup(e);
 
-
-
-        ShutdownMode = ShutdownMode.OnExplicitShutdown;
-
-
-
-        _singleInstance = new SingleInstanceService();
-
-        if (!_singleInstance.TryBecomePrimary(ActivateRunningInstance))
-
+        DispatcherUnhandledException += (_, args) =>
         {
+            MessageBox.Show(
+                $"Uygulamada beklenmeyen bir hata oluştu:\n{args.Exception.Message}",
+                "ITAD Library Sync — Hata",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            args.Handled = true;
+        };
 
-            Shutdown(0);
-
-            return;
-
-        }
-
-
-
-        _serviceProvider = ConfigureServices();
-
-        _trayIconService = _serviceProvider.GetRequiredService<TrayIconService>();
-
-        _trayIconService.Initialize();
-
-
-
-        var appSettingsStorage = _serviceProvider.GetRequiredService<AppSettingsStorage>();
-
-        var settings = appSettingsStorage.Load();
-
-
-
-        if (!settings.HasCompletedFirstRun)
-
+        try
         {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var wizardViewModel = _serviceProvider.GetRequiredService<FirstRunWizardViewModel>();
+            _singleInstance = new SingleInstanceService();
+            if (!_singleInstance.TryBecomePrimary(ActivateRunningInstance))
+            {
+                Shutdown(0);
+                return;
+            }
 
-            wizardViewModel.WizardCompleted += (_, args) =>
+            _serviceProvider = ConfigureServices();
 
-                ApplyNormalStartup(appSettingsStorage.Load(), skipSyncOnStartup: args.InitialSyncRan);
+            _trayIconService = _serviceProvider.GetRequiredService<TrayIconService>();
+            _trayIconService.Initialize();
 
+            var appSettingsStorage = _serviceProvider.GetRequiredService<AppSettingsStorage>();
+            var settings = appSettingsStorage.Load();
 
+            if (!settings.HasCompletedFirstRun)
+            {
+                var wizardViewModel = _serviceProvider.GetRequiredService<FirstRunWizardViewModel>();
+                wizardViewModel.WizardCompleted += (_, args) =>
+                    ApplyNormalStartup(appSettingsStorage.Load(), skipSyncOnStartup: args.InitialSyncRan);
 
-            var wizard = new FirstRunWizard(wizardViewModel);
-
-            wizard.Show();
-
+                var wizard = new FirstRunWizard(wizardViewModel);
+                wizard.Show();
+            }
+            else
+            {
+                ApplyNormalStartup(settings);
+            }
         }
-
-        else
-
+        catch (Exception ex)
         {
-
-            ApplyNormalStartup(settings);
-
+            MessageBox.Show(
+                $"Uygulama başlatılırken bir hata oluştu:\n{ex.Message}",
+                "ITAD Library Sync — Hata",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown(1);
         }
-
     }
 
 
