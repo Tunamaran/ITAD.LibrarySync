@@ -164,7 +164,6 @@
                 <Button Width="95"
                         Margin="0,0,8,0"
                         Content="İleri"
-                        Style="{StaticResource PrimaryButtonStyle}"
                         Command="{Binding GoNextCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
@@ -179,7 +178,6 @@
                 </Button>
                 <Button Width="95"
                         Content="Tamamla"
-                        Style="{StaticResource PrimaryButtonStyle}"
                         IsDefault="True"
                         Command="{Binding FinishCommand}">
                     <Button.Style>
