@@ -64,6 +64,11 @@ public sealed class NotificationService
             "Your IsThereAnyDeal session has expired. Connect again from the tray menu.");
     }
 
+    public void ShowInfo(string title, string body)
+    {
+        Show(title, body);
+    }
+
     private static void Show(string title, string body)
     {
         new ToastContentBuilder()

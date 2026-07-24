@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,6 +11,7 @@ using ITAD.LibrarySync.Core.Auth;
 using ITAD.LibrarySync.Core.Auth.Ea;
 using ITAD.LibrarySync.Core.Auth.Xbox;
 using ITAD.LibrarySync.Core.Launchers;
+using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
 using ITAD.LibrarySync.Core.Scheduling;
 using ITAD.LibrarySync.Core.Services;

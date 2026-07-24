@@ -197,7 +197,7 @@ public partial class App : Application
             var result = await checker.CheckForUpdatesAsync();
             if (result.HasUpdate)
             {
-                _serviceProvider?.GetService<NotificationService>()?.ShowNotification(
+                _serviceProvider?.GetService<NotificationService>()?.ShowInfo(
                     "ITAD Library Sync — Güncelleme Mevcut",
                     $"Yeni bir sürüm mevcut ({result.LatestVersion}). İndirmek için Ayarlar'ı açın.");
             }
