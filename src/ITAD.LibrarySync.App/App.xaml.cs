@@ -407,6 +407,7 @@ public partial class App : Application
 
         services.AddSingleton<TrayIconService>();
 
+        services.AddSingleton<SyncOrchestrator>();
         services.AddSingleton<ISyncOrchestrator, TrayAwareSyncOrchestrator>();
 
         services.AddSingleton<SyncScheduler>();
