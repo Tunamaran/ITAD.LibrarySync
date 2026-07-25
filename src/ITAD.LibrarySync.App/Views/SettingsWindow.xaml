@@ -377,20 +377,27 @@
                         </Grid>
                     </Border>
 
-                    <TextBlock Text="Uygulama Tercihleri" FontWeight="SemiBold" FontSize="15" />
+                    <TextBlock Text="{Binding Lang[AppPreferencesHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
                     <CheckBox Margin="0,12,0,0"
-                              Content="Windows açılışında çalıştır"
-                              ToolTip="Bilgisayarınız açıldığında uygulamanın sistem tepsisinde (tray) otomatik başlamasını sağlar."
+                              Content="{Binding Lang[StartWithWindowsLabel], Mode=OneWay}"
+                              ToolTip="{Binding Lang[StartWithWindowsTooltip], Mode=OneWay}"
                               IsChecked="{Binding StartWithWindows}" />
                     <CheckBox Margin="0,10,0,0"
-                              Content="Masaüstü bildirimlerini göster"
-                              ToolTip="Senkronizasyon tamamlandığında veya hata oluştuğunda masaüstü bildirimleri görüntüler."
+                              Content="{Binding Lang[ShowNotificationsLabel], Mode=OneWay}"
+                              ToolTip="{Binding Lang[ShowNotificationsTooltip], Mode=OneWay}"
                               IsChecked="{Binding ShowNotifications}" />
 
-                    <TextBlock Margin="0,16,0,6" Text="Log Seviyesi" Foreground="#64748B" FontSize="13" />
+                    <TextBlock Margin="0,14,0,6" Text="{Binding Lang[LanguageLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" />
                     <ComboBox Width="220"
                               HorizontalAlignment="Left"
-                              ToolTip="Kaydedilecek log detay seviyesini ayarlar (Bilgi, Hata, Hata Ayıklama)."
+                              ToolTip="{Binding Lang[LanguageTooltip], Mode=OneWay}"
+                              ItemsSource="{Binding LanguageOptions}"
+                              SelectedItem="{Binding SelectedLanguage}" />
+
+                    <TextBlock Margin="0,14,0,6" Text="{Binding Lang[LogLevelLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" />
+                    <ComboBox Width="220"
+                              HorizontalAlignment="Left"
+                              ToolTip="{Binding Lang[LogLevelTooltip], Mode=OneWay}"
                               ItemsSource="{Binding LogLevelOptions}"
                               SelectedItem="{Binding SelectedLogLevel}" />
 

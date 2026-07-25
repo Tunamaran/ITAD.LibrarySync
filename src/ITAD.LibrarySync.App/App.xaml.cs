@@ -87,6 +87,7 @@ public partial class App : Application
             _trayIconService.Initialize();
 
             var appSettingsStorage = _serviceProvider.GetRequiredService<AppSettingsStorage>();
+            LanguageManager.Instance.Initialize(appSettingsStorage);
             var settings = appSettingsStorage.Load();
 
             if (!settings.HasCompletedFirstRun)

@@ -84,6 +84,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         _customMappingService = customMappingService;
         _logReaderService = logReaderService;
         _settings = appSettingsStorage.Load();
+        LanguageManager.Instance.Initialize(appSettingsStorage);
+        _selectedLanguage = LanguageOptions.FirstOrDefault(l => l.Code == _settings.Language) ?? LanguageOptions[0];
 
         VersionInfo = $"v{UpdateCheckerService.GetCurrentAssemblyVersion()}";
         UpdateStatusText = "Sürümünüz güncel tutuluyor.";
@@ -160,6 +162,22 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _showNotifications;
+
+    public LanguageManager Lang => LanguageManager.Instance;
+
+    public IReadOnlyList<LanguageOption> LanguageOptions => LanguageManager.AvailableLanguages;
+
+    [ObservableProperty]
+    private LanguageOption _selectedLanguage;
+
+    partial void OnSelectedLanguageChanged(LanguageOption value)
+    {
+        if (value is null) return;
+        _settings.Language = value.Code;
+        PersistSettings();
+        LanguageManager.Instance.CurrentLanguage = value.Code;
+        OnPropertyChanged(nameof(ConnectionStatus));
+    }
 
     [ObservableProperty]
     private AppLogLevel _selectedLogLevel;

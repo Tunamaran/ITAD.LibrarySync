@@ -13,6 +13,7 @@ public enum AppLogLevel
 
 public sealed class AppSettings
 {
+    public string Language { get; set; } = "en";
     public SyncInterval Interval { get; set; } = SyncInterval.Disabled;
     public bool SyncOnStartup { get; set; }
     public bool HasCompletedFirstRun { get; set; }
