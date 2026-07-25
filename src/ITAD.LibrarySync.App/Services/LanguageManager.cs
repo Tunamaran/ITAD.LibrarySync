@@ -34,7 +34,7 @@ public sealed class LanguageManager : INotifyPropertyChanged
             if (_currentLanguage != value)
             {
                 _currentLanguage = value;
-                OnPropertyChanged(string.Empty); // Notifies all indexers and properties
+                OnPropertyChanged(string.Empty); // Notifies all indexers and properties in WPF
             }
         }
     }
@@ -120,13 +120,20 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "BtnFix" => "Fix",
         "ClearListTooltip" => "Clears the recorded unmatched titles history.",
         "RefreshListTooltip" => "Reloads the unmatched titles list.",
+        "ColReason" => "Reason",
+        "ColDate" => "Date",
+        "ColAction" => "Action",
 
         "LogsGuideText" => "Live system execution logs for library scanning, matching, and ITAD API sync processes.",
         "BtnOpenLogFolder" => "Open Log Folder",
         "OpenLogFolderTooltip" => "Opens the log files directory in Windows Explorer.",
         "RefreshLogsTooltip" => "Reloads live system logs.",
         "LogFilterTooltip" => "Filter by log level (ALL, INFO, ERROR)",
+        "ColTime" => "Time",
+        "ColLevel" => "Level",
+        "ColMessage" => "Message Details",
 
+        "AppSubtitle" => "IsThereAnyDeal Game Library Synchronization Tool",
         "AppPreferencesHeader" => "Application Preferences",
         "StartWithWindowsLabel" => "Run on Windows startup",
         "ShowNotificationsLabel" => "Show desktop notifications",
@@ -136,12 +143,24 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "BtnCheckUpdates" => "Check for Updates",
         "BtnDownloadUpdate" => "Download & Update",
         "BtnClose" => "Close",
+        "VersionPrefix" => "Version",
+        "VersionUpToDate" => "Your version is kept up to date.",
 
         "StartWithWindowsTooltip" => "Starts the app automatically in the system tray when Windows boots.",
         "ShowNotificationsTooltip" => "Displays Windows desktop notifications when sync completes or encounters an error.",
         "LanguageTooltip" => "Select the application display language (English / Türkçe).",
         "LogLevelTooltip" => "Sets log detail level (Info, Error, Debug).",
-        "CurrentVersionLabel" => "Current Version: {0}",
+
+        "TraySyncNow" => "Sync Now",
+        "TraySyncStore" => "Sync {0}",
+        "TraySettings" => "Settings…",
+        "TrayViewLog" => "View Latest Log File",
+        "TrayCheckUpdates" => "Check for Updates…",
+        "TrayDisconnect" => "Disconnect ITAD",
+        "TrayConnect" => "Connect to ITAD",
+        "TrayExit" => "Exit",
+        "ExitConfirmText" => "A sync is in progress. Exit anyway?",
+        "ExitConfirmTitle" => "Exit ITAD Library Sync",
 
         _ => key
     };
@@ -213,13 +232,20 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "BtnFix" => "Düzelt",
         "ClearListTooltip" => "Eşleşmeyen oyun kayıt geçmişini temizler.",
         "RefreshListTooltip" => "Eşleşmeyen oyunlar listesini yeniden yükler.",
+        "ColReason" => "Neden",
+        "ColDate" => "Tarih",
+        "ColAction" => "Eylem",
 
         "LogsGuideText" => "Uygulamanın kütüphane tarama, eşleştirme ve ITAD iletişim süreçlerine ait canlı günlüklerdir.",
         "BtnOpenLogFolder" => "Log Klasörünü Aç",
         "OpenLogFolderTooltip" => "Log dosyalarının saklandığı klasörü Windows Gezgini'nde açar.",
         "RefreshLogsTooltip" => "Canlı log akışını yeniden yükler.",
         "LogFilterTooltip" => "Log seviyesine göre filtrele (ALL, INFO, ERROR)",
+        "ColTime" => "Zaman",
+        "ColLevel" => "Seviye",
+        "ColMessage" => "Mesaj Detayı",
 
+        "AppSubtitle" => "IsThereAnyDeal Oyun Kütüphanesi Senkronizasyon Aracı",
         "AppPreferencesHeader" => "Uygulama Tercihleri",
         "StartWithWindowsLabel" => "Windows açılışında çalıştır",
         "ShowNotificationsLabel" => "Masaüstü bildirimlerini göster",
@@ -229,12 +255,24 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "BtnCheckUpdates" => "Güncellemeleri Kontrol Et",
         "BtnDownloadUpdate" => "İndir ve Güncelle",
         "BtnClose" => "Kapat",
+        "VersionPrefix" => "Sürüm",
+        "VersionUpToDate" => "Sürümünüz güncel tutuluyor.",
 
         "StartWithWindowsTooltip" => "Bilgisayarınız açıldığında uygulamanın sistem tepsisinde (tray) otomatik başlamasını sağlar.",
         "ShowNotificationsTooltip" => "Senkronizasyon tamamlandığında veya hata oluştuğunda masaüstü bildirimleri görüntüler.",
-        "LanguageTooltip" => "Uygulama görüntüleme dilini seçin (English / Türkçe).",
+        "LanguageTooltip" => "Bilgisayarınız açıldığında uygulamanın sistem tepsisinde (tray) otomatik başlamasını sağlar.",
         "LogLevelTooltip" => "Kaydedilecek log detay seviyesini ayarlar (Bilgi, Hata, Hata Ayıklama).",
-        "CurrentVersionLabel" => "Mevcut Sürüm: {0}",
+
+        "TraySyncNow" => "Şimdi Senkronize Et",
+        "TraySyncStore" => "{0} Senkronize Et",
+        "TraySettings" => "Ayarlar…",
+        "TrayViewLog" => "Son Log Dosyasını Aç",
+        "TrayCheckUpdates" => "Güncellemeleri Kontrol Et…",
+        "TrayDisconnect" => "ITAD Bağlantısını Kes",
+        "TrayConnect" => "ITAD'a Bağlan",
+        "TrayExit" => "Çıkış",
+        "ExitConfirmText" => "Senkronizasyon devam ediyor. Yine de çıkılsın mı?",
+        "ExitConfirmTitle" => "ITAD Library Sync — Çıkış",
 
         _ => key
     };

@@ -57,6 +57,7 @@ public sealed class TrayIconService(
         };
         _trayIcon.TrayMouseDoubleClick += (_, _) => OpenSettings();
         syncStatusService.SyncCompleted += (_, _) => UpdateTrayAppearance();
+        LanguageManager.Instance.PropertyChanged += (_, _) => RefreshContextMenu();
     }
 
     public void SetState(TraySyncState state)
@@ -76,8 +77,8 @@ public sealed class TrayIconService(
         if (IsSyncing)
         {
             var result = MessageBox.Show(
-                "A sync is in progress. Exit anyway?",
-                "Exit ITAD Library Sync",
+                LanguageManager.Instance["ExitConfirmText"],
+                LanguageManager.Instance["ExitConfirmTitle"],
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -126,9 +127,10 @@ public sealed class TrayIconService(
     private ContextMenu CreateContextMenu()
     {
         var menu = new ContextMenu();
+        var lang = LanguageManager.Instance;
         var isConnected = tokenStorage.Load() is not null;
 
-        var syncNow = new MenuItem { Header = "Şimdi Senkronize Et" };
+        var syncNow = new MenuItem { Header = lang["TraySyncNow"] };
         syncNow.Click += async (_, _) => await RunSyncAsync();
         menu.Items.Add(syncNow);
 
@@ -138,20 +140,20 @@ public sealed class TrayIconService(
             menu.Items.Add(new Separator());
 
             foreach (var launcher in enabledLaunchers.OrderBy(l => l))
-                menu.Items.Add(CreateLauncherSyncItem($"{GetLauncherMenuLabel(launcher)} Senkronize Et", launcher));
+                menu.Items.Add(CreateLauncherSyncItem(string.Format(lang["TraySyncStore"], GetLauncherMenuLabel(launcher)), launcher));
         }
 
         menu.Items.Add(new Separator());
 
-        var settings = new MenuItem { Header = "Ayarlar…" };
+        var settings = new MenuItem { Header = lang["TraySettings"] };
         settings.Click += (_, _) => OpenSettings();
         menu.Items.Add(settings);
 
-        var viewLog = new MenuItem { Header = "Son Log Dosyasını Aç" };
+        var viewLog = new MenuItem { Header = lang["TrayViewLog"] };
         viewLog.Click += (_, _) => OpenLastSyncLog();
         menu.Items.Add(viewLog);
 
-        var checkUpdates = new MenuItem { Header = "Güncellemeleri Kontrol Et…" };
+        var checkUpdates = new MenuItem { Header = lang["TrayCheckUpdates"] };
         checkUpdates.Click += async (_, _) => await CheckForUpdatesFromTrayAsync();
         menu.Items.Add(checkUpdates);
 
@@ -159,20 +161,20 @@ public sealed class TrayIconService(
 
         if (isConnected)
         {
-            var disconnect = new MenuItem { Header = "ITAD Bağlantısını Kes" };
+            var disconnect = new MenuItem { Header = lang["TrayDisconnect"] };
             disconnect.Click += (_, _) => Disconnect();
             menu.Items.Add(disconnect);
         }
         else
         {
-            var connect = new MenuItem { Header = "ITAD'a Bağlan" };
+            var connect = new MenuItem { Header = lang["TrayConnect"] };
             connect.Click += async (_, _) => await ConnectAsync();
             menu.Items.Add(connect);
         }
 
         menu.Items.Add(new Separator());
 
-        var exit = new MenuItem { Header = "Çıkış" };
+        var exit = new MenuItem { Header = lang["TrayExit"] };
         exit.Click += (_, _) => RequestExit();
         menu.Items.Add(exit);
 

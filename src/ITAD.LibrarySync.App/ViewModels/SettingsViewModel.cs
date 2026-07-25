@@ -88,7 +88,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _selectedLanguage = LanguageOptions.FirstOrDefault(l => l.Code == _settings.Language) ?? LanguageOptions[0];
 
         VersionInfo = $"v{UpdateCheckerService.GetCurrentAssemblyVersion()}";
-        UpdateStatusText = "Sürümünüz güncel tutuluyor.";
+        UpdateStatusText = Lang["VersionUpToDate"];
 
         SelectedInterval = _settings.Interval;
         SyncOnStartup = _settings.SyncOnStartup;
@@ -167,6 +167,10 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<LanguageOption> LanguageOptions => LanguageManager.AvailableLanguages;
 
+    public string ConnectionStatusText => IsConnected ? Lang["StatusConnected"] : Lang["StatusNotConnected"];
+    public string DisplayVersionText => $"{Lang["VersionPrefix"]} v{UpdateCheckerService.GetCurrentAssemblyVersion()}";
+    public string DisplayCurrentVersionText => $"{Lang["VersionPrefix"]}: v{UpdateCheckerService.GetCurrentAssemblyVersion()}";
+
     [ObservableProperty]
     private LanguageOption _selectedLanguage;
 
@@ -177,6 +181,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         PersistSettings();
         LanguageManager.Instance.CurrentLanguage = value.Code;
         OnPropertyChanged(nameof(ConnectionStatus));
+        OnPropertyChanged(nameof(ConnectionStatusText));
+        OnPropertyChanged(nameof(DisplayVersionText));
+        OnPropertyChanged(nameof(DisplayCurrentVersionText));
+        UpdateStatusText = Lang["VersionUpToDate"];
     }
 
     [ObservableProperty]
