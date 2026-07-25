@@ -48,5 +48,6 @@ jobs:
           files: |
             ITAD.LibrarySync-win-x64.zip
             Output/*.exe
+          draft: false
           overwrite: true
           generate_release_notes: true
