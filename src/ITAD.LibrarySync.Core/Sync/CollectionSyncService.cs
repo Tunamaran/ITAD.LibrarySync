@@ -78,34 +78,33 @@ public sealed class CollectionSyncService(
                 $"EA: syncing IDs: {string.Join(", ", payloads.Select(payload => payload.Id))}");
         }
 
-        var response = await profiles.ExecuteProfileSyncAsync(
+        return await profiles.ExecuteProfileSyncAsync(
             read.Launcher,
-            (accessToken, profileToken) => SyncWithRecoveryAsync(
-                read.Launcher,
-                accessToken,
-                profileToken,
-                payloads,
-                ct),
-            ct);
-
-        if (response != null && obsoleteIds.Count > 0)
-        {
-            try
+            async (accessToken, profileToken) =>
             {
-                var token = await profiles.GetAccessTokenAsync(read.Launcher, ct);
-                if (!string.IsNullOrEmpty(token))
+                var syncResponse = await SyncWithRecoveryAsync(
+                    read.Launcher,
+                    accessToken,
+                    profileToken,
+                    payloads,
+                    ct);
+
+                if (obsoleteIds.Count > 0)
                 {
-                    logger.LogInfo($"Auto-Cleanup: Purging {obsoleteIds.Count} obsolete mismatched IDs ({string.Join(", ", obsoleteIds)}) from ITAD...");
-                    await api.DeleteWaitlistGamesAsync(token, obsoleteIds, ct);
+                    try
+                    {
+                        logger.LogInfo($"Auto-Cleanup: Purging {obsoleteIds.Count} obsolete mismatched IDs ({string.Join(", ", obsoleteIds)}) from ITAD...");
+                        await api.DeleteWaitlistGamesAsync(accessToken, obsoleteIds, ct);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogInfo($"Auto-Cleanup Note: {ex.Message}");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.LogInfo($"Auto-Cleanup Note: {ex.Message}");
-            }
-        }
 
-        return response;
+                return syncResponse;
+            },
+            ct);
     }
 
     private async Task<ItadSyncResponse> SyncWithRecoveryAsync(
