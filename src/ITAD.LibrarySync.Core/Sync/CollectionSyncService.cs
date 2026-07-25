@@ -49,9 +49,14 @@ public sealed class CollectionSyncService(
                 $"Microsoft: normalized {read.Owned.Count} library entries to {owned.Count} Microsoft Store product ID(s).");
         }
 
+        var obsoleteIds = new List<string>();
         var payloads = new List<SyncGamePayload>();
         foreach (var game in owned)
         {
+            var obsolete = AutoMatchResolver.GetObsoleteIdIfReplaced(game.StoreId, game.Title);
+            if (!string.IsNullOrEmpty(obsolete))
+                obsoleteIds.Add(obsolete);
+
             var payload = await payloadBuilder.ToPayloadAsync(game, ct);
             if (SyncPayloadBuilder.IsValid(payload))
                 payloads.Add(payload);
@@ -73,7 +78,7 @@ public sealed class CollectionSyncService(
                 $"EA: syncing IDs: {string.Join(", ", payloads.Select(payload => payload.Id))}");
         }
 
-        return await profiles.ExecuteProfileSyncAsync(
+        var response = await profiles.ExecuteProfileSyncAsync(
             read.Launcher,
             (accessToken, profileToken) => SyncWithRecoveryAsync(
                 read.Launcher,
@@ -82,6 +87,25 @@ public sealed class CollectionSyncService(
                 payloads,
                 ct),
             ct);
+
+        if (response != null && obsoleteIds.Count > 0)
+        {
+            try
+            {
+                var token = await profiles.GetAccessTokenAsync(read.Launcher, ct);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    logger.LogInfo($"Auto-Cleanup: Purging {obsoleteIds.Count} obsolete mismatched IDs ({string.Join(", ", obsoleteIds)}) from ITAD...");
+                    await api.DeleteWaitlistGamesAsync(token, obsoleteIds, ct);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogInfo($"Auto-Cleanup Note: {ex.Message}");
+            }
+        }
+
+        return response;
     }
 
     private async Task<ItadSyncResponse> SyncWithRecoveryAsync(
