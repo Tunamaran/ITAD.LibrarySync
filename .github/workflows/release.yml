@@ -40,13 +40,13 @@ jobs:
           name: ITAD.LibrarySync-Artifacts
           path: |
             ITAD.LibrarySync-win-x64.zip
-            Output/ITAD.LibrarySync-Setup-v1.0.0.exe
+            Output/*.exe
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             ITAD.LibrarySync-win-x64.zip
-            Output/ITAD.LibrarySync-Setup-v1.0.0.exe
+            Output/*.exe
           overwrite: true
           generate_release_notes: true

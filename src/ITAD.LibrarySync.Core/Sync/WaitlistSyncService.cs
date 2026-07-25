@@ -17,7 +17,13 @@ public sealed class WaitlistSyncService(
         if (WaitlistFilter.ShouldSkipWaitlistSync(read.WishlistReadable, filtered.Count))
             return null;
 
-        var payloads = filtered.Select(payloadBuilder.ToPayload).ToList();
+        var payloads = new List<SyncGamePayload>();
+        foreach (var game in filtered)
+        {
+            var payload = await payloadBuilder.ToPayloadAsync(game, ct);
+            if (SyncPayloadBuilder.IsValid(payload))
+                payloads.Add(payload);
+        }
         return await profiles.ExecuteProfileSyncAsync(
             read.Launcher,
             (accessToken, profileToken) => api.SyncWaitlistAsync(accessToken, profileToken, payloads, ct),

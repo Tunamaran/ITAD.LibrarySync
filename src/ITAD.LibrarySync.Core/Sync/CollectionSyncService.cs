@@ -49,10 +49,13 @@ public sealed class CollectionSyncService(
                 $"Microsoft: normalized {read.Owned.Count} library entries to {owned.Count} Microsoft Store product ID(s).");
         }
 
-        var payloads = owned
-            .Select(payloadBuilder.ToPayload)
-            .Where(SyncPayloadBuilder.IsValid)
-            .ToList();
+        var payloads = new List<SyncGamePayload>();
+        foreach (var game in owned)
+        {
+            var payload = await payloadBuilder.ToPayloadAsync(game, ct);
+            if (SyncPayloadBuilder.IsValid(payload))
+                payloads.Add(payload);
+        }
 
         if (payloads.Count == 0)
             return null;
