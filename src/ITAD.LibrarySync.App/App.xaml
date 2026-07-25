@@ -120,30 +120,59 @@
             </Setter>
         </Style>
 
-        <!-- TabControl & TabItem Styles -->
+        <!-- TabControl & TabItem Styles (Modern Segmented Pill Bar) -->
         <Style TargetType="TabControl">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid KeyboardNavigation.TabNavigation="Local">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0"
+                                    Background="#F1F5F9"
+                                    BorderBrush="#E2E8F0"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="4"
+                                    Margin="0,0,0,16">
+                                <UniformGrid Rows="1" IsItemsHost="True" />
+                            </Border>
+
+                            <ContentPresenter Grid.Row="1"
+                                              x:Name="PART_SelectedContentHost"
+                                              Margin="{TemplateBinding Padding}"
+                                              ContentSource="SelectedContent" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="TabItem">
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="12.5" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="#64748B" />
-            <Setter Property="Padding" Value="14,8" />
-            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="Padding" Value="4,7" />
+            <Setter Property="Margin" Value="2,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
                         <Border x:Name="border"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
-                                BorderThickness="0,0,0,2"
-                                CornerRadius="4,4,0,0"
+                                BorderThickness="1"
+                                CornerRadius="6"
                                 Padding="{TemplateBinding Padding}"
-                                Margin="{TemplateBinding Margin}">
+                                SnapsToDevicePixels="True">
                             <ContentPresenter x:Name="contentPresenter"
                                               ContentSource="Header"
                                               Focusable="False"
@@ -152,13 +181,14 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#F1F5F9" />
+                                <Setter TargetName="border" Property="Background" Value="#E2E8F0" />
                                 <Setter Property="Foreground" Value="#0F172A" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
-                                <Setter TargetName="border" Property="Background" Value="White" />
-                                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}" />
+                                <Setter TargetName="border" Property="Background" Value="#0284C7" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="#0284C7" />
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="FontWeight" Value="Bold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

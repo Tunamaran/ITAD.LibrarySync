@@ -67,7 +67,7 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="Oyun Platformları">
+            <TabItem Header="Platformlar">
                 <DockPanel Margin="4">
                     <DataGrid DockPanel.Dock="Top"
                                Margin="0,0,0,12"
