@@ -14,7 +14,7 @@ public sealed class ItadAccountService(
     public string GetDisplayName()
     {
         var username = appSettingsStorage.Load().ItadUsername;
-        return string.IsNullOrWhiteSpace(username) ? "ITAD Account" : username;
+        return string.IsNullOrWhiteSpace(username) ? "ITAD Hesabı" : username;
     }
 
     public async Task RefreshAsync(CancellationToken ct = default)

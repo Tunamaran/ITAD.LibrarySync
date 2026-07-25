@@ -222,7 +222,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _unmatchedSearchText = string.Empty;
 
-    public string ConnectionStatus => IsConnected ? "Connected" : "Not connected";
+    public string ConnectionStatus => IsConnected ? "Bağlı" : "Bağlı Değil";
 
     [RelayCommand(CanExecute = nameof(CanConnect))]
     private async Task ConnectAsync()
@@ -529,12 +529,19 @@ public sealed partial class SettingsViewModel : ObservableObject
         RefreshAccountName();
 
         if (IsConnected)
-            _ = _itadAccountService.RefreshAsync();
+        {
+            _ = Task.Run(async () =>
+            {
+                await _itadAccountService.RefreshAsync();
+                Application.Current?.Dispatcher?.Invoke(RefreshAccountName);
+            });
+        }
     }
 
     private void RefreshAccountName()
     {
         AccountName = IsConnected ? _itadAccountService.GetDisplayName() : "—";
+        OnPropertyChanged(nameof(ConnectionStatus));
     }
 
     private void RefreshXboxConnectionState()

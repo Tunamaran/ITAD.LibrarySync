@@ -26,9 +26,9 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Bağlantı Durumu:" Foreground="#64748B" FontSize="13" />
-                                <TextBlock Grid.Column="1" Margin="8,0,0,0" FontSize="13" FontWeight="SemiBold"
-                                           Text="{Binding ConnectionStatus, Mode=OneWay}" />
+                                <TextBlock Grid.Column="0" Text="Bağlantı Durumu:" Foreground="#64748B" FontSize="13" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Margin="8,0,0,0" FontSize="13" FontWeight="Bold" Foreground="#0284C7"
+                                           Text="{Binding ConnectionStatus, Mode=OneWay}" VerticalAlignment="Center" />
                             </Grid>
                             
                             <Grid Margin="0,8,0,0">
@@ -36,9 +36,9 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Kullanıcı Adı:" Foreground="#64748B" FontSize="13" />
-                                <TextBlock Grid.Column="1" Margin="8,0,0,0" FontSize="13" FontWeight="SemiBold"
-                                           Text="{Binding AccountName, Mode=OneWay}" />
+                                <TextBlock Grid.Column="0" Text="Kullanıcı Adı:" Foreground="#64748B" FontSize="13" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Margin="8,0,0,0" FontSize="13" FontWeight="Bold" Foreground="#0F172A"
+                                           Text="{Binding AccountName, Mode=OneWay}" VerticalAlignment="Center" />
                             </Grid>
                         </StackPanel>
                     </Border>
