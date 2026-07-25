@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -37,12 +39,21 @@ public sealed class UpdateCheckerService(HttpClient httpClient, FileLogger? logg
             if (Version.TryParse(rawTag, out var latestParsed) && Version.TryParse(currentVersion, out var currentParsed))
             {
                 var hasUpdate = latestParsed > currentParsed;
+                var setupAsset = release.Assets?.FirstOrDefault(a => 
+                    (a.Name?.Contains("Setup", StringComparison.OrdinalIgnoreCase) ?? false) || 
+                    (a.BrowserDownloadUrl?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ?? false));
+
+                var downloadUrl = setupAsset?.BrowserDownloadUrl 
+                    ?? release.Assets?.FirstOrDefault()?.BrowserDownloadUrl 
+                    ?? release.HtmlUrl 
+                    ?? RepositoryReleasesUrl;
+
                 return new UpdateCheckResult(
                     hasUpdate,
                     currentVersion,
                     release.TagName,
                     release.HtmlUrl ?? RepositoryReleasesUrl,
-                    release.Assets?.FirstOrDefault()?.BrowserDownloadUrl ?? release.HtmlUrl ?? RepositoryReleasesUrl);
+                    downloadUrl);
             }
 
             return new UpdateCheckResult(
@@ -63,7 +74,10 @@ public sealed class UpdateCheckerService(HttpClient httpClient, FileLogger? logg
     {
         var tempDir = Path.Combine(Path.GetTempPath(), "ITADLibrarySyncUpdate");
         Directory.CreateDirectory(tempDir);
-        var tempFile = Path.Combine(tempDir, "ITAD.LibrarySync.new.exe");
+
+        var rawFileName = Path.GetFileName(new Uri(downloadUrl).AbsolutePath);
+        var fileName = string.IsNullOrWhiteSpace(rawFileName) ? "ITAD.LibrarySync-Setup.exe" : rawFileName;
+        var tempFile = Path.Combine(tempDir, fileName);
 
         using var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, ct);
         response.EnsureSuccessStatusCode();
@@ -91,11 +105,29 @@ public sealed class UpdateCheckerService(HttpClient httpClient, FileLogger? logg
 
     public void ApplyUpdateAndRestart(string downloadedFilePath)
     {
-        var currentExe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+        if (!File.Exists(downloadedFilePath)) return;
+
+        logger?.LogInfo($"UpdateCheckerService: launching downloaded update — {downloadedFilePath}");
+
+        // If it's an installer executable (Setup.exe)
+        if (downloadedFilePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = downloadedFilePath,
+                UseShellExecute = true // Ensures UAC elevation prompt if installed in Program Files
+            };
+
+            Process.Start(startInfo);
+            Environment.Exit(0);
+            return;
+        }
+
+        var currentExe = Process.GetCurrentProcess().MainModule?.FileName;
         if (string.IsNullOrWhiteSpace(currentExe)) return;
 
         var script = $"Start-Sleep -Seconds 2; Copy-Item -Path '{downloadedFilePath}' -Destination '{currentExe}' -Force; Start-Process '{currentExe}'";
-        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        Process.Start(new ProcessStartInfo
         {
             FileName = "powershell.exe",
             Arguments = $"-NoProfile -NonInteractive -Command \"{script}\"",
@@ -119,5 +151,6 @@ public sealed class UpdateCheckerService(HttpClient httpClient, FileLogger? logg
         [property: JsonPropertyName("assets")] List<GitHubAssetResponse>? Assets);
 
     private sealed record GitHubAssetResponse(
+        [property: JsonPropertyName("name")] string? Name,
         [property: JsonPropertyName("browser_download_url")] string BrowserDownloadUrl);
 }
