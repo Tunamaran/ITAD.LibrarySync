@@ -143,13 +143,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ConnectionStatus))]
     private bool _isConnected;
 
-    partial void OnIsConnectedChanged(bool value)
-    {
-        ConnectCommand?.NotifyCanExecuteChanged();
-        DisconnectCommand?.NotifyCanExecuteChanged();
-        SyncNowCommand?.NotifyCanExecuteChanged();
-    }
-
     [ObservableProperty]
     private string _accountName = "—";
 
