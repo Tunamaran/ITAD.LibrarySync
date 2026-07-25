@@ -22,36 +22,22 @@ public sealed class EaReader(EaOnlineLibraryReader? onlineLibraryReader = null) 
 
         try
         {
+            var local = ReadLocalLibrary();
+            if (local.Owned.Count > 0)
+            {
+                return FormatEaResult(local with
+                {
+                    IsDetected = true,
+                    IsLoggedIn = true,
+                    Error = null
+                });
+            }
+
             if (onlineLibraryReader is not null)
             {
                 var online = await onlineLibraryReader.TryReadAsync(ct);
                 if (online is { Owned.Count: > 0 })
                     return online;
-
-                if (online is { IsLoggedIn: false, Error: not null })
-                    return FormatEaResult(online);
-            }
-
-            var local = ReadLocalLibrary();
-            if (local.Owned.Count > 0)
-            {
-                if (onlineLibraryReader?.CanReadOnline() == true && local.Error is not null)
-                {
-                    return local with
-                    {
-                        Error = null,
-                        Warnings = CombineWarnings(local.Warnings, EaReadResultMerger.RegistryFallbackWarning)
-                    };
-                }
-
-                return FormatEaResult(local);
-            }
-
-            if (onlineLibraryReader is not null)
-            {
-                var onlineRetry = await onlineLibraryReader.TryReadAsync(ct);
-                if (onlineRetry is not null)
-                    return FormatEaResult(onlineRetry);
             }
 
             return FormatEaResult(EaReadResultMerger.MergeRegistryFallback(local));

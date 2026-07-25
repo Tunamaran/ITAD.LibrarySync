@@ -173,35 +173,21 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
             }
 
             catch (Exception ex)
-
             {
-
                 if (installedResult.Owned.Count > 0)
-
                 {
-
                     return AppendWarnings(
-
                         FilterXboxLocalScanNoise(installedResult) with { IsLoggedIn = true },
-
                         ex.Message);
-
                 }
 
-
-
                 return FilterXboxLocalScanNoise(installedResult) with
-
                 {
-
                     IsDetected = isInstalled,
-
                     IsLoggedIn = false,
-
-                    Error = ex.Message
-
+                    Error = null,
+                    Warnings = [ex.Message]
                 };
-
             }
 
         }

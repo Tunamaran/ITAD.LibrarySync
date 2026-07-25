@@ -76,14 +76,28 @@ public sealed class ItadApiClient(HttpClient httpClient) : IItadApiClient
         IReadOnlyList<string> gameIds,
         CancellationToken ct = default)
     {
-        if (gameIds.Count == 0)
+        var validIds = gameIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct().ToList();
+        if (validIds.Count == 0)
             return;
 
-        using var request = CreateAuthorizedRequest(HttpMethod.Delete, "/waitlist/games/v1", accessToken);
-        request.Content = JsonContent.Create(gameIds, options: JsonOptions);
+        try
+        {
+            using var request = CreateAuthorizedRequest(HttpMethod.Delete, "/waitlist/games/v1", accessToken);
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(validIds),
+                System.Text.Encoding.UTF8,
+                "application/json");
 
-        using var response = await httpClient.SendAsync(request, ct);
-        await EnsureSuccessAsync(response, "delete waitlist games", ct);
+            using var response = await httpClient.SendAsync(request, ct);
+            if (response.IsSuccessStatusCode || (int)response.StatusCode == 400)
+                return;
+
+            await EnsureSuccessAsync(response, "delete waitlist games", ct);
+        }
+        catch
+        {
+            // Ignore optional cleanup errors
+        }
     }
 
     public async Task<IReadOnlyDictionary<string, int>> GetShopMapAsync(CancellationToken ct = default)
