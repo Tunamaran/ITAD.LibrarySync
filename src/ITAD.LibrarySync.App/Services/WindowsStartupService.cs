@@ -19,7 +19,7 @@ public sealed class WindowsStartupService
             var exePath = Environment.ProcessPath
                 ?? throw new InvalidOperationException("Could not determine application executable path.");
 
-            key.SetValue(ValueName, $"\"{exePath}\"");
+            key.SetValue(ValueName, $"\"{exePath}\" --autostart");
             return;
         }
 

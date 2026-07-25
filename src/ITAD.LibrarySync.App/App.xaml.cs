@@ -90,18 +90,23 @@ public partial class App : Application
             LanguageManager.Instance.Initialize(appSettingsStorage);
             var settings = appSettingsStorage.Load();
 
+            var isAutostart = e.Args.Any(a =>
+                a.Equals("--autostart", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("--minimized", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("/autostart", StringComparison.OrdinalIgnoreCase));
+
             if (!settings.HasCompletedFirstRun)
             {
                 var wizardViewModel = _serviceProvider.GetRequiredService<FirstRunWizardViewModel>();
                 wizardViewModel.WizardCompleted += (_, args) =>
-                    ApplyNormalStartup(appSettingsStorage.Load(), skipSyncOnStartup: args.InitialSyncRan);
+                    ApplyNormalStartup(appSettingsStorage.Load(), isAutostart: isAutostart, skipSyncOnStartup: args.InitialSyncRan);
 
                 var wizard = new FirstRunWizard(wizardViewModel);
                 wizard.Show();
             }
             else
             {
-                ApplyNormalStartup(settings);
+                ApplyNormalStartup(settings, isAutostart: isAutostart);
             }
         }
         catch (Exception ex)
@@ -115,68 +120,43 @@ public partial class App : Application
         }
     }
 
-
-
     protected override void OnExit(ExitEventArgs e)
-
     {
-
         _trayIconService?.Dispose();
-
         _singleInstance?.Dispose();
 
-
-
         if (_serviceProvider is not null)
-
         {
-
             _serviceProvider.GetService<SyncScheduler>()?.Dispose();
-
             _serviceProvider.Dispose();
-
         }
 
-
-
         base.OnExit(e);
-
     }
 
-
-
     private void ActivateRunningInstance() =>
-
         _trayIconService?.Activate();
 
-
-
-    private void ApplyNormalStartup(AppSettings settings, bool skipSyncOnStartup = false)
-
+    private void ApplyNormalStartup(AppSettings settings, bool isAutostart = false, bool skipSyncOnStartup = false)
     {
-
         _serviceProvider!.GetRequiredService<WindowsStartupService>().Apply(settings.StartWithWindows);
 
-
-
         var tokenStorage = _serviceProvider.GetRequiredService<TokenStorage>();
-
         if (tokenStorage.Load() is not null)
-
             _ = _serviceProvider.GetRequiredService<ItadAccountService>().RefreshAsync();
 
-
-
         var scheduler = _serviceProvider.GetRequiredService<SyncScheduler>();
-
         scheduler.Apply(settings.ToSyncScheduleOptions());
-
-
 
         if (settings.SyncOnStartup && !skipSyncOnStartup)
             _ = RunStartupSyncAsync();
 
         _ = CheckUpdateOnStartupAsync();
+
+        if (!isAutostart)
+        {
+            _trayIconService?.Activate();
+        }
     }
 
     private async Task CheckUpdateOnStartupAsync()
