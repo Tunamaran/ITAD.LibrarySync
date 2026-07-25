@@ -22,9 +22,14 @@
             <TextBlock Margin="0,4,0,0"
                        Foreground="#64748B"
                        Text="{Binding Summary, StringFormat=Özet: {0}}" />
-            <TextBlock Margin="0,2,0,0"
-                       Foreground="#64748B"
-                       Text="{Binding Status, StringFormat=Durum: {0}}" />
+
+            <!-- Tanılama ve Sürücü Bilgi Kartı -->
+            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,8,0,0">
+                <StackPanel>
+                    <TextBlock FontSize="12" Foreground="#475569" Text="{Binding ResolvedPath, StringFormat=📌 Tespit Edilen Yol: {0}}" TextWrapping="Wrap" />
+                    <TextBlock FontSize="12" Foreground="#475569" Margin="0,3,0,0" Text="{Binding DetectionSource, StringFormat=🔍 Tespit Metodu: {0}}" />
+                </StackPanel>
+            </Border>
             <TextBlock Margin="0,8,0,0"
                        Foreground="DarkOrange"
                        TextWrapping="Wrap"

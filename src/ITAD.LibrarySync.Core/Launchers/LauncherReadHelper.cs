@@ -47,6 +47,9 @@ internal static class LauncherReadHelper
         if (!isLoggedIn && error is null && errorMessages.Count > 0)
             error = $"Unable to read library: {string.Join("; ", errorMessages)}";
 
+        var resolvedPathStr = clientPath != default ? clientPath.ToString() : null;
+        var detectionSource = treatAsInstalled ? "Kayıt Defteri (Registry)" : "Kayıt Defteri & Yerel Önbellek";
+
         return new LauncherReadResult(
             launcher,
             IsDetected: true,
@@ -55,7 +58,9 @@ internal static class LauncherReadHelper
             Wishlist: [],
             WishlistReadable: false,
             Error: error,
-            Warnings: warnings);
+            Warnings: warnings,
+            ResolvedPath: resolvedPathStr,
+            DetectionSource: detectionSource);
     }
 
     internal static LauncherReadResult MergeOwned(

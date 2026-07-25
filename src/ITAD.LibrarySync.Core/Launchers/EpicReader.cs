@@ -24,7 +24,7 @@ public sealed class EpicReader : ILauncherReader
             var clientPath = handler.FindClient();
             var results = handler.FindAllGames(OwnedGamesSettings);
 
-            return Task.FromResult(LauncherReadHelper.ReadOwnedGames(
+            var result = LauncherReadHelper.ReadOwnedGames(
                 LauncherId.Epic,
                 clientPath,
                 FileSystem.Shared,
@@ -34,7 +34,23 @@ public sealed class EpicReader : ILauncherReader
                     game.GameId,
                     game.GameName,
                     game.RunTime,
-                    game.LastRunDate)));
+                    game.LastRunDate));
+
+            if (!result.IsDetected || string.IsNullOrEmpty(result.ResolvedPath))
+            {
+                var multiPath = MultiDriveScanner.FindExistingPathOnAnyDrive(MultiDriveScanner.EpicCandidatePaths);
+                if (!string.IsNullOrEmpty(multiPath))
+                {
+                    result = result with
+                    {
+                        IsDetected = true,
+                        ResolvedPath = multiPath,
+                        DetectionSource = $"Çoklu Sürücü Taraması ({Path.GetPathRoot(multiPath)})"
+                    };
+                }
+            }
+
+            return Task.FromResult(result);
         }
         catch (Exception ex)
         {

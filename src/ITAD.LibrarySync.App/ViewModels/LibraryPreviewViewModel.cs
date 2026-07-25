@@ -15,6 +15,9 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
         LauncherName = launcherName;
         Summary = LauncherReadResultDisplay.FormatScanSummary(result);
         Status = LauncherReadResultDisplay.GetDetectionStatus(result);
+        ResolvedPath = result.ResolvedPath ?? "Varsayılan İstemci Yolu";
+        DetectionSource = result.DetectionSource ?? "Kayıt Defteri & Önbellek";
+        HasResolvedPath = !string.IsNullOrWhiteSpace(result.ResolvedPath);
         PreviewWarning = LauncherReadResultDisplay.FormatPreviewWarning(result);
         HasWarning = !string.IsNullOrWhiteSpace(PreviewWarning);
 
@@ -44,6 +47,12 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
     public string Summary { get; }
 
     public string Status { get; }
+
+    public string ResolvedPath { get; }
+
+    public string DetectionSource { get; }
+
+    public bool HasResolvedPath { get; }
 
     public string? PreviewWarning { get; }
 

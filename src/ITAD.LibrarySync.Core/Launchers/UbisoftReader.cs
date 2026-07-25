@@ -37,6 +37,20 @@ public sealed class UbisoftReader : ILauncherReader
                     game.RunTime,
                     game.LastRunDate));
 
+            if (!gameCollectorResult.IsDetected || string.IsNullOrEmpty(gameCollectorResult.ResolvedPath))
+            {
+                var multiPath = MultiDriveScanner.FindExistingPathOnAnyDrive(MultiDriveScanner.UbisoftCandidatePaths);
+                if (!string.IsNullOrEmpty(multiPath))
+                {
+                    gameCollectorResult = gameCollectorResult with
+                    {
+                        IsDetected = true,
+                        ResolvedPath = multiPath,
+                        DetectionSource = $"Çoklu Sürücü Taraması ({Path.GetPathRoot(multiPath)})"
+                    };
+                }
+            }
+
             var localOwned = UbisoftLocalLibraryReader.ReadOwnedGames();
             if (localOwned.Count == 0)
                 return Task.FromResult(gameCollectorResult);
