@@ -1,178 +1,151 @@
 # ITAD Library Sync
 
-Windows WPF tray application that syncs your game libraries from Epic Games, Ubisoft Connect, Battle.net, Microsoft/Xbox, and EA App to [IsThereAnyDeal](https://isthereanydeal.com/) Collection and Waitlist via the official Custom Profiles API.
+<p center>
+  <a href="#-itad-library-sync---english"><b>🇬🇧 English Documentation</b></a> • 
+  <a href="#-itad-library-sync---türkçe"><b>🇹🇷 Türkçe Dokümantasyon</b></a>
+</p>
 
-## Features
+---
 
-- Read owned games from local launcher cache and store APIs (no store passwords stored)
-- Push libraries to ITAD Collection per store profile
-- Sync waitlist where local data is available; remove owned games from ITAD Waitlist
-- Manual sync with optional confirmation, scheduled sync, and sync on startup
-- Library preview before sync — inspect owned/wishlist game lists per store
-- Tray tooltip shows last sync time and per-store summary
+## 🇬🇧 ITAD Library Sync - English
 
-## Prerequisites
+[![GitHub Release](https://img.shields.io/github/v/release/Tunamaran/ITAD.LibrarySync?color=blue&style=for-the-badge)](https://github.com/Tunamaran/ITAD.LibrarySync/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20x64-0078D6?style=for-the-badge&logo=windows)](https://github.com/Tunamaran/ITAD.LibrarySync)
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
 
-- **Windows 10 or later** (64-bit)
-- **[Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)** — required for ITAD OAuth sign-in (preinstalled on Windows 11; install manually on Windows 10 if needed)
-- **.NET 8 runtime** — only required when running a framework-dependent build; [GitHub Releases](https://github.com/Tunamaran/ITAD.LibrarySync/releases) are self-contained and do not need a separate runtime install
-- **Game launchers installed and signed in** — Epic Games, Ubisoft Connect, Battle.net, EA App, and/or Xbox/Microsoft Store as needed for the stores you want to sync
-- **Xbox / Microsoft Store** — connect your Xbox account in Settings for library sync beyond locally installed games (see [Xbox account](#xbox-account-microsoft-store) below)
+**ITAD Library Sync** is a lightweight, modern Windows WPF system tray application that automatically synchronizes your local game libraries from **Epic Games Store, Ubisoft Connect, Battle.net, Xbox / Microsoft Store, and EA App** to your [IsThereAnyDeal](https://isthereanydeal.com/) Collection and Waitlist profiles.
 
-## Download
+---
 
-Download the latest release from the repository’s **GitHub Releases** page. Releases are built as self-contained, single-file `win-x64` binaries tagged with `v*`.
+### 🌟 Key Features
 
-## ITAD OAuth (contributors)
+- **⚡ 100% Local & Password-Free Launcher Sync:** 
+  Reads games directly from local encrypted launcher caches and Windows registries for Epic, Ubisoft, Battle.net, and EA App. No launcher login credentials required!
+- **🤖 Smart Match Engine (SmartMatchEngine):**
+  Automatically normalizes game titles, handles franchise prefixes (*Sid Meier's, Tom Clancy's, EA SPORTS*), formats DLC colons (*Base: DLC*), and strips regional tags so games match ITAD database IDs seamlessly.
+- **🧹 Automatic ITAD Obsolete Entry Purging:**
+  Automatically identifies and deletes obsolete or mis-matched game IDs from your ITAD Waitlist/Collection right after a successful sync.
+- **🔍 Multi-Drive Deep Scanner:**
+  Scans all fixed drives (`C:`, `D:`, `E:`, `F:`) to discover games installed across custom directories.
+- **📊 Searchable Library Preview & Diagnostic Info:**
+  Inspect your full game list, store IDs, detected folder paths (`📌 Resolved Path`), and detection methods (`🔍 Detection Source`) before running a sync.
+- **🌐 Dual Language Support (English & Türkçe):**
+  Full English interface by default, with dynamic runtime switching to Turkish in Settings.
+- **⏰ Automatic & Tray Background Synchronization:**
+  Runs silently in the system tray with customizable auto-sync intervals (6h, 12h, 24h, weekly) or manual one-click sync.
 
-End users connect through the app’s built-in OAuth flow. **Contributors building from source** must register their own ITAD OAuth application and embed the client ID:
+---
 
-1. Register an app at [IsThereAnyDeal — My Apps](https://isthereanydeal.com/my/apps/).
-2. Set the redirect URI to `http://127.0.0.1:8765/callback` (must match `appsettings.json`).
-3. Request scopes: `profiles`, `wait_read`, `wait_write`, `coll_read`, `coll_write`.
-4. Replace `YOUR_ITAD_CLIENT_ID` in `src/ITAD.LibrarySync.App/appsettings.json`:
+### 🎮 Supported Platform Launcher Matrix
 
-```json
-{
-  "Itad": {
-    "ClientId": "your-client-id-here",
-    "RedirectUri": "http://127.0.0.1:8765/callback"
-  }
-}
-```
+| Platform Launcher | Local Sync Method | Credentials Required? | Wishlist Sync |
+| :--- | :--- | :---: | :---: |
+| **Epic Games Store** | Local Manifests + Multi-Drive Scan | ❌ No | ✅ Best-effort (Local Cache) |
+| **Ubisoft Connect** | Encrypted `configurations` Cache + Registry | ❌ No | ➖ N/A |
+| **Battle.net** | Local Product Database Scan | ❌ No | ➖ N/A |
+| **EA App** | Local Encrypted `IS` Cache Scan | ❌ No | ➖ N/A |
+| **Xbox / Microsoft Store** | Installed Apps + Xbox Live OAuth Play History | 🔑 Xbox Sign-In | ➖ N/A |
 
-The app is a public OAuth client (PKCE, no client secret). OAuth tokens are encrypted with Windows DPAPI under `%AppData%\ITADLibrarySync\`.
+---
 
-## Build
+### 🚀 Installation & Getting Started
+
+1. **Download the App:**
+   - Download `ITAD.LibrarySync-Setup-vX.X.X.exe` (Installer) or `ITAD.LibrarySync-win-x64.zip` (Portable) from [GitHub Releases](https://github.com/Tunamaran/ITAD.LibrarySync/releases).
+2. **First-Run Setup:**
+   - Launch the application and click **"Connect to ITAD"** to sign in via the secure web login (OAuth2 PKCE).
+3. **Verify Detected Libraries:**
+   - Go to **Settings → Platforms** and click **Test** or **Details** next to any launcher to preview detected games.
+4. **Sync Your Library:**
+   - Click **"Sync Now"** in Settings or right-click the System Tray icon and select **"Sync Now"**.
+
+---
+
+### ⚙️ How EA App & Xbox Sync Work
+
+- **EA App:** 
+  Works 100% locally from EA's encrypted `IS` cache file on your PC. You do not need to sign in to EA inside the app. If decryption fails, simply open and launch EA App once while online so EA can refresh its local cache key.
+- **Xbox / Microsoft Store:**
+  Combines PC local app manifest scanning with Xbox Live Title History. Connect your Xbox account under **Settings → Platforms → Xbox Connect** for full coverage including Xbox Game Pass games.
+
+---
+
+### 🛠️ Building From Source
+
+Prerequisites:
+- **Windows 10/11 x64**
+- **.NET 8.0 SDK**
 
 ```powershell
+# Clone the repository
+git clone https://github.com/Tunamaran/ITAD.LibrarySync.git
+cd ITAD.LibrarySync
+
+# Build the project
 dotnet build
-```
 
-Publish a self-contained release binary locally:
+# Run the app locally
+dotnet run --project src/ITAD.LibrarySync.App
 
-```powershell
+# Publish a self-contained release binary
 dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
-Run from source:
+---
 
-```powershell
-dotnet run --project src/ITAD.LibrarySync.App
-```
+<br/>
 
-## Development
+## 🇹🇷 ITAD Library Sync - Türkçe
 
-### Xbox debugging (XboxProbe)
+**ITAD Library Sync**, **Epic Games Store, Ubisoft Connect, Battle.net, Xbox / Microsoft Store ve EA App** kütüphanelerinizdeki oyunları yerel olarak tarayıp [IsThereAnyDeal](https://isthereanydeal.com/) (ITAD) Koleksiyon ve İstek Listesi (Waitlist) profillerinize otomatik aktaran hafif, modern bir Windows WPF sistem tepsisi (system tray) uygulamasıdır.
 
-`tools/XboxProbe` is a small console utility for verifying Xbox OAuth tokens and TitleHub responses without running the full WPF app.
+---
 
-```powershell
-dotnet run --project tools/XboxProbe
-```
+### 🌟 Öne Çıkan Özellikler
 
-If you have already connected Xbox in ITAD Library Sync, XboxProbe reuses the saved tokens from `%AppData%\ITADLibrarySync\`. Otherwise it prints the Microsoft authorize URL and accepts an authorization code from stdin.
+- **⚡ %100 Yerel ve Şifresiz Platform Taraması:**
+  Epic Games, Ubisoft Connect, Battle.net ve EA App kütüphanelerinizi bilgisayarınızdaki şifreli kütüphane dosyalarından ve sistem kayıt defterinden okur. Hiçbir platform kullanıcı adı/şifresi saklanmaz!
+- **🤖 Akıllı Eşleştirme Motoru (SmartMatchEngine):**
+  Oyun isimlerini otomatik temizler, seri ön eklerini (*Sid Meier's, Tom Clancy's, EA SPORTS*) düzenler, DLC iki nokta üst üste biçimlendirmelerini (*Ana Oyun: DLC*) yapar ve ITAD veritabanı ID'leri ile kusursuz eşleştirir.
+- **🧹 Otomatik ITAD Hatalı Kayıt Temizliği (Auto-Purge):**
+  Başarılı bir senkronizasyonun ardından, ITAD hesabınızda bulunan eski veya yanlış eşleşmiş oyun ID'lerini tespit ederek ITAD profillerinizden otomatik olarak siler.
+- **🔍 Tüm Sürücüleri Derinlemesine Tarama (Multi-Drive Scan):**
+  `C:`, `D:`, `E:`, `F:` gibi tüm sabit disklerinizi tarayarak farklı sürücülere kurulu oyunlarınızı eksiksiz tespit eder.
+- **📊 Aranabilir Kütüphane Önizlemesi ve Tanılama Kartı:**
+  Senkronize etmeden önce tüm oyun listenizi, mağaza ID'lerini, tespit edilen klasör yolunu (`📌 Tespit Edilen Yol`) ve tarama metodunu (`🔍 Tespit Metodu`) detaylarıyla inceleyin.
+- **🌐 Çift Dil Desteği (İngilizce & Türkçe):**
+  Varsayılan İngilizce arayüz, Ayarlar sekmesinden tek tıkla anında Türkçe yapılabilir.
+- **⏰ Arka Planda Otomatik Senkronizasyon:**
+  Sistem tepsisinde (tray) sessizce çalışır; belirlediğiniz zaman aralıklarında (6 saat, 12 saat, 24 saat, haftalık) kütüphanelerinizi güncel tutar.
 
-### Manual ITAD verification
+---
 
-See [`docs/manual-itad-verification-checklist.md`](docs/manual-itad-verification-checklist.md) for a step-by-step checklist to verify sync against a live ITAD account.
+### 🎮 Desteklenen Platform Matrisi
 
-## Usage
+| Platform İstemcisi | Yerel Tarama Metodu | Şifre / Giriş Gerekli mi? | İstek Listesi |
+| :--- | :--- | :---: | :---: |
+| **Epic Games Store** | Yerel Manifestler + Çoklu Sürücü Taraması | ❌ Hayır | ✅ Desteklenir (Yerel Önbelek) |
+| **Ubisoft Connect** | Şifreli `configurations` Önbelleği + Registry | ❌ Hayır | ➖ N/A |
+| **Battle.net** | Yerel Ürün Veritabanı Taraması | ❌ Hayır | ➖ N/A |
+| **EA App** | Yerel Şifreli `IS` Önbellek Taraması | ❌ Hayır | ➖ N/A |
+| **Xbox / Microsoft Store** | Kurulu Uygulamalar + Xbox Live Oynama Geçmişi | 🔑 Xbox Girişi | ➖ N/A |
 
-### System tray
+---
 
-The app runs in the system tray only (no main window). Right-click the tray icon for:
+### 🚀 Kurulum ve Kullanım
 
-| Menu item | Action |
-|-----------|--------|
-| **Sync Now** | Sync all **enabled** launchers |
-| **Sync Epic / Ubisoft / …** | Sync a single enabled store (disabled stores are hidden) |
-| **Settings…** | Open the settings window |
-| **View Last Sync Log** | Open the most recent log in `%AppData%\ITADLibrarySync\logs\` |
-| **Connect to ITAD** / **Disconnect from ITAD** | Start or clear OAuth |
-| **Exit** | Quit the application |
+1. **Uygulamayı İndirin:**
+   - [GitHub Releases](https://github.com/Tunamaran/ITAD.LibrarySync/releases) sayfasından `ITAD.LibrarySync-Setup-vX.X.X.exe` (Kurulum dosyası) veya `ITAD.LibrarySync-win-x64.zip` (Portatif) sürümünü indirin.
+2. **İlk Kurulum Sihirbazı:**
+   - Uygulamayı çalıştırın ve **"ITAD'a Bağlan"** butonuna basarak güvenli web tarayıcı penceresinden (OAuth2 PKCE) IsThereAnyDeal hesabınızla giriş yapın.
+3. **Tespit Edilen Oyunları İnceleyin:**
+   - **Ayarlar → Platformlar** sekmesinden istediğiniz platformun yanındaki **Test Et** veya **Detaylar** butonuna basarak okunan oyunları kontrol edin.
+4. **Senkronize Edin:**
+   - Ayarlar penceresinden **"Şimdi Senkronize Et"** butonuna basın veya sağ alttaki sistem tepsisi simgesine sağ tıklayıp **"Şimdi Senkronize Et"** seçeneğini seçin.
 
-Tray icon tooltips reflect sync state (idle, syncing, success, partial, error) and, after a sync, show the last sync time plus a short per-store summary (for example `Epic: +2/-1 | Ubisoft: ok`).
+---
 
-Only one instance runs at a time. Launching the app again while it is already running opens Settings in the existing instance instead of creating a second tray icon.
+### 📜 Lisans
 
-Double-click the tray icon to open Settings.
-
-On first run, complete the setup wizard: connect ITAD, review launcher detection, and optionally run an initial sync.
-
-### Settings
-
-- **ITAD Connection** — Connect or disconnect your ITAD account; shows your ITAD username after sign-in
-- **Launchers** — Enable/disable stores, view detection status, last sync stats, **Test** read counts, **Detay** (detail) preview of the full game list before syncing
-- **Sync Settings** — Auto-sync interval (6 h / 12 h / 24 h / weekly, or disabled), sync on startup, confirm before manual sync
-- **General** — Start with Windows, toast notifications, log level
-
-**Start with Windows** registers the published `.exe` path in the current-user Run key. When developing with `dotnet run`, enable this only for testing in a release/published build so Windows starts the real app binary, not the `dotnet` host.
-
-#### Library preview (Detay)
-
-1. Open **Settings → Launchers**
-2. Click **Test** on a store to read the library
-3. Click **Detay** to open a searchable owned/wishlist game list
-4. Review titles before running **Sync Now**
-
-If you click **Detay** without a prior test read, the app reads the library first.
-
-#### Xbox account (Microsoft Store)
-
-Microsoft/Xbox sync uses multiple sources:
-
-1. **Local installs** — games installed via the Microsoft Store / Xbox app on this PC (via GameCollector)
-2. **Xbox Live title history** — account-level play history from Xbox OAuth
-3. **Microsoft Store license check** — filters title-history candidates to titles with a confirmed Store entitlement on this PC
-
-To connect Xbox:
-
-1. Open **Settings** from the tray menu
-2. Go to the **Launchers** tab
-3. Click **Connect Xbox** and sign in with your Microsoft account in the WebView window
-4. After success, the panel shows your gamertag
-5. Use **Test** and **Detay** to verify the game list before syncing
-
-To disconnect, click **Disconnect Xbox**. Xbox tokens are stored separately from ITAD OAuth tokens (DPAPI-encrypted under `%AppData%\ITADLibrarySync\`).
-
-**Important:** The synced Microsoft library reflects Store license verification combined with title history — not every played title and not every purchase you have never launched. Use **Detay** to see exactly what will sync.
-
-#### EA App
-
-EA App sync reads your owned games from EA’s encrypted local library cache (no EA password stored):
-
-1. Install and sign in to **EA App** on this PC
-2. Enable **EA App** under **Settings → Launchers**
-3. Use **Test** and **Detay** to verify the game list before syncing
-
-If library read fails with a decrypt error, open EA App while signed in so it can refresh its local cache. Hardware changes can invalidate EA’s encryption key until the cache is rebuilt.
-
-### Sync behavior
-
-For each **enabled** launcher the app:
-
-1. **Reads** owned games (and wishlist where available)
-2. **Syncs Collection** — `PUT /profiles/sync/collection/v1` to the store’s ITAD custom profile (Epic, Ubisoft, Battle.net, Xbox, EA App)
-3. **Syncs Waitlist** — pushes local wishlist to the profile waitlist when data is available; owned games are filtered out before upload
-4. **Global waitlist cleanup** — after all profiles, removes any ITAD waitlist entry that matches a game you own (including cross-store matches)
-
-**Safety guards:** if a launcher returns zero owned games, collection sync is skipped (prevents wiping ITAD). If wishlist data is unreadable or empty, waitlist sync is skipped for that profile.
-
-Manual sync from the tray or Settings can show a confirmation dialog listing the stores (and cached game counts when available). Disable this via **Settings → Sync Settings → Confirm before manual sync**. Automatic and scheduled sync never prompts.
-
-Sync runs are spaced ~30 seconds apart between stores to respect ITAD rate limits.
-
-## Limitations
-
-- **Microsoft / Xbox library** — requires Xbox OAuth in Settings. Synced titles are filtered by Microsoft Store license checks on your PC; title history alone is not used as the final owned list. See [Xbox account](#xbox-account-microsoft-store) above.
-- **Waitlist import** is **Epic-only, best-effort** — read from Epic’s local cache when available. Ubisoft Connect, Battle.net, EA App, and Xbox do not expose local wishlists; waitlist sync is skipped for those stores, but global waitlist cleanup still runs.
-- **Battle.net** — local cache may omit uninstalled owned titles.
-- **EA App** — reads EA’s encrypted local library cache via GameCollector. The EA App UI may show your full online library, but sync uses the local `IS` cache file only (no EA OAuth in v1.1). If decryption fails, try **Help → App recovery** in EA App, sign in again, and retry. Installed-game registry fallback is used when available. Uninstalled owned titles may be missing.
-- **GameCollector 4.4.0.1** — launcher reading depends on [GameCollector](https://www.nuget.org/packages/GameCollector.StoreHandlers.EGS) store handlers; behavior may change if launcher cache formats change.
-- **ITAD matching** — games are matched by store ID with title fallback; unmatched titles are logged but may not appear on ITAD.
-- **Windows only** — reads local launcher data paths; not supported on macOS or Linux.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+Bu proje **MIT Lisansı** altında lisanslanmıştır — detaylar için [LICENSE](LICENSE) dosyasına bakabilirsiniz.
