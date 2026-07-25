@@ -147,6 +147,7 @@
                                         <Button Content="Xbox Bağla" Command="{Binding ConnectXboxCommand}" Margin="0,0,8,0"/>
                                         <Button Content="Xbox Bağlantısını Kes" Command="{Binding DisconnectXboxCommand}"/>
                                     </StackPanel>
+                                </StackPanel>
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
