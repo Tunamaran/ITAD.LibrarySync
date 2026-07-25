@@ -64,14 +64,14 @@ public static class AutoMatchResolver
     {
         var cleanId = storeId.Trim();
         if (KnownAutoAliases.TryGetValue(cleanId, out var known) &&
-            !string.Equals(cleanId, known.MappedId, StringComparer.OrdinalIgnoreCase))
+            !string.Equals(cleanId, known.MappedId, StringComparison.OrdinalIgnoreCase))
         {
             return cleanId;
         }
 
         var slugFromTitle = GenerateSlug(rawTitle);
         if (KnownAutoAliases.TryGetValue(slugFromTitle, out var knownBySlug) &&
-            !string.Equals(slugFromTitle, knownBySlug.MappedId, StringComparer.OrdinalIgnoreCase))
+            !string.Equals(slugFromTitle, knownBySlug.MappedId, StringComparison.OrdinalIgnoreCase))
         {
             return slugFromTitle;
         }
