@@ -1,5 +1,5 @@
 #define MyAppName "ITAD Library Sync"
-#define MyAppVersion "1.0.4"
+#define MyAppVersion "1.0.5"
 #define MyAppPublisher "Tunamaran"
 #define MyAppURL "https://github.com/Tunamaran/ITAD.LibrarySync"
 #define MyAppExeName "ITAD.LibrarySync.App.exe"
@@ -16,7 +16,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=ITAD.LibrarySync-Setup-v1.0.4
+OutputBaseFilename=ITAD.LibrarySync-Setup-v1.0.5
 OutputDir=..\Output
 Compression=lzma2/ultra64
 SolidCompression=yes
