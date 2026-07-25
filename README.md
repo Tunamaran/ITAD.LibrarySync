@@ -1,12 +1,16 @@
+<a id="top"></a>
+
 # ITAD Library Sync
 
-<p center>
-  <a href="#-itad-library-sync---english"><b>🇬🇧 English Documentation</b></a> • 
-  <a href="#-itad-library-sync---türkçe"><b>🇹🇷 Türkçe Dokümantasyon</b></a>
+<p align="center">
+  <a href="#english-documentation"><img src="https://img.shields.io/badge/Language-English%20%F0%9F%87%AC%F0%9F%87%B7-blue?style=for-the-badge" alt="English Documentation" /></a>
+  &nbsp;&nbsp;
+  <a href="#turkish-documentation"><img src="https://img.shields.io/badge/Dil-T%C3%BCrk%C3%A7e%20%F0%9F%87%B9%F0%9F%87%B7-red?style=for-the-badge" alt="Türkçe Dokümantasyon" /></a>
 </p>
 
 ---
 
+<a id="english-documentation"></a>
 ## 🇬🇧 ITAD Library Sync - English
 
 [![GitHub Release](https://img.shields.io/github/v/release/Tunamaran/ITAD.LibrarySync?color=blue&style=for-the-badge)](https://github.com/Tunamaran/ITAD.LibrarySync/releases)
@@ -92,10 +96,16 @@ dotnet run --project src/ITAD.LibrarySync.App
 dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
+<p align="right">
+  <a href="#top"><b>⬆ Back to Top</b></a> &nbsp;|&nbsp; 
+  <a href="#turkish-documentation"><b>🇹🇷 Switch to Türkçe</b></a>
+</p>
+
 ---
 
 <br/>
 
+<a id="turkish-documentation"></a>
 ## 🇹🇷 ITAD Library Sync - Türkçe
 
 **ITAD Library Sync**, **Epic Games Store, Ubisoft Connect, Battle.net, Xbox / Microsoft Store ve EA App** kütüphanelerinizdeki oyunları yerel olarak tarayıp [IsThereAnyDeal](https://isthereanydeal.com/) (ITAD) Koleksiyon ve İstek Listesi (Waitlist) profillerinize otomatik aktaran hafif, modern bir Windows WPF sistem tepsisi (system tray) uygulamasıdır.
@@ -149,3 +159,10 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
 ### 📜 Lisans
 
 Bu proje **MIT Lisansı** altında lisanslanmıştır — detaylar için [LICENSE](LICENSE) dosyasına bakabilirsiniz.
+
+---
+
+<p align="right">
+  <a href="#top"><b>⬆ Başa Dön / Back to Top</b></a> &nbsp;|&nbsp; 
+  <a href="#english-documentation"><b>🇬🇧 English Version</b></a>
+</p>
