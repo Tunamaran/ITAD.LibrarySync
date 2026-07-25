@@ -311,6 +311,22 @@
 
             <TabItem Header="Genel">
                 <StackPanel Margin="16">
+                    <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="ITAD Library Sync" FontWeight="Bold" FontSize="15" Foreground="{StaticResource TextPrimaryBrush}" />
+                                <TextBlock Text="IsThereAnyDeal Oyun Kütüphanesi Senkronizasyon Aracı" FontSize="12" Foreground="#64748B" Margin="0,2,0,0" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="#0284C7" CornerRadius="12" Padding="10,4" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding VersionInfo, Mode=OneWay, StringFormat=Sürüm {0}}" Foreground="White" FontWeight="Bold" FontSize="12" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
                     <TextBlock Text="Uygulama Tercihleri" FontWeight="SemiBold" FontSize="15" />
                     <CheckBox Margin="0,12,0,0"
                               Content="Windows açılışında çalıştır"
