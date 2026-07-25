@@ -112,7 +112,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         RefreshEaConnectionState();
         ApplySyncStatsFromService();
         _syncStatusService.SyncCompleted += (_, _) => ApplySyncStatsFromService();
-        _itadAccountService.AccountInfoChanged += (_, _) => RefreshAccountName();
+        _itadAccountService.AccountInfoChanged += (_, _) => Application.Current?.Dispatcher?.Invoke(RefreshAccountName);
         _ = LoadUnmatchedTitlesAsync();
         _ = LoadCustomMappingsAsync();
         _ = RefreshLogsAsync();
@@ -140,6 +140,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<string> LogFilterOptions { get; } = ["ALL", "INFO", "ERROR"];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ConnectionStatus))]
+    [NotifyPropertyChangedFor(nameof(CanConnect))]
+    [NotifyPropertyChangedFor(nameof(CanDisconnect))]
+    [NotifyPropertyChangedFor(nameof(CanSyncNow))]
     private bool _isConnected;
 
     [ObservableProperty]

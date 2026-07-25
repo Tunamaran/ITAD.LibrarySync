@@ -131,17 +131,6 @@
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
-
-                            <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
-                                <StackPanel>
-                                    <TextBlock Text="EA App Hesabı" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding EaConnectionStatus, Mode=OneWay}" Foreground="#64748B" Margin="0,2,0,8"/>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Content="EA Bağla" Command="{Binding ConnectEaCommand}" Margin="0,0,8,0"/>
-                                        <Button Content="EA Bağlantısını Kes" Command="{Binding DisconnectEaCommand}"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
