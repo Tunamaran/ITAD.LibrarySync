@@ -7,6 +7,12 @@ obj/
 *.sln.docstates
 .vs/
 
+## AI / Planning / Internal Docs
+docs/superpowers/
+.gemini/
+.cursor/
+.idea/
+
 ## Worktrees
 .worktrees/
 
@@ -18,4 +24,6 @@ Desktop.ini
 appsettings.Development.json
 
 ## Local publish output
+publish/
 publish-test/
+Output/
