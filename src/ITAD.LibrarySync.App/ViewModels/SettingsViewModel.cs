@@ -675,6 +675,14 @@ public sealed partial class SettingsViewModel : ObservableObject
             {
                 DownloadUrl = result.DownloadUrl;
                 UpdateStatusText = string.Format(Lang["VMUpdateAvailable"], result.LatestVersion);
+                if (MessageBox.Show(
+                        string.Format(Lang["VMUpdateAvailablePrompt"], result.LatestVersion),
+                        Lang["VMUpdateAvailableTitle"],
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information) == MessageBoxResult.Yes)
+                {
+                    await DownloadAndApplyUpdateAsync();
+                }
             }
             else
             {
