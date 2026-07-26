@@ -173,7 +173,7 @@ public class SyncOrchestratorTests
         await orchestrator.SyncAllAsync();
 
         _delay.Verify(
-            x => x.DelayAsync(TimeSpan.FromSeconds(30), It.IsAny<CancellationToken>()),
+            x => x.DelayAsync(TimeSpan.FromSeconds(2), It.IsAny<CancellationToken>()),
             Times.Exactly(2));
     }
 
