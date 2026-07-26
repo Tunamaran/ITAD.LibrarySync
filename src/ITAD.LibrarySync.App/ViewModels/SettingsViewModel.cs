@@ -224,7 +224,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     private double _downloadProgress;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasUpdateAvailable))]
     private string _downloadUrl = string.Empty;
+
+    public bool HasUpdateAvailable => !string.IsNullOrWhiteSpace(DownloadUrl);
 
     [ObservableProperty]
     private int _totalSyncedGamesCount;
@@ -672,22 +675,16 @@ public sealed partial class SettingsViewModel : ObservableObject
             {
                 DownloadUrl = result.DownloadUrl;
                 UpdateStatusText = string.Format(Lang["VMUpdateAvailable"], result.LatestVersion);
-                if (MessageBox.Show(
-                        string.Format(Lang["VMUpdateAvailablePrompt"], result.LatestVersion),
-                        Lang["VMUpdateAvailableTitle"],
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Information) == MessageBoxResult.Yes)
-                {
-                    await DownloadAndApplyUpdateAsync();
-                }
             }
             else
             {
+                DownloadUrl = string.Empty;
                 UpdateStatusText = string.Format(Lang["VMUpToDate"], result.CurrentVersion);
             }
         }
         catch (Exception ex)
         {
+            DownloadUrl = string.Empty;
             UpdateStatusText = string.Format(Lang["VMUpdateCheckFailed"], ex.Message);
         }
         finally
