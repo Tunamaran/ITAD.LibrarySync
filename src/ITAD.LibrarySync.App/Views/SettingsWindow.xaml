@@ -141,16 +141,37 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,8">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Lang[XboxAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding XboxConnectionStatus, Mode=OneWay}" Foreground="#64748B" Margin="0,2,0,8"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="{Binding Lang[BtnConnectXbox], Mode=OneWay}" Command="{Binding ConnectXboxCommand}" Margin="0,0,8,0"/>
-                                    <Button Content="{Binding Lang[BtnDisconnectXbox], Mode=OneWay}" Command="{Binding DisconnectXboxCommand}"/>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Xbox Account Card -->
+                            <Border Grid.Column="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Lang[XboxAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding XboxConnectionStatus, Mode=OneWay}" Foreground="#64748B" Margin="0,2,0,8"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="{Binding Lang[BtnConnectXbox], Mode=OneWay}" Command="{Binding ConnectXboxCommand}" Margin="0,0,8,0"/>
+                                        <Button Content="{Binding Lang[BtnDisconnectXbox], Mode=OneWay}" Command="{Binding DisconnectXboxCommand}"/>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Border>
+                            </Border>
+
+                            <!-- EA App Account Card -->
+                            <Border Grid.Column="2" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Lang[EaAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding EaConnectionStatus, Mode=OneWay}" Foreground="#64748B" Margin="0,2,0,8"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="{Binding Lang[BtnConnectEa], Mode=OneWay}" Command="{Binding ConnectEaCommand}" Margin="0,0,8,0"/>
+                                        <Button Content="{Binding Lang[BtnDisconnectEa], Mode=OneWay}" Command="{Binding DisconnectEaCommand}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
