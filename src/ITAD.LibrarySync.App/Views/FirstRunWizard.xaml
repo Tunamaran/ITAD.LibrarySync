@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ITAD.LibrarySync.App.ViewModels"
         Title="{Binding Lang[WizardTitle], Mode=OneWay}"
-        Height="490"
-        Width="640"
-        MinHeight="430"
-        MinWidth="580"
+        Height="540"
+        Width="680"
+        MinHeight="460"
+        MinWidth="600"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize">
     <Grid Margin="24">
