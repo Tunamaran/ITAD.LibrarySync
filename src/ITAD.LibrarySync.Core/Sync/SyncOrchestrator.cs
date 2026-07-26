@@ -68,7 +68,7 @@ public sealed class SyncOrchestrator(
 
             ItadSyncResponse? collectionResponse = null;
             ItadSyncResponse? waitlistResponse = null;
-            string? syncError = read.Error;
+            string? syncError = null;
 
             try
             {

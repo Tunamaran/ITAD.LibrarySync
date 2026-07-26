@@ -113,6 +113,16 @@ public sealed class EaReader(EaOnlineLibraryReader? onlineLibraryReader = null) 
         if (result.Error is null)
             return result;
 
-        return result with { Error = EaReadErrorFormatter.FormatFromReadError(result.Error) };
+        var formattedError = EaReadErrorFormatter.FormatFromReadError(result.Error);
+        if (result.Owned.Count == 0 && EaReadErrorFormatter.IsDecryptOrHardwareFailureMessage(formattedError))
+        {
+            return result with
+            {
+                Error = null,
+                Warnings = CombineWarnings(result.Warnings, formattedError)
+            };
+        }
+
+        return result with { Error = formattedError };
     }
 }
