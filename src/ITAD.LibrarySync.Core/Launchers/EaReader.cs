@@ -97,15 +97,16 @@ public sealed class EaReader(EaOnlineLibraryReader? onlineLibraryReader = null) 
     }
 
     private static IReadOnlyList<string> CombineWarnings(
-        IReadOnlyList<string> existing,
+        IReadOnlyList<string>? existing,
         string additional)
     {
+        if (existing is null || existing.Count == 0)
+            return [additional];
+
         if (existing.Contains(additional, StringComparer.OrdinalIgnoreCase))
             return existing;
 
-        return existing.Count == 0
-            ? [additional]
-            : existing.Append(additional).ToList();
+        return existing.Append(additional).ToList();
     }
 
     private static LauncherReadResult FormatEaResult(LauncherReadResult result)
