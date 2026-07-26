@@ -63,8 +63,8 @@ public partial class App : Application
         DispatcherUnhandledException += (_, args) =>
         {
             MessageBox.Show(
-                $"Uygulamada beklenmeyen bir hata oluştu:\n{args.Exception.Message}",
-                "ITAD Library Sync — Hata",
+                string.Format(LanguageManager.Instance["AppErrorUnexpected"], args.Exception.Message),
+                LanguageManager.Instance["AppErrorTitle"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             args.Handled = true;
@@ -112,8 +112,8 @@ public partial class App : Application
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Uygulama başlatılırken bir hata oluştu:\n{ex.Message}",
-                "ITAD Library Sync — Hata",
+                string.Format(LanguageManager.Instance["AppErrorStartup"], ex.Message),
+                LanguageManager.Instance["AppErrorTitle"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown(1);
@@ -169,8 +169,8 @@ public partial class App : Application
             if (result.HasUpdate)
             {
                 _serviceProvider?.GetService<NotificationService>()?.ShowInfo(
-                    "ITAD Library Sync — Güncelleme Mevcut",
-                    $"Yeni bir sürüm mevcut ({result.LatestVersion}). İndirmek için Ayarlar'ı açın.");
+                    LanguageManager.Instance["AppUpdateNotifTitle"],
+                    string.Format(LanguageManager.Instance["AppUpdateNotifBody"], result.LatestVersion));
             }
         }
         catch

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ITAD.LibrarySync.App.Services;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Models;
 
@@ -15,8 +16,8 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
         LauncherName = launcherName;
         Summary = LauncherReadResultDisplay.FormatScanSummary(result);
         Status = LauncherReadResultDisplay.GetDetectionStatus(result);
-        ResolvedPath = result.ResolvedPath ?? "Varsayılan İstemci Yolu";
-        DetectionSource = result.DetectionSource ?? "Kayıt Defteri & Önbellek";
+        ResolvedPath = result.ResolvedPath ?? "Default Client Path";
+        DetectionSource = result.DetectionSource ?? "Registry & Cache";
         HasResolvedPath = !string.IsNullOrWhiteSpace(result.ResolvedPath);
         PreviewWarning = LauncherReadResultDisplay.FormatPreviewWarning(result);
         HasWarning = !string.IsNullOrWhiteSpace(PreviewWarning);
@@ -41,6 +42,8 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
         WishlistGames = new ObservableCollection<LibraryGameRow>();
         ApplyFilter();
     }
+
+    public LanguageManager Lang => LanguageManager.Instance;
 
     public string LauncherName { get; }
 
@@ -67,6 +70,13 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
     public int OwnedCount => _allOwned.Count;
 
     public int WishlistCount => _allWishlist.Count;
+
+    public string WindowTitle => string.Format(Lang["LibPreviewTitleFormat"], LauncherName);
+    public string SummaryText => string.Format(Lang["LibPreviewSummary"], Summary);
+    public string ResolvedPathText => string.Format(Lang["LibPreviewPath"], ResolvedPath);
+    public string DetectionSourceText => string.Format(Lang["LibPreviewMethod"], DetectionSource);
+    public string OwnedTabHeader => string.Format(Lang["LibPreviewOwnedTab"], OwnedCount);
+    public string WishlistTabHeader => string.Format(Lang["LibPreviewWishlistTab"], WishlistCount);
 
     public ObservableCollection<LibraryGameRow> OwnedGames { get; }
 

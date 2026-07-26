@@ -248,7 +248,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _unmatchedSearchText = string.Empty;
 
-    public string ConnectionStatus => IsConnected ? "Bağlı" : "Bağlı Değil";
+    public string ConnectionStatus => IsConnected ? Lang["StatusConnected"] : Lang["StatusNotConnected"];
 
     [RelayCommand(CanExecute = nameof(CanConnect))]
     private async Task ConnectAsync()
@@ -474,16 +474,16 @@ public sealed partial class SettingsViewModel : ObservableObject
     private static Task<bool> PromptConnectXboxAsync() =>
         Task.FromResult(
             MessageBox.Show(
-                    "Connect Xbox account now?",
-                    "Xbox Not Connected",
+                    LanguageManager.Instance["VMXboxConnectPrompt"],
+                    LanguageManager.Instance["VMXboxConnectTitle"],
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question) == MessageBoxResult.Yes);
 
     private static Task<bool> PromptConnectEaAsync() =>
         Task.FromResult(
             MessageBox.Show(
-                    "Connect your EA account now?",
-                    "EA Not Connected",
+                    LanguageManager.Instance["VMEaConnectPrompt"],
+                    LanguageManager.Instance["VMEaConnectTitle"],
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question) == MessageBoxResult.Yes);
 
@@ -608,8 +608,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public async Task ClearUnmatchedTitlesAsync()
     {
         if (MessageBox.Show(
-                "Eşleşmeyen oyunlar listesi temizlensin mi?",
-                "Listeyi Temizle",
+                Lang["VMClearUnmatchedConfirm"],
+                Lang["VMClearUnmatchedTitle"],
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question) == MessageBoxResult.Yes)
         {
@@ -662,7 +662,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public async Task CheckForUpdatesAsync()
     {
         IsCheckingUpdates = true;
-        UpdateStatusText = "Güncellemeler kontrol ediliyor…";
+        UpdateStatusText = Lang["VMUpdateChecking"];
         DownloadUrl = string.Empty;
 
         try
@@ -671,10 +671,10 @@ public sealed partial class SettingsViewModel : ObservableObject
             if (result.HasUpdate)
             {
                 DownloadUrl = result.DownloadUrl;
-                UpdateStatusText = $"Yeni sürüm mevcut: {result.LatestVersion}";
+                UpdateStatusText = string.Format(Lang["VMUpdateAvailable"], result.LatestVersion);
                 if (MessageBox.Show(
-                        $"Yeni sürüm mevcut ({result.LatestVersion})!\n\nŞimdi arka planda indirip uygulamayı güncellemek ister misiniz?",
-                        "Yeni Sürüm Mevcut",
+                        string.Format(Lang["VMUpdateAvailablePrompt"], result.LatestVersion),
+                        Lang["VMUpdateAvailableTitle"],
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Information) == MessageBoxResult.Yes)
                 {
@@ -683,12 +683,12 @@ public sealed partial class SettingsViewModel : ObservableObject
             }
             else
             {
-                UpdateStatusText = $"En güncel sürümü kullanıyorsunuz ({result.CurrentVersion}).";
+                UpdateStatusText = string.Format(Lang["VMUpToDate"], result.CurrentVersion);
             }
         }
         catch (Exception ex)
         {
-            UpdateStatusText = $"Güncelleme kontrolü başarısız: {ex.Message}";
+            UpdateStatusText = string.Format(Lang["VMUpdateCheckFailed"], ex.Message);
         }
         finally
         {
@@ -707,18 +707,18 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         IsDownloadingUpdate = true;
         DownloadProgress = 0;
-        UpdateStatusText = "Güncelleme indiriliyor…";
+        UpdateStatusText = Lang["VMUpdateDownloading"];
 
         try
         {
             var progress = new Progress<double>(p => DownloadProgress = p);
             var downloadedFile = await _updateCheckerService.DownloadUpdateAsync(DownloadUrl, progress);
-            UpdateStatusText = "İndirme tamamlandı, uygulama yeniden başlatılıyor…";
+            UpdateStatusText = Lang["VMUpdateComplete"];
             _updateCheckerService.ApplyUpdateAndRestart(downloadedFile);
         }
         catch (Exception ex)
         {
-            UpdateStatusText = $"Güncelleme indirmesi başarısız: {ex.Message}";
+            UpdateStatusText = string.Format(Lang["VMUpdateDownloadFailed"], ex.Message);
             IsDownloadingUpdate = false;
         }
     }

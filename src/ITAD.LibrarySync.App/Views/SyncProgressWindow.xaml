@@ -1,7 +1,7 @@
 <Window x:Class="ITAD.LibrarySync.App.Views.SyncProgressWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ITAD Library Sync — Senkronizasyon İlerlemesi"
+        Title="{Binding Lang[SyncProgressTitle], Mode=OneWay}"
         Height="460"
         Width="680"
         MinHeight="320"
@@ -43,7 +43,7 @@
                 Margin="0,12,0,0"
                 HorizontalAlignment="Right"
                 Width="90"
-                Content="Kapat"
+                Content="{Binding Lang[SyncProgressClose], Mode=OneWay}"
                 IsEnabled="{Binding CanClose}"
                 Click="CloseButton_Click" />
     </Grid>

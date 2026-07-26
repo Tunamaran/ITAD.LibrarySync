@@ -1,7 +1,7 @@
 <Window x:Class="ITAD.LibrarySync.App.Views.LibraryPreviewWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{Binding LauncherName, StringFormat={}{0} — Kütüphane Önizlemesi}"
+        Title="{Binding WindowTitle}"
         Height="580"
         Width="780"
         MinHeight="440"
@@ -21,13 +21,13 @@
             <TextBlock FontWeight="SemiBold" FontSize="16" Text="{Binding LauncherName}" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBlock Margin="0,4,0,0"
                        Foreground="#64748B"
-                       Text="{Binding Summary, StringFormat=Özet: {0}}" />
+                       Text="{Binding SummaryText}" />
 
-            <!-- Tanılama ve Sürücü Bilgi Kartı -->
+            <!-- Diagnostic & Drive Info Card -->
             <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,8,0,0">
                 <StackPanel>
-                    <TextBlock FontSize="12" Foreground="#475569" Text="{Binding ResolvedPath, StringFormat=📌 Tespit Edilen Yol: {0}}" TextWrapping="Wrap" />
-                    <TextBlock FontSize="12" Foreground="#475569" Margin="0,3,0,0" Text="{Binding DetectionSource, StringFormat=🔍 Tespit Metodu: {0}}" />
+                    <TextBlock FontSize="12" Foreground="#475569" Text="{Binding ResolvedPathText}" TextWrapping="Wrap" />
+                    <TextBlock FontSize="12" Foreground="#475569" Margin="0,3,0,0" Text="{Binding DetectionSourceText}" />
                 </StackPanel>
             </Border>
             <TextBlock Margin="0,8,0,0"
@@ -69,16 +69,16 @@
                    Margin="0,12,0,4"
                    Foreground="#64748B"
                    FontSize="12.5"
-                   Text="Arama / Filtreleme" />
+                   Text="{Binding Lang[LibPreviewSearch], Mode=OneWay}" />
 
         <TextBox Grid.Row="2"
                  Margin="0,0,0,12"
                  Padding="8,6"
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                 ToolTip="Oyun adı veya mağaza ID ara" />
+                 ToolTip="{Binding Lang[LibPreviewSearchTooltip], Mode=OneWay}" />
 
         <TabControl Grid.Row="3">
-            <TabItem Header="{Binding OwnedCount, StringFormat=Sahip Olunanlar ({0})}">
+            <TabItem Header="{Binding OwnedTabHeader}">
                 <DataGrid ItemsSource="{Binding OwnedGames}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
@@ -86,12 +86,12 @@
                           IsReadOnly="True"
                           HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Oyun Adı" Binding="{Binding Title}" Width="*" />
-                        <DataGridTextColumn Header="Mağaza ID" Binding="{Binding StoreId}" Width="200" />
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[LibPreviewGameTitle], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" Binding="{Binding Title}" Width="*" />
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[LibPreviewStoreId], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" Binding="{Binding StoreId}" Width="200" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Header="{Binding WishlistCount, StringFormat=İstek Listesi ({0})}">
+            <TabItem Header="{Binding WishlistTabHeader}">
                 <DataGrid ItemsSource="{Binding WishlistGames}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
@@ -99,8 +99,8 @@
                           IsReadOnly="True"
                           HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Oyun Adı" Binding="{Binding Title}" Width="*" />
-                        <DataGridTextColumn Header="Mağaza ID" Binding="{Binding StoreId}" Width="200" />
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[LibPreviewGameTitle], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" Binding="{Binding Title}" Width="*" />
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[LibPreviewStoreId], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" Binding="{Binding StoreId}" Width="200" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -110,7 +110,7 @@
                 Margin="0,14,0,0"
                 HorizontalAlignment="Right"
                 Width="90"
-                Content="Kapat"
+                Content="{Binding Lang[BtnClose], Mode=OneWay}"
                 IsDefault="True"
                 Click="CloseButton_Click" />
     </Grid>

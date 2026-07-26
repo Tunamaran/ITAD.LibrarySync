@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ITAD.LibrarySync.App.Services;
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
 
@@ -8,6 +9,8 @@ namespace ITAD.LibrarySync.App.ViewModels;
 public sealed partial class SyncProgressViewModel : ObservableObject
 {
     public ObservableCollection<string> Lines { get; } = [];
+
+    public LanguageManager Lang => LanguageManager.Instance;
 
     [ObservableProperty]
     private string _statusText = "Syncing libraries…";

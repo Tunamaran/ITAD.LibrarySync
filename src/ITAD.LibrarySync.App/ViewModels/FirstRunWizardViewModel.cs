@@ -87,16 +87,18 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLastStep;
 
-    public string ConnectionStatus => IsConnected ? "Bağlandı" : "Bağlı Değil";
+    public LanguageManager Lang => LanguageManager.Instance;
+
+    public string ConnectionStatus => IsConnected ? Lang["WizardConnected"] : Lang["WizardNotConnected"];
 
     public int StepNumber => (int)CurrentStep + 1;
 
     public string StepTitle => CurrentStep switch
     {
-        WizardStep.Welcome => "Hoş Geldiniz",
-        WizardStep.ItadOAuth => "ITAD Hesabını Bağla",
-        WizardStep.LauncherScan => "Platform Tespiti",
-        WizardStep.FirstSync => "Senkronizasyona Hazır",
+        WizardStep.Welcome => Lang["WizardWelcomeTitle"],
+        WizardStep.ItadOAuth => Lang["WizardItadTitle"],
+        WizardStep.LauncherScan => Lang["WizardPlatformTitle"],
+        WizardStep.FirstSync => Lang["WizardReadyTitle"],
         _ => string.Empty
     };
 
@@ -114,7 +116,7 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
         {
             MessageBox.Show(
                 ex.Message,
-                "Connection Failed",
+                Lang["WizardConnectionFailed"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -166,7 +168,7 @@ public sealed partial class FirstRunWizardViewModel : ObservableObject
         {
             MessageBox.Show(
                 ex.Message,
-                "Setup Failed",
+                Lang["WizardSetupFailed"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }

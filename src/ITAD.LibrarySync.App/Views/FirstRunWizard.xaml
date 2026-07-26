@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ITAD.LibrarySync.App.ViewModels"
-        Title="ITAD Library Sync — Kurulum Sihirbazı"
+        Title="{Binding Lang[WizardTitle], Mode=OneWay}"
         Height="490"
         Width="640"
         MinHeight="430"
@@ -18,9 +18,11 @@
 
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
             <TextBlock FontSize="12" Foreground="#64748B">
-                <Run Text="Adım " />
+                <Run Text="{Binding Lang[WizardStepPrefix], Mode=OneWay}" />
+                <Run Text=" " />
                 <Run Text="{Binding StepNumber, Mode=OneWay}" />
-                <Run Text=" / 4" />
+                <Run Text=" " />
+                <Run Text="{Binding Lang[WizardStepSuffix], Mode=OneWay}" />
             </TextBlock>
             <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding StepTitle, Mode=OneWay}" Foreground="{StaticResource TextPrimaryBrush}" />
         </StackPanel>
@@ -38,9 +40,9 @@
                     </Style>
                 </StackPanel.Style>
                 <TextBlock FontSize="14" TextWrapping="Wrap" LineHeight="20"
-                           Text="ITAD Library Sync uygulamasına hoş geldiniz. Bu sihirbaz IsThereAnyDeal hesabınızı bağlamanıza, sisteminizdeki oyun platformlarını tespit etmeye ve ilk senkronizasyonu çalıştırmanıza yardımcı olacaktır." />
+                           Text="{Binding Lang[WizardWelcomeBody], Mode=OneWay}" />
                 <TextBlock Margin="0,16,0,0" Foreground="#64748B" TextWrapping="Wrap" LineHeight="18"
-                           Text="Uygulama sistem tepsisinde (System Tray) çalışır. Kurulum tamamlandıktan sonra Epic Games, Ubisoft Connect, Battle.net, EA App ve Xbox kütüphanelerinizi otomatik senkronize tutar." />
+                           Text="{Binding Lang[WizardWelcomeSubtext], Mode=OneWay}" />
             </StackPanel>
 
             <StackPanel>
@@ -54,15 +56,15 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Style>
-                <TextBlock Text="Kütüphanelerinizi aktarabilmek için IsThereAnyDeal hesabınızı bağlayın."
+                <TextBlock Text="{Binding Lang[WizardItadBody], Mode=OneWay}"
                            TextWrapping="Wrap" FontSize="13.5" />
                 
                 <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,16,0,0">
                     <StackPanel>
-                        <TextBlock Text="Bağlantı Durumu:" Foreground="#64748B" FontSize="12.5" />
+                        <TextBlock Text="{Binding Lang[WizardItadStatusLabel], Mode=OneWay}" Foreground="#64748B" FontSize="12.5" />
                         <TextBlock FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"
                                    Text="{Binding ConnectionStatus, Mode=OneWay}" />
-                        <TextBlock Text="Hesap:" Foreground="#64748B" FontSize="12.5" Margin="0,8,0,0" />
+                        <TextBlock Text="{Binding Lang[WizardItadAccountLabel], Mode=OneWay}" Foreground="#64748B" FontSize="12.5" Margin="0,8,0,0" />
                         <TextBlock FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"
                                    Text="{Binding AccountName, Mode=OneWay}" />
                     </StackPanel>
@@ -72,14 +74,14 @@
                         HorizontalAlignment="Left"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Width="130"
-                        Content="ITAD'a Bağlan"
+                        Content="{Binding Lang[WizardItadConnectBtn], Mode=OneWay}"
                         Command="{Binding ConnectCommand}" />
                 
                 <TextBlock Margin="0,16,0,0"
                            Foreground="#64748B"
                            TextWrapping="Wrap"
                            FontSize="12"
-                           Text="Tarayıcıda bir yetkilendirme penceresi açılacaktır. Devam etmeden önce ITAD hesabınızı bağlamalısınız." />
+                           Text="{Binding Lang[WizardItadNote], Mode=OneWay}" />
             </StackPanel>
 
             <Grid>
@@ -100,7 +102,7 @@
                 <TextBlock Grid.Row="0"
                            Margin="0,0,0,12"
                            TextWrapping="Wrap"
-                           Text="Yüklü platformlar taranıyor. Sonuçlar aşağıda görüntülenecektir." />
+                           Text="{Binding Lang[WizardPlatformBody], Mode=OneWay}" />
                 <DataGrid Grid.Row="1"
                           ItemsSource="{Binding LauncherStatuses}"
                           AutoGenerateColumns="False"
@@ -108,15 +110,15 @@
                           CanUserDeleteRows="False"
                           HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Platform"
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[WizardColPlatform], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                             Binding="{Binding DisplayName}"
                                             Width="*"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="Durum"
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[WizardColStatus], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                             Binding="{Binding DetectionStatus}"
                                             Width="120"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="Bulunan Oyunlar"
+                        <DataGridTextColumn Header="{Binding DataContext.Lang[WizardColGames], RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                             Binding="{Binding LastReadResult}"
                                             Width="*"
                                             IsReadOnly="True" />
@@ -135,16 +137,16 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Style>
-                <TextBlock Text="Kurulum tamamlandı! ITAD Library Sync sistem tepsisinde çalışacaktır."
+                <TextBlock Text="{Binding Lang[WizardReadyBody], Mode=OneWay}"
                            TextWrapping="Wrap" FontSize="13.5" />
                 <CheckBox Margin="0,20,0,0"
-                          Content="Şimdi senkronize et"
+                          Content="{Binding Lang[WizardSyncOnFinish], Mode=OneWay}"
                           IsChecked="{Binding RunSyncOnFinish}" />
                 <TextBlock Margin="0,12,0,0"
                            Foreground="#64748B"
                            TextWrapping="Wrap"
                            FontSize="12"
-                           Text="İşaretlendiğinde, kurulum biter bitmez tüm aktif platformlar ITAD Koleksiyon ve İstek Listesi profillerinize aktarılacaktır." />
+                           Text="{Binding Lang[WizardSyncOnFinishNote], Mode=OneWay}" />
             </StackPanel>
         </Grid>
 
@@ -157,13 +159,13 @@
             <Button Grid.Column="0"
                     HorizontalAlignment="Left"
                     Width="90"
-                    Content="Geri"
+                    Content="{Binding Lang[WizardBtnBack], Mode=OneWay}"
                     Command="{Binding GoBackCommand}" />
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Width="95"
                         Margin="0,0,8,0"
-                        Content="İleri"
+                        Content="{Binding Lang[WizardBtnNext], Mode=OneWay}"
                         Command="{Binding GoNextCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
@@ -177,7 +179,7 @@
                     </Button.Style>
                 </Button>
                 <Button Width="95"
-                        Content="Tamamla"
+                        Content="{Binding Lang[WizardBtnFinish], Mode=OneWay}"
                         IsDefault="True"
                         Command="{Binding FinishCommand}">
                     <Button.Style>

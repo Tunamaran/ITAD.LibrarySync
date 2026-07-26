@@ -1,13 +1,17 @@
 using System.Runtime.Versioning;
+using ITAD.LibrarySync.App.Services;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Scheduling;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace ITAD.LibrarySync.App.Services;
 
 [SupportedOSPlatform("windows")]
-public sealed class NotificationService
+public sealed class NotificationService(AppSettingsStorage appSettingsStorage)
 {
+    private static LanguageManager Lang => LanguageManager.Instance;
+
     public void ShowSyncComplete(IReadOnlyList<SyncResult> results)
     {
         var successes = results.Count(r => r.Success);
@@ -15,53 +19,51 @@ public sealed class NotificationService
 
         if (total == 0)
         {
-            Show("Sync complete", "No launchers were synced.");
+            Show(Lang["NotifSyncComplete"], Lang["NotifNoLaunchers"]);
             return;
         }
 
         if (successes == total)
         {
             var summary = BuildSuccessSummary(results);
-            Show("Sync complete", summary);
+            Show(Lang["NotifSyncComplete"], summary);
             return;
         }
 
         if (successes == 0)
         {
-            Show("Sync failed", BuildFailureSummary(results));
+            Show(Lang["NotifSyncFailed"], BuildFailureSummary(results));
             return;
         }
 
         Show(
-            "Sync completed with errors",
-            $"{successes} of {total} launchers synced successfully.\n{BuildFailureSummary(results)}");
+            Lang["NotifSyncPartial"],
+            $"{string.Format(Lang["NotifPartialFormat"], successes, total)}\n{BuildFailureSummary(results)}");
     }
 
     public void ShowSyncFailed(string message)
     {
-        Show("Sync failed", message);
+        Show(Lang["NotifSyncFailed"], message);
     }
 
     public void ShowConnected()
     {
-        Show("Connected to ITAD", "Successfully connected to IsThereAnyDeal.");
+        Show(Lang["NotifConnectedTitle"], Lang["NotifConnectedBody"]);
     }
 
     public void ShowConnectionFailed(string message)
     {
-        Show("Connection failed", message);
+        Show(Lang["NotifConnectionFailed"], message);
     }
 
     public void ShowDisconnected()
     {
-        Show("Disconnected from ITAD", "Your ITAD account has been disconnected.");
+        Show(Lang["NotifDisconnectedTitle"], Lang["NotifDisconnectedBody"]);
     }
 
     public void ShowTokenExpired()
     {
-        Show(
-            "ITAD session expired",
-            "Your IsThereAnyDeal session has expired. Connect again from the tray menu.");
+        Show(Lang["NotifTokenExpiredTitle"], Lang["NotifTokenExpiredBody"]);
     }
 
     public void ShowInfo(string title, string body)
@@ -69,8 +71,11 @@ public sealed class NotificationService
         Show(title, body);
     }
 
-    private static void Show(string title, string body)
+    private void Show(string title, string body)
     {
+        if (!appSettingsStorage.Load().ShowNotifications)
+            return;
+
         new ToastContentBuilder()
             .AddText(title)
             .AddText(body)
@@ -86,8 +91,8 @@ public sealed class NotificationService
         var lines = results
             .Where(r => r.Success)
             .Select(r =>
-                $"{FormatLauncher(r.Launcher)}: +{r.CollectionAdded}/-{r.CollectionRemoved} collection, " +
-                $"+{r.WaitlistAdded}/-{r.WaitlistRemoved} waitlist");
+                $"{FormatLauncher(r.Launcher)}: +{r.CollectionAdded}/-{r.CollectionRemoved} {Lang["NotifCollectionLabel"]}, " +
+                $"+{r.WaitlistAdded}/-{r.WaitlistRemoved} {Lang["NotifWaitlistLabel"]}");
 
         return string.Join("\n", lines);
     }
@@ -104,8 +109,8 @@ public sealed class NotificationService
     private static string FormatLauncherError(SyncResult result) =>
         result.Launcher == LauncherId.Xbox
         && string.Equals(result.Error, XboxReader.XboxConnectMessage, StringComparison.Ordinal)
-            ? "Reconnect Xbox in Settings"
-            : result.Error ?? "Unknown error";
+            ? Lang["NotifReconnectXbox"]
+            : result.Error ?? Lang["NotifUnknownError"];
 
     private static string FormatLauncher(LauncherId launcher) => launcher switch
     {
@@ -113,6 +118,7 @@ public sealed class NotificationService
         LauncherId.Ubisoft => "Ubisoft",
         LauncherId.BattleNet => "Battle.net",
         LauncherId.Xbox => "Microsoft",
+        LauncherId.Ea => "EA App",
         _ => launcher.ToString()
     };
 }

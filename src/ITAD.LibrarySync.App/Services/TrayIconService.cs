@@ -106,13 +106,14 @@ public sealed class TrayIconService(
 
     private string BuildToolTip(TraySyncState state)
     {
+        var lang = LanguageManager.Instance;
         var baseText = state switch
         {
-            TraySyncState.Syncing => "ITAD Library Sync — Syncing…",
-            TraySyncState.Success => "ITAD Library Sync — Last sync successful",
-            TraySyncState.Partial => "ITAD Library Sync — Last sync completed with errors",
-            TraySyncState.Error => "ITAD Library Sync — Last sync failed",
-            _ => "ITAD Library Sync — Idle"
+            TraySyncState.Syncing => lang["TrayTooltipSyncing"],
+            TraySyncState.Success => lang["TrayTooltipSuccess"],
+            TraySyncState.Partial => lang["TrayTooltipPartial"],
+            TraySyncState.Error => lang["TrayTooltipError"],
+            _ => lang["TrayTooltipIdle"]
         };
 
         if (state == TraySyncState.Syncing)
@@ -277,7 +278,7 @@ public sealed class TrayIconService(
         {
             MessageBox.Show(
                 ex.Message,
-                "Could Not Open Settings",
+                LanguageManager.Instance["CouldNotOpenSettings"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -316,6 +317,7 @@ public sealed class TrayIconService(
 
     private async Task CheckForUpdatesFromTrayAsync()
     {
+        var lang = LanguageManager.Instance;
         try
         {
             var updateChecker = serviceProvider.GetRequiredService<IUpdateCheckerService>();
@@ -324,8 +326,8 @@ public sealed class TrayIconService(
             if (result.HasUpdate)
             {
                 var prompt = MessageBox.Show(
-                    $"Yeni bir güncelleme mevcut ({result.LatestVersion})!\n\nİndirme sayfasını açmak ister misiniz?",
-                    "Güncelleme Mevcut",
+                    string.Format(lang["TrayUpdateAvailableText"], result.LatestVersion),
+                    lang["TrayUpdateAvailableTitle"],
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
 
@@ -341,8 +343,8 @@ public sealed class TrayIconService(
             else
             {
                 MessageBox.Show(
-                    $"Uygulamanız en güncel sürümde ({result.CurrentVersion}).",
-                    "Güncelleme Kontrolü",
+                    string.Format(lang["TrayUpToDateText"], result.CurrentVersion),
+                    lang["TrayUpdateCheckTitle"],
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
@@ -350,8 +352,8 @@ public sealed class TrayIconService(
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Güncelleme kontrolü yapılamadı: {ex.Message}",
-                "Hata",
+                string.Format(lang["TrayUpdateCheckFailedText"], ex.Message),
+                lang["ErrorTitle"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
