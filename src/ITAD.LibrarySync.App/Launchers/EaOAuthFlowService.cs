@@ -13,7 +13,8 @@ public sealed class EaOAuthFlowService(EaOAuthService oauthService)
         ct.ThrowIfCancellationRequested();
 
         var codeVerifier = EaOAuthService.GenerateCodeVerifier();
-        var authorizeUrl = oauthService.BuildWebAuthorizeUrl();
+        var pcSign = EaPcSignGenerator.Generate();
+        var authorizeUrl = oauthService.BuildAuthorizeUrl(pcSign);
         var redirectUri = oauthService.RedirectUri;
 
         var code = await RunOAuthDialogAsync(authorizeUrl, redirectUri, ct);

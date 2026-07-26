@@ -305,7 +305,7 @@ public partial class App : Application
 
         services.AddSingleton<XboxOAuthFlowService>();
 
-        services.AddSingleton(EaOAuthOptions.CreateWebFallback());
+        services.AddSingleton(EaOAuthOptions.CreateDefault());
         services.AddSingleton<EaTokenStorage>();
         services.AddSingleton<EaOAuthService>(sp =>
         {
