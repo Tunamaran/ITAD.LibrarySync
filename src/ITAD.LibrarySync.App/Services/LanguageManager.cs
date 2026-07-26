@@ -241,6 +241,11 @@ public sealed class LanguageManager : INotifyPropertyChanged
         // ── Sync Progress Window ──
         "SyncProgressTitle" => "ITAD Library Sync — Sync Progress",
         "SyncProgressClose" => "Close",
+        "SyncProgressSyncing" => "Syncing libraries…",
+        "SyncProgressNothing" => "Sync finished — nothing to sync.",
+        "SyncProgressSuccess" => "Sync completed — {0}/{1} launcher(s) succeeded.",
+        "SyncProgressFailed" => "Sync failed — see log for details.",
+        "SyncProgressPartial" => "Sync completed with errors — {0}/{1} launcher(s) succeeded.",
 
         // ── Library Preview Window ──
         "LibPreviewTitleFormat" => "{0} — Library Preview",
@@ -469,6 +474,11 @@ public sealed class LanguageManager : INotifyPropertyChanged
         // ── Senkronizasyon İlerleme Penceresi ──
         "SyncProgressTitle" => "ITAD Library Sync — Senkronizasyon İlerlemesi",
         "SyncProgressClose" => "Kapat",
+        "SyncProgressSyncing" => "Kütüphaneler senkronize ediliyor…",
+        "SyncProgressNothing" => "Senkronizasyon tamamlandı — aktarılacak platform bulunamadı.",
+        "SyncProgressSuccess" => "Senkronizasyon tamamlandı — {0}/{1} platform başarılı.",
+        "SyncProgressFailed" => "Senkronizasyon başarısız — detaylar için günlüğe bakın.",
+        "SyncProgressPartial" => "Senkronizasyon hatalarla tamamlandı — {0}/{1} platform başarılı.",
 
         // ── Kütüphane Önizleme Penceresi ──
         "LibPreviewTitleFormat" => "{0} — Kütüphane Önizlemesi",

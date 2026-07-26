@@ -12,8 +12,13 @@ public sealed partial class SyncProgressViewModel : ObservableObject
 
     public LanguageManager Lang => LanguageManager.Instance;
 
+    public SyncProgressViewModel()
+    {
+        _statusText = Lang["SyncProgressSyncing"];
+    }
+
     [ObservableProperty]
-    private string _statusText = "Syncing libraries…";
+    private string _statusText = string.Empty;
 
     [ObservableProperty]
     private bool _isRunning = true;
@@ -31,23 +36,23 @@ public sealed partial class SyncProgressViewModel : ObservableObject
 
         if (results.Count == 0)
         {
-            StatusText = "Sync finished — nothing to sync.";
+            StatusText = Lang["SyncProgressNothing"];
             return;
         }
 
         var successes = results.Count(r => r.Success);
         StatusText = successes == results.Count
-            ? $"Sync completed — {successes}/{results.Count} launcher(s) succeeded."
+            ? string.Format(Lang["SyncProgressSuccess"], successes, results.Count)
             : successes == 0
-                ? "Sync failed — see log for details."
-                : $"Sync completed with errors — {successes}/{results.Count} launcher(s) succeeded.";
+                ? Lang["SyncProgressFailed"]
+                : string.Format(Lang["SyncProgressPartial"], successes, results.Count);
     }
 
     public void Fail(string message)
     {
         IsRunning = false;
         CanClose = true;
-        StatusText = "Sync failed — see log for details.";
+        StatusText = Lang["SyncProgressFailed"];
         AddEntry(new SyncLogEntry(DateTimeOffset.Now, "ERROR", message));
     }
 }

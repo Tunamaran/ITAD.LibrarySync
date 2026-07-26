@@ -112,6 +112,7 @@ public sealed partial class FileLogger
         LauncherId.Ubisoft => "Ubisoft",
         LauncherId.BattleNet => "Battle.net",
         LauncherId.Xbox => "Microsoft",
+        LauncherId.Ea => "EA App",
         _ => launcher.ToString()
     };
 

@@ -15,7 +15,7 @@ public sealed class SyncOrchestrator(
     IDelayProvider delayProvider,
     FileLogger logger) : ISyncOrchestrator
 {
-    private static readonly TimeSpan InterLauncherDelay = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan InterLauncherDelay = TimeSpan.FromSeconds(2);
 
     public async Task<IReadOnlyList<SyncResult>> SyncAllAsync(
         IReadOnlyList<LauncherId>? launchers = null,
@@ -143,10 +143,16 @@ public sealed class SyncOrchestrator(
         ItadSyncResponse? collection,
         ItadSyncResponse? waitlist,
         int globalWaitlistRemoved,
-        string? syncError = null) =>
-        new(
+        string? syncError = null)
+    {
+        var isConnectPromptOnly = read.Owned.Count == 0 &&
+                                  read.Wishlist.Count == 0 &&
+                                  IsInformationalConnectMessage(read.Error);
+        var effectiveError = syncError ?? (isConnectPromptOnly ? null : read.Error);
+
+        return new(
             read.Launcher,
-            Success: read.Error is null && syncError is null,
+            Success: effectiveError is null,
             CollectionTotal: collection?.Total ?? 0,
             CollectionAdded: collection?.Added ?? 0,
             CollectionRemoved: collection?.Removed ?? 0,
@@ -154,7 +160,13 @@ public sealed class SyncOrchestrator(
             WaitlistAdded: waitlist?.Added ?? 0,
             WaitlistRemoved: waitlist?.Removed ?? 0,
             GlobalWaitlistRemoved: globalWaitlistRemoved,
-            Error: syncError ?? read.Error);
+            Error: effectiveError);
+    }
+
+    private static bool IsInformationalConnectMessage(string? error) =>
+        !string.IsNullOrWhiteSpace(error) && (
+            error.Contains("Connect your", StringComparison.OrdinalIgnoreCase) ||
+            error.Contains("Settings", StringComparison.OrdinalIgnoreCase));
 
     private static string FormatLauncher(LauncherId launcher) => launcher switch
     {
@@ -162,7 +174,7 @@ public sealed class SyncOrchestrator(
         LauncherId.Ubisoft => "Ubisoft",
         LauncherId.BattleNet => "Battle.net",
         LauncherId.Xbox => "Microsoft",
-        LauncherId.Ea => "EA",
+        LauncherId.Ea => "EA App",
         _ => launcher.ToString()
     };
 }
