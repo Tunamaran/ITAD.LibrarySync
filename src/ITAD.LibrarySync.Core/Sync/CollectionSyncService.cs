@@ -79,11 +79,7 @@ public sealed class CollectionSyncService(
             logger.LogInfo(
                 $"EA: syncing IDs: {string.Join(", ", payloads.Select(payload => payload.Id))}");
         }
-        else
-        {
-            // Epic, Ubisoft, Battle.net — track unmatched games via ITAD shop lookup
-            await TrackUnmatchedForGenericLauncherAsync(read.Launcher, owned, payloads, ct);
-        }
+
 
         return await profiles.ExecuteProfileSyncAsync(
             read.Launcher,
@@ -167,55 +163,7 @@ public sealed class CollectionSyncService(
     private static bool IsServerError(HttpRequestException exception) =>
         exception.Message.Contains("500", StringComparison.Ordinal);
 
-    private async Task TrackUnmatchedForGenericLauncherAsync(
-        LauncherId launcher,
-        IReadOnlyList<StoreGame> owned,
-        IReadOnlyList<SyncGamePayload> payloads,
-        CancellationToken ct)
-    {
-        if (unmatchedTitles is null || payloads.Count == 0)
-            return;
 
-        try
-        {
-            var shopId = payloads[0].Shop;
-            var lookupIds = payloads.Select(p => p.Id).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-            var lookup = await api.LookupShopGameIdsAsync(shopId, lookupIds, ct);
-
-            var unmatchedList = new List<UnmatchedTitle>();
-            var ownedLookup = owned.ToDictionary(g => g.StoreId, g => g, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var payload in payloads)
-            {
-                var isKnown = lookup.TryGetValue(payload.Id, out var gameId) && !string.IsNullOrWhiteSpace(gameId);
-                if (!isKnown)
-                {
-                    var originalTitle = ownedLookup.TryGetValue(payload.Id, out var original)
-                        ? original.Title
-                        : payload.Title;
-
-                    unmatchedList.Add(new UnmatchedTitle(
-                        launcher,
-                        payload.Id,
-                        originalTitle,
-                        nameof(UnmatchedReason.NoApiMatch),
-                        DateTime.Now,
-                        UnmatchedReason.NoApiMatch));
-                }
-            }
-
-            if (unmatchedList.Count > 0)
-            {
-                logger.LogInfo(
-                    $"{FormatLauncher(launcher)}: {unmatchedList.Count} game(s) not found in ITAD catalog.");
-                await unmatchedTitles.AddRangeAsync(unmatchedList, ct);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogInfo($"{FormatLauncher(launcher)}: unmatched tracking skipped — {ex.Message}");
-        }
-    }
 
     private static string FormatLauncher(LauncherId launcher) => launcher switch
     {
