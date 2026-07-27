@@ -34,6 +34,8 @@
   Scans all fixed drives (`C:`, `D:`, `E:`, `F:`) to discover games installed across custom directories.
 - **📊 Searchable Library Preview & Diagnostic Info:**
   Inspect your full game list, store IDs, detected folder paths (`📌 Resolved Path`), and detection methods (`🔍 Detection Source`) before running a sync.
+- **🧩 Unmatched Games & Custom Mappings Manager:**
+  Review games not automatically matched in ITAD's catalog, paste an ITAD page URL (e.g., `https://isthereanydeal.com/game/syberia-ii/info/`) or slug to create custom mappings, view/delete saved rules, and trigger dedicated single-click syncs for custom mapped games!
 - **🌐 Dual Language Support (English & Türkçe):**
   Full English interface by default, with dynamic runtime switching to Turkish in Settings.
 - **⏰ Automatic & Tray Background Synchronization:**
@@ -124,6 +126,8 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
   `C:`, `D:`, `E:`, `F:` gibi tüm sabit disklerinizi tarayarak farklı sürücülere kurulu oyunlarınızı eksiksiz tespit eder.
 - **📊 Aranabilir Kütüphane Önizlemesi ve Tanılama Kartı:**
   Senkronize etmeden önce tüm oyun listenizi, mağaza ID'lerini, tespit edilen klasör yolunu (`📌 Tespit Edilen Yol`) ve tarama metodunu (`🔍 Tespit Metodu`) detaylarıyla inceleyin.
+- **🧩 Eşleşmeyen Oyun Yönetimi & Özel Eşleştirme Kuralları (Custom Mappings):**
+  ITAD kataloğunda otomatik bulunamayan oyunları inceleyin, doğrudan ITAD web adresi (`https://isthereanydeal.com/game/syberia-ii/info/`) veya oyun slug'ı girerek eşleştirin, kurallarınızı yönetin ve sadece özel eşleştirilmiş oyunlarınızı tek tıkla ITAD'a aktarın!
 - **🌐 Çift Dil Desteği (İngilizce & Türkçe):**
   Varsayılan İngilizce arayüz, Ayarlar sekmesinden tek tıkla anında Türkçe yapılabilir.
 - **⏰ Arka Planda Otomatik Senkronizasyon:**
