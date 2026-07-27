@@ -599,10 +599,20 @@ public sealed partial class SettingsViewModel : ObservableObject
     public async Task LoadUnmatchedTitlesAsync()
     {
         var items = await _unmatchedTitlesService.GetAllAsync();
+        var mappings = await _customMappingService.GetAllAsync();
+
         UnmatchedTitles.Clear();
         foreach (var item in items)
         {
-            UnmatchedTitles.Add(item);
+            var isMapped = mappings.Any(m =>
+                m.Launcher == item.Launcher && (
+                    string.Equals(m.StoreId, item.StoreId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(m.Title, item.Title, StringComparison.OrdinalIgnoreCase)));
+
+            if (!isMapped)
+            {
+                UnmatchedTitles.Add(item);
+            }
         }
         ApplyUnmatchedFilter();
     }
@@ -658,6 +668,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         if (mapping is null) return;
         await _customMappingService.RemoveMappingAsync(mapping.Launcher, mapping.StoreId);
         await LoadCustomMappingsAsync();
+        await LoadUnmatchedTitlesAsync();
         RefreshInsights();
     }
 
