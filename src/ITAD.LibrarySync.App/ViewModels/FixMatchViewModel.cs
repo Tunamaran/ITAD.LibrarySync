@@ -41,7 +41,8 @@ public sealed partial class FixMatchViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (string.IsNullOrWhiteSpace(MappedId))
+        var targetId = ExtractSlugOrId(MappedId);
+        if (string.IsNullOrWhiteSpace(targetId))
         {
             MessageBox.Show(Lang["FixMatchValidation"], Lang["FixMatchValidationTitle"], MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
@@ -50,13 +51,31 @@ public sealed partial class FixMatchViewModel : ObservableObject
         var mapping = new CustomGameMapping(
             _unmatchedTitle.Launcher,
             _unmatchedTitle.StoreId,
-            MappedId.Trim(),
+            targetId,
             _unmatchedTitle.Title,
             DateTime.Now);
 
         await _customMappingService.SetMappingAsync(mapping);
         await _unmatchedTitlesService.RemoveAsync(_unmatchedTitle.Launcher, _unmatchedTitle.StoreId);
         RequestClose?.Invoke(this, EventArgs.Empty);
+    }
+
+    public static string ExtractSlugOrId(string rawInput)
+    {
+        if (string.IsNullOrWhiteSpace(rawInput)) return string.Empty;
+        var trimmed = rawInput.Trim();
+
+        var match = System.Text.RegularExpressions.Regex.Match(
+            trimmed,
+            @"(?:isthereanydeal\.com\/game\/)([^\/\?\#]+)",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        if (match.Success && match.Groups.Count > 1)
+        {
+            return match.Groups[1].Value.Trim();
+        }
+
+        return trimmed.TrimEnd('/');
     }
 
     [RelayCommand]

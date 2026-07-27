@@ -230,15 +230,15 @@ public sealed class LanguageManager : INotifyPropertyChanged
         // ── Fix Match Window ──
         "FixMatchTitle" => "Fix Match",
         "FixMatchHeader" => "Fix Match",
-        "FixMatchDesc" => "Enter the correct ITAD Game ID or Store ID for this game that could not be automatically found in the ITAD catalog.",
+        "FixMatchDesc" => "Enter the ITAD Game ID, slug, or paste the full ITAD page URL for this game.",
         "FixMatchGameName" => "Game Title: {0}",
         "FixMatchStoreId" => "Local Store ID: {0}",
         "FixMatchPlatform" => "Platform: {0}",
-        "FixMatchTargetLabel" => "Target ITAD / Store ID:",
-        "FixMatchTargetTooltip" => "e.g. 018d937f-...",
+        "FixMatchTargetLabel" => "ITAD Link or Game Slug / ID:",
+        "FixMatchTargetTooltip" => "e.g. syberia-ii or https://isthereanydeal.com/game/syberia-ii/info/",
         "FixMatchSave" => "Save",
         "FixMatchCancel" => "Cancel",
-        "FixMatchValidation" => "Please enter a valid ITAD / Store ID.",
+        "FixMatchValidation" => "Please enter a valid ITAD URL, game slug, or Store ID.",
         "FixMatchValidationTitle" => "Warning",
 
         // ── Sync Progress Window ──
@@ -298,7 +298,7 @@ public sealed class LanguageManager : INotifyPropertyChanged
 
         // ── FixMatch Help ──
         "FixMatchHelpPrefix" => "Search for the game on ",
-        "FixMatchHelpSuffix" => " and copy the game's slug or ID from the URL.",
+        "FixMatchHelpSuffix" => ". You can paste the full page URL (e.g. https://isthereanydeal.com/game/syberia-ii/info/) or just the slug (syberia-ii).",
 
         _ => key
     };
@@ -480,15 +480,15 @@ public sealed class LanguageManager : INotifyPropertyChanged
         // ── Eşleştirme Düzeltme Penceresi ──
         "FixMatchTitle" => "Eşleştirmeyi Düzelt",
         "FixMatchHeader" => "Eşleştirmeyi Düzelt",
-        "FixMatchDesc" => "ITAD kataloğunda otomatik bulunamayan bu oyun için doğru ITAD Game ID veya Mağaza ID değerini girin.",
+        "FixMatchDesc" => "Otomatik bulunamayan bu oyun için ITAD sayfa adresini (URL), slug veya oyun ID değerini girin.",
         "FixMatchGameName" => "Oyun Adı: {0}",
         "FixMatchStoreId" => "Yerel Mağaza ID: {0}",
         "FixMatchPlatform" => "Platform: {0}",
-        "FixMatchTargetLabel" => "Hedef ITAD / Mağaza ID:",
-        "FixMatchTargetTooltip" => "Örn: 018d937f-...",
+        "FixMatchTargetLabel" => "ITAD Linki veya Oyun Slug / ID:",
+        "FixMatchTargetTooltip" => "Örn: syberia-ii veya https://isthereanydeal.com/game/syberia-ii/info/",
         "FixMatchSave" => "Kaydet",
         "FixMatchCancel" => "İptal",
-        "FixMatchValidation" => "Lütfen geçerli bir ITAD / Mağaza ID girin.",
+        "FixMatchValidation" => "Lütfen geçerli bir ITAD linki, oyun slug'ı veya Mağaza ID girin.",
         "FixMatchValidationTitle" => "Uyarı",
 
         // ── Senkronizasyon İlerleme Penceresi ──
@@ -548,7 +548,7 @@ public sealed class LanguageManager : INotifyPropertyChanged
 
         // ── Eşleştirme Yardımı ──
         "FixMatchHelpPrefix" => "Oyunu ",
-        "FixMatchHelpSuffix" => " sitesinde arayıp URL'deki slug veya ID değerini kopyalayın.",
+        "FixMatchHelpSuffix" => " adresinde arayın. Sayfanın tüm linkini (örn: https://isthereanydeal.com/game/syberia-ii/info/) veya doğrudan linkteki oyun kodunu (syberia-ii) yapıştırabilirsiniz.",
 
         _ => key
     };
