@@ -2,6 +2,8 @@ using ITAD.LibrarySync.Core.Api;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Profiles;
+using ITAD.LibrarySync.Core.Services;
 
 namespace ITAD.LibrarySync.Core.Sync;
 
@@ -13,7 +15,9 @@ public sealed class SyncOrchestrator(
     IWaitlistSyncService waitlistSync,
     IWaitlistCleanupService waitlistCleanup,
     IDelayProvider delayProvider,
-    FileLogger logger) : ISyncOrchestrator
+    FileLogger logger,
+    ProfileManager? profiles = null,
+    ICustomMappingService? customMappings = null) : ISyncOrchestrator
 {
     private static readonly TimeSpan InterLauncherDelay = TimeSpan.FromSeconds(2);
 
@@ -136,6 +140,63 @@ public sealed class SyncOrchestrator(
         }
 
         return results;
+    }
+
+    public async Task<int> SyncCustomMappingsAsync(CancellationToken ct = default)
+    {
+        if (customMappings is null || profiles is null) return 0;
+        var mappings = await customMappings.GetAllAsync(ct);
+        if (mappings.Count == 0) return 0;
+
+        logger.LogInfo("Loading ITAD shop map for custom mappings sync…");
+        var shopMap = await api.GetShopMapAsync(ct);
+        shopIds.LoadFromShopMap(shopMap);
+
+        var totalSynced = 0;
+        foreach (var group in mappings.GroupBy(m => m.Launcher))
+        {
+            var launcher = group.Key;
+            var launcherName = FormatLauncher(launcher);
+
+            if (!shopIds.TryGetShopId(launcher, out var shopId))
+            {
+                logger.LogWarning($"Custom Mappings Sync: shop ID not found for {launcherName}");
+                continue;
+            }
+
+            var payloads = group.Select(m => new SyncGamePayload(
+                Shop: shopId,
+                Id: m.MappedId.Trim(),
+                Title: SyncTitleSanitizer.Sanitize(m.Title)
+            )).ToList();
+
+            if (payloads.Count == 0) continue;
+
+            logger.LogInfo($"{launcherName}: syncing {payloads.Count} custom mapped game(s) to ITAD…");
+
+            try
+            {
+                var response = await profiles.ExecuteProfileSyncAsync(
+                    launcher,
+                    async (accessToken, profileToken) =>
+                    {
+                        return await api.SyncCollectionAsync(accessToken, profileToken, payloads, ct);
+                    },
+                    ct);
+
+                if (response is not null)
+                {
+                    logger.LogInfo($"{launcherName}: custom mappings collection +{response.Added}/-{response.Removed} (total {response.Total})");
+                    totalSynced += payloads.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"{launcherName}: custom mappings sync failed — {ex.Message}");
+            }
+        }
+
+        return totalSynced;
     }
 
     private static SyncResult CreateSyncResult(

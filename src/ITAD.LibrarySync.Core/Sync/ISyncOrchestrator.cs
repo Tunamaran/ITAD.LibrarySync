@@ -7,4 +7,6 @@ public interface ISyncOrchestrator
     Task<IReadOnlyList<SyncResult>> SyncAllAsync(
         IReadOnlyList<LauncherId>? launchers = null,
         CancellationToken ct = default);
+
+    Task<int> SyncCustomMappingsAsync(CancellationToken ct = default);
 }

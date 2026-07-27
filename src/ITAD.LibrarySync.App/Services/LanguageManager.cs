@@ -300,6 +300,13 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "FixMatchHelpPrefix" => "Search for the game on ",
         "FixMatchHelpSuffix" => ". You can paste the full page URL (e.g. https://isthereanydeal.com/game/syberia-ii/info/) or just the slug (syberia-ii).",
 
+        // ── Sync Custom Mappings ──
+        "BtnSyncCustomMappings" => "Sync Custom Mappings Now",
+        "SyncCustomMappingsTooltip" => "Syncs only your manually matched custom games to your ITAD collection.",
+        "VMSyncCustomMappingsNone" => "There are no custom mapped games to sync.",
+        "VMSyncCustomMappingsSuccess" => "Successfully synced {0} custom mapped game(s) to your ITAD collection!",
+        "VMSyncCustomMappingsTitle" => "Custom Mappings Sync",
+
         _ => key
     };
 
@@ -549,6 +556,13 @@ public sealed class LanguageManager : INotifyPropertyChanged
         // ── Eşleştirme Yardımı ──
         "FixMatchHelpPrefix" => "Oyunu ",
         "FixMatchHelpSuffix" => " adresinde arayın. Sayfanın tüm linkini (örn: https://isthereanydeal.com/game/syberia-ii/info/) veya doğrudan linkteki oyun kodunu (syberia-ii) yapıştırabilirsiniz.",
+
+        // ── Özel Eşleştirme Senkronizasyonu ──
+        "BtnSyncCustomMappings" => "Şimdi Senkronize Et (Özel Eşleştirmeler)",
+        "SyncCustomMappingsTooltip" => "Sadece manuel olarak eşleştirdiğiniz özel oyunları ITAD koleksiyonunuza aktarır.",
+        "VMSyncCustomMappingsNone" => "Senkronize edilecek özel eşleştirilmiş oyun bulunamadı.",
+        "VMSyncCustomMappingsSuccess" => "{0} adet özel eşleştirilmiş oyun ITAD koleksiyonunuza başarıyla aktarıldı!",
+        "VMSyncCustomMappingsTitle" => "Özel Eşleştirme Senkronizasyonu",
 
         _ => key
     };

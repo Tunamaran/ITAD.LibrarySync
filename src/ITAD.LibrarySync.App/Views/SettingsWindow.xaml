@@ -372,6 +372,14 @@
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
+
+                        <Button Content="{Binding Lang[BtnSyncCustomMappings], Mode=OneWay}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Padding="14,6"
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Right"
+                                ToolTip="{Binding Lang[SyncCustomMappingsTooltip], Mode=OneWay}"
+                                Command="{Binding SyncCustomMappingsCommand}" />
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

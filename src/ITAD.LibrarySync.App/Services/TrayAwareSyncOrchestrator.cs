@@ -53,6 +53,23 @@ public sealed class TrayAwareSyncOrchestrator(
         }
     }
 
+    public async Task<int> SyncCustomMappingsAsync(CancellationToken ct = default)
+    {
+        trayIcon.SetSyncing();
+        try
+        {
+            var count = await inner.SyncCustomMappingsAsync(ct);
+            trayIcon.SetState(TraySyncState.Success);
+            return count;
+        }
+        catch (Exception ex)
+        {
+            trayIcon.SetState(TraySyncState.Error);
+            logger.LogError($"Custom mappings sync failed: {ex.Message}");
+            throw;
+        }
+    }
+
     private static TraySyncState DetermineState(IReadOnlyList<SyncResult> results)
     {
         if (results.Count == 0)

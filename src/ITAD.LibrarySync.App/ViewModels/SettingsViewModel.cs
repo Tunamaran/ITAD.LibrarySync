@@ -662,6 +662,42 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    public async Task SyncCustomMappingsAsync()
+    {
+        if (CustomMappings.Count == 0)
+        {
+            MessageBox.Show(
+                Lang["VMSyncCustomMappingsNone"],
+                Lang["VMSyncCustomMappingsTitle"],
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        try
+        {
+            var count = await _syncOrchestrator.SyncCustomMappingsAsync();
+            MessageBox.Show(
+                string.Format(Lang["VMSyncCustomMappingsSuccess"], count),
+                Lang["VMSyncCustomMappingsTitle"],
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            await LoadCustomMappingsAsync();
+            await LoadUnmatchedTitlesAsync();
+            RefreshInsights();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.Message,
+                Lang["VMSyncCustomMappingsTitle"],
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
     public async Task CheckForUpdatesAsync()
     {
         IsCheckingUpdates = true;
