@@ -286,6 +286,20 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "AppUpdateNotifTitle" => "ITAD Library Sync — Update Available",
         "AppUpdateNotifBody" => "A new version is available ({0}). Open Settings to download.",
 
+        // ── Unmatched Reason Strings ──
+        "UnmatchedReasonNotInCatalog" => "Not found in ITAD catalog",
+        "UnmatchedReasonTrackingId" => "Using tracking ID (not matched)",
+        "UnmatchedReasonNoApiMatch" => "No match from ITAD lookup",
+
+        // ── Custom Mappings ──
+        "CustomMappingsGuideText" => "Games you have manually matched are listed here. You can remove a mapping to let it be re-evaluated on the next sync.",
+        "ColMappedId" => "Mapped ID",
+        "BtnRemoveMapping" => "Remove this mapping",
+
+        // ── FixMatch Help ──
+        "FixMatchHelpPrefix" => "Search for the game on ",
+        "FixMatchHelpSuffix" => " and copy the game's slug or ID from the URL.",
+
         _ => key
     };
 
@@ -521,6 +535,20 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "AppErrorStartup" => "Uygulama başlatılırken bir hata oluştu:\n{0}",
         "AppUpdateNotifTitle" => "ITAD Library Sync — Güncelleme Mevcut",
         "AppUpdateNotifBody" => "Yeni bir sürüm mevcut ({0}). İndirmek için Ayarlar'ı açın.",
+
+        // ── Eşleşmeyen Neden Stringleri ──
+        "UnmatchedReasonNotInCatalog" => "ITAD kataloğunda bulunamadı",
+        "UnmatchedReasonTrackingId" => "Takip ID kullanılıyor (eşleşmedi)",
+        "UnmatchedReasonNoApiMatch" => "ITAD sorgulamasında eşleşme yok",
+
+        // ── Özel Eşleştirmeler ──
+        "CustomMappingsGuideText" => "Manuel olarak eşleştirdiğiniz oyunlar burada listelenir. Bir eşleştirmeyi kaldırırsanız, sonraki senkronda yeniden değerlendirilir.",
+        "ColMappedId" => "Eşlenen ID",
+        "BtnRemoveMapping" => "Bu eşleştirmeyi kaldır",
+
+        // ── Eşleştirme Yardımı ──
+        "FixMatchHelpPrefix" => "Oyunu ",
+        "FixMatchHelpSuffix" => " sitesinde arayıp URL'deki slug veya ID değerini kopyalayın.",
 
         _ => key
     };

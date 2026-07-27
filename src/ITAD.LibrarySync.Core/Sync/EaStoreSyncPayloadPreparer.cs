@@ -59,8 +59,9 @@ public sealed class EaStoreSyncPayloadPreparer(
                     LauncherId.Ea,
                     payload.Id,
                     payload.Title,
-                    "Not in ITAD EA Store catalog (using tracking ID)",
-                    DateTime.Now));
+                    nameof(UnmatchedReason.NotInCatalog),
+                    DateTime.Now,
+                    UnmatchedReason.NotInCatalog));
             }
         }
 

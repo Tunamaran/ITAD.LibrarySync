@@ -5,4 +5,5 @@ public sealed record UnmatchedTitle(
     string StoreId,
     string Title,
     string Reason,
-    DateTime DetectedAt);
+    DateTime DetectedAt,
+    UnmatchedReason ReasonCode = UnmatchedReason.NotInCatalog);

@@ -10,11 +10,16 @@ namespace ITAD.LibrarySync.App.ViewModels;
 public sealed partial class FixMatchViewModel : ObservableObject
 {
     private readonly ICustomMappingService _customMappingService;
+    private readonly IUnmatchedTitlesService _unmatchedTitlesService;
     private readonly UnmatchedTitle _unmatchedTitle;
 
-    public FixMatchViewModel(ICustomMappingService customMappingService, UnmatchedTitle unmatchedTitle)
+    public FixMatchViewModel(
+        ICustomMappingService customMappingService,
+        IUnmatchedTitlesService unmatchedTitlesService,
+        UnmatchedTitle unmatchedTitle)
     {
         _customMappingService = customMappingService;
+        _unmatchedTitlesService = unmatchedTitlesService;
         _unmatchedTitle = unmatchedTitle;
 
         LauncherName = unmatchedTitle.Launcher.ToString();
@@ -50,6 +55,7 @@ public sealed partial class FixMatchViewModel : ObservableObject
             DateTime.Now);
 
         await _customMappingService.SetMappingAsync(mapping);
+        await _unmatchedTitlesService.RemoveAsync(_unmatchedTitle.Launcher, _unmatchedTitle.StoreId);
         RequestClose?.Invoke(this, EventArgs.Empty);
     }
 

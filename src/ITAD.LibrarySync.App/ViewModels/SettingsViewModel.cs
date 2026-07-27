@@ -626,7 +626,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         if (title is null) return;
 
-        var vm = new FixMatchViewModel(_customMappingService, title);
+        var vm = new FixMatchViewModel(_customMappingService, _unmatchedTitlesService, title);
         var window = new FixMatchWindow(vm)
         {
             Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
