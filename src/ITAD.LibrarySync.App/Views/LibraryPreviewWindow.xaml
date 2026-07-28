@@ -112,6 +112,7 @@
                 Width="90"
                 Content="{Binding Lang[BtnClose], Mode=OneWay}"
                 IsDefault="True"
+                IsCancel="True"
                 Click="CloseButton_Click" />
     </Grid>
 </Window>
