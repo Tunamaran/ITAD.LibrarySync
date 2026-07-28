@@ -111,6 +111,34 @@ public sealed class UnmatchedTitlesService : IUnmatchedTitlesService
         }
     }
 
+    public async Task RemoveByStoreIdOrTitleAsync(LauncherId launcher, string storeId, string title, CancellationToken ct = default)
+    {
+        await _semaphore.WaitAsync(ct);
+        try
+        {
+            var current = await LoadInternalAsync(ct);
+            var updated = current
+                .Where(item => !(item.Launcher == launcher && (
+                                 string.Equals(item.StoreId, storeId, StringComparison.OrdinalIgnoreCase) ||
+                                 string.Equals(item.Title, title, StringComparison.OrdinalIgnoreCase))))
+                .ToList();
+
+            if (updated.Count < current.Count)
+            {
+                var json = JsonSerializer.Serialize(updated, JsonOptions);
+                await File.WriteAllTextAsync(_filePath, json, ct);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"UnmatchedTitlesService: failed to remove title — {ex.Message}");
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
     public async Task ClearAsync(CancellationToken ct = default)
     {
         await _semaphore.WaitAsync(ct);

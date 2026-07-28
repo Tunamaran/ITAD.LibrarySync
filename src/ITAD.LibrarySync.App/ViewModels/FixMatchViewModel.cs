@@ -56,7 +56,7 @@ public sealed partial class FixMatchViewModel : ObservableObject
             DateTime.Now);
 
         await _customMappingService.SetMappingAsync(mapping);
-        await _unmatchedTitlesService.RemoveAsync(_unmatchedTitle.Launcher, _unmatchedTitle.StoreId);
+        await _unmatchedTitlesService.RemoveByStoreIdOrTitleAsync(_unmatchedTitle.Launcher, _unmatchedTitle.StoreId, _unmatchedTitle.Title);
         RequestClose?.Invoke(this, EventArgs.Empty);
     }
 

@@ -8,5 +8,6 @@ public interface IUnmatchedTitlesService
     Task AddRangeAsync(IEnumerable<UnmatchedTitle> titles, CancellationToken ct = default);
     Task<IReadOnlyList<UnmatchedTitle>> GetAllAsync(CancellationToken ct = default);
     Task RemoveAsync(LauncherId launcher, string storeId, CancellationToken ct = default);
+    Task RemoveByStoreIdOrTitleAsync(LauncherId launcher, string storeId, string title, CancellationToken ct = default);
     Task ClearAsync(CancellationToken ct = default);
 }
