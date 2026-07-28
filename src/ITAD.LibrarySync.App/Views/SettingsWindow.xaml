@@ -104,14 +104,14 @@
                         </Border>
 
                         <!-- Platform Launchers & Connected Accounts Section -->
-                        <TextBlock Text="{Binding Lang[PlatformInfoHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Margin="0,8,0,0" />
+                        <TextBlock Text="{Binding Lang[PlatformsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Margin="0,8,0,0" />
                         
                         <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,12">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="ℹ️" FontSize="15" Margin="0,0,8,0" VerticalAlignment="Top" />
                                 <TextBlock Foreground="#475569" TextWrapping="Wrap" FontSize="12" LineHeight="17">
-                                    <Run FontWeight="Bold" Text="{Binding Lang[PlatformInfoCardTitle], Mode=OneWay}" /><LineBreak />
-                                    <Run Text="{Binding Lang[PlatformInfoCardText], Mode=OneWay}" />
+                                    <Run FontWeight="Bold" Text="{Binding Lang[PlatformScanInfoTitle], Mode=OneWay}" /><LineBreak />
+                                    <Run Text="{Binding Lang[PlatformScanInfoText], Mode=OneWay}" />
                                 </TextBlock>
                             </StackPanel>
                         </Border>
@@ -134,7 +134,7 @@
                                                 <TextBlock Text="{Binding DisplayStatus}" Foreground="#64748B" FontSize="12" Margin="0,2,0,0"/>
                                             </StackPanel>
 
-                                            <Button Grid.Column="2" Content="{Binding DataContext.Lang[BtnTestDetails], RelativeSource={RelativeSource AncestorType=Window}}"
+                                            <Button Grid.Column="2" Content="{Binding DataContext.Lang[BtnDetails], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Command="{Binding DataContext.TestPlatformCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}" VerticalAlignment="Center" Padding="10,4" />
                                         </Grid>
@@ -269,7 +269,7 @@
                                 <DataGridTemplateColumn Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="{Binding DataContext.Lang[BtnFixMatch], RelativeSource={RelativeSource AncestorType=Window}}"
+                                            <Button Content="{Binding DataContext.Lang[BtnFix], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Style="{StaticResource PrimaryButtonStyle}"
                                                     Padding="8,2"
                                                     Command="{Binding DataContext.FixMatchCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -356,7 +356,7 @@
                         <Separator Margin="0,16,0,14" Background="#E2E8F0" />
 
                         <!-- Application Preferences -->
-                        <TextBlock Text="{Binding Lang[AppSettingsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
+                        <TextBlock Text="{Binding Lang[AppPreferencesHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
                         
                         <CheckBox Margin="0,10,0,0"
                                   Content="{Binding Lang[StartWithWindowsLabel], Mode=OneWay}"
@@ -364,8 +364,8 @@
                                   IsChecked="{Binding StartWithWindows}" />
 
                         <CheckBox Margin="0,10,0,0"
-                                  Content="{Binding Lang[MinimizeToTrayLabel], Mode=OneWay}"
-                                  ToolTip="{Binding Lang[MinimizeToTrayTooltip], Mode=OneWay}"
+                                  Content="{Binding Lang[CloseToTrayLabel], Mode=OneWay}"
+                                  ToolTip="{Binding Lang[CloseToTrayTooltip], Mode=OneWay}"
                                   IsChecked="{Binding MinimizeToTray}" />
 
                         <CheckBox Margin="0,10,0,0"
@@ -402,7 +402,7 @@
                         <Separator Margin="0,16,0,14" Background="#E2E8F0" />
 
                         <!-- System Logs Viewer -->
-                        <TextBlock Text="{Binding Lang[LogsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
+                        <TextBlock Text="{Binding Lang[SystemLogsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
                         
                         <Grid Margin="0,8,0,8">
                             <Grid.ColumnDefinitions>
@@ -420,7 +420,7 @@
                                 <Button Content="{Binding Lang[BtnOpenLogFolder], Mode=OneWay}"
                                         Command="{Binding OpenLogFolderCommand}"
                                         Margin="0,0,6,0" Padding="10,4" />
-                                <Button Content="{Binding Lang[BtnRefreshLogs], Mode=OneWay}"
+                                <Button Content="{Binding Lang[BtnRefresh], Mode=OneWay}"
                                         Command="{Binding RefreshLogsCommand}"
                                         Padding="10,4" />
                             </StackPanel>

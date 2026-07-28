@@ -97,6 +97,9 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "EaAccountHeader" => "EA App Account",
         "BtnConnectEa" => "Connect EA Account",
         "BtnDisconnectEa" => "Disconnect EA Account",
+        "PlatformsHeader" => "Game Platforms",
+        "PlatformScanInfoTitle" => "Platform Scanning:",
+        "PlatformScanInfoText" => "Local platforms (Epic, Ubisoft, Battle.net, EA App) are scanned from your PC's local files. Xbox requires a separate account link below for full coverage.",
 
         "SyncSettingsHeader" => "Automatic Synchronization Settings",
         "SyncGuideTitle" => "Automatic Sync Guide:",
@@ -142,6 +145,7 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "AppSubtitle" => "IsThereAnyDeal Game Library Synchronization Tool",
         "AppPreferencesHeader" => "Application Preferences",
         "StartWithWindowsLabel" => "Run on Windows startup",
+        "CloseToTrayLabel" => "Minimize to system tray when closed",
         "ShowNotificationsLabel" => "Show desktop notifications",
         "LanguageLabel" => "Language / Dil",
         "LogLevelLabel" => "Log Level",
@@ -153,9 +157,11 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "VersionUpToDate" => "Your version is kept up to date.",
 
         "StartWithWindowsTooltip" => "Starts the app automatically in the system tray when Windows boots.",
+        "CloseToTrayTooltip" => "When you close the window, the app will continue running in the system tray instead of exiting.",
         "ShowNotificationsTooltip" => "Displays Windows desktop notifications when sync completes or encounters an error.",
         "LanguageTooltip" => "Select the application display language (English / Türkçe).",
         "LogLevelTooltip" => "Sets log detail level (Info, Error, Debug).",
+        "SystemLogsHeader" => "System Logs",
 
         "TraySyncNow" => "Sync Now",
         "TraySyncStore" => "Sync {0}",
@@ -359,6 +365,9 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "EaAccountHeader" => "EA App Hesabı",
         "BtnConnectEa" => "EA Hesabını Bağla",
         "BtnDisconnectEa" => "EA Hesabını Kopar",
+        "PlatformsHeader" => "Oyun Platformları",
+        "PlatformScanInfoTitle" => "Platform Taraması:",
+        "PlatformScanInfoText" => "Yerel platformlar (Epic, Ubisoft, Battle.net, EA App) bilgisayarınızdaki yerel dosyalardan taranmaktadır. Xbox için aşağıdaki hesap bağlantısı gerekmektedir.",
 
         "SyncSettingsHeader" => "Otomatik Senkronizasyon Ayarları",
         "SyncGuideTitle" => "Otomatik Senkronizasyon Rehberi:",
@@ -404,6 +413,7 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "AppSubtitle" => "IsThereAnyDeal Oyun Kütüphanesi Senkronizasyon Aracı",
         "AppPreferencesHeader" => "Uygulama Tercihleri",
         "StartWithWindowsLabel" => "Windows açılışında çalıştır",
+        "CloseToTrayLabel" => "Kapatıldığında sistem tepsisine küçült",
         "ShowNotificationsLabel" => "Masaüstü bildirimlerini göster",
         "LanguageLabel" => "Dil / Language",
         "LogLevelLabel" => "Log Seviyesi",
@@ -415,9 +425,11 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "VersionUpToDate" => "Sürümünüz güncel tutuluyor.",
 
         "StartWithWindowsTooltip" => "Bilgisayarınız açıldığında uygulamanın sistem tepsisinde (tray) otomatik başlamasını sağlar.",
+        "CloseToTrayTooltip" => "Pencereyi kapattığınızda uygulama tamamen kapanmak yerine sistem tepsisinde çalışmaya devam eder.",
         "ShowNotificationsTooltip" => "Senkronizasyon tamamlandığında veya hata oluştuğunda masaüstü bildirimleri görüntüler.",
         "LanguageTooltip" => "Uygulama görüntüleme dilini seçin (English / Türkçe).",
         "LogLevelTooltip" => "Kaydedilecek log detay seviyesini ayarlar (Bilgi, Hata, Hata Ayıklama).",
+        "SystemLogsHeader" => "Sistem Günlükleri",
 
         "TraySyncNow" => "Şimdi Senkronize Et",
         "TraySyncStore" => "{0} Senkronize Et",
