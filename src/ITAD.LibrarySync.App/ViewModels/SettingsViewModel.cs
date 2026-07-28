@@ -42,6 +42,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly ILogReaderService _logReaderService;
     private readonly AppSettings _settings;
 
+    public SyncProgressService SyncProgress { get; }
+
     public SettingsViewModel(
         OAuthFlowService oauthFlow,
         XboxOAuthFlowService xboxOAuthFlow,
@@ -62,8 +64,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         IUnmatchedTitlesService unmatchedTitlesService,
         IUpdateCheckerService updateCheckerService,
         ICustomMappingService customMappingService,
-        ILogReaderService logReaderService)
+        ILogReaderService logReaderService,
+        SyncProgressService syncProgressService)
     {
+        SyncProgress = syncProgressService;
         _oauthFlow = oauthFlow;
         _xboxOAuthFlow = xboxOAuthFlow;
         _xboxOAuthService = xboxOAuthService;

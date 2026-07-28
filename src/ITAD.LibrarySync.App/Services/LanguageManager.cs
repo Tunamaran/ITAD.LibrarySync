@@ -241,14 +241,16 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "FixMatchValidation" => "Please enter a valid ITAD URL, game slug, or Store ID.",
         "FixMatchValidationTitle" => "Warning",
 
-        // ── Sync Progress Window ──
+        // ── Sync Progress Inline UI ──
         "SyncProgressTitle" => "ITAD Library Sync — Sync Progress",
         "SyncProgressClose" => "Close",
+        "SyncProgressIdle" => "Idle — Ready to sync",
         "SyncProgressSyncing" => "Syncing libraries…",
         "SyncProgressNothing" => "Sync finished — nothing to sync.",
         "SyncProgressSuccess" => "Sync completed — {0}/{1} launcher(s) succeeded.",
         "SyncProgressFailed" => "Sync failed — see log for details.",
         "SyncProgressPartial" => "Sync completed with errors — {0}/{1} launcher(s) succeeded.",
+        "SyncInlineHeader" => "Sync Status & Live Progress",
 
         // ── Library Preview Window ──
         "LibPreviewTitleFormat" => "{0} — Library Preview",
@@ -498,14 +500,16 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "FixMatchValidation" => "Lütfen geçerli bir ITAD linki, oyun slug'ı veya Mağaza ID girin.",
         "FixMatchValidationTitle" => "Uyarı",
 
-        // ── Senkronizasyon İlerleme Penceresi ──
+        // ── Senkronizasyon İlerleme İçi Arayüz ──
         "SyncProgressTitle" => "ITAD Library Sync — Senkronizasyon İlerlemesi",
         "SyncProgressClose" => "Kapat",
+        "SyncProgressIdle" => "Boşta — Senkronizasyona hazır",
         "SyncProgressSyncing" => "Kütüphaneler senkronize ediliyor…",
         "SyncProgressNothing" => "Senkronizasyon tamamlandı — aktarılacak platform bulunamadı.",
         "SyncProgressSuccess" => "Senkronizasyon tamamlandı — {0}/{1} platform başarılı.",
         "SyncProgressFailed" => "Senkronizasyon başarısız — detaylar için günlüğe bakın.",
         "SyncProgressPartial" => "Senkronizasyon hatalarla tamamlandı — {0}/{1} platform başarılı.",
+        "SyncInlineHeader" => "Senkronizasyon Durumu ve Canlı İlerleme",
 
         // ── Kütüphane Önizleme Penceresi ──
         "LibPreviewTitleFormat" => "{0} — Kütüphane Önizlemesi",
