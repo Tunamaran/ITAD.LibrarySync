@@ -26,6 +26,19 @@
 
 ---
 
+### 📸 Application Screenshots
+
+#### 1. Accounts & Platforms Dashboard
+![Accounts & Platforms Dashboard](docs/screenshots/dashboard_statistics.png)
+
+#### 2. Sync Progress, Unmatched Games & Custom Mappings
+![Sync Progress and Mappings](docs/screenshots/sync_and_mappings.png)
+
+#### 3. Interactive Stat Breakdown Popup
+![Stat Details Popup](docs/screenshots/stat_details_popup.png)
+
+---
+
 ### 🌟 Key Features
 
 - **⚡ 100% Local & Password-Free Launcher Sync:** 
@@ -115,6 +128,19 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
 ## 🇹🇷 ITAD Library Sync - Türkçe
 
 **ITAD Library Sync**, **Epic Games Store, Ubisoft Connect, Battle.net, Xbox / Microsoft Store ve EA App** kütüphanelerinizdeki oyunları yerel olarak tarayıp [IsThereAnyDeal](https://isthereanydeal.com/) (ITAD) Koleksiyon ve İstek Listesi (Waitlist) profillerinize otomatik aktaran hafif, modern bir Windows WPF sistem tepsisi (system tray) uygulamasıdır.
+
+---
+
+### 📸 Uygulama İçi Ekran Görüntüleri
+
+#### 1. Hesaplar & Platformlar Paneli
+![Hesaplar ve Platformlar Paneli](docs/screenshots/dashboard_statistics.png)
+
+#### 2. Canlı İlerleme, Eşleşmeyenler & Özel Eşleşme Kuralları
+![Senkronizasyon ve Eşleşmeler](docs/screenshots/sync_and_mappings.png)
+
+#### 3. Detaylı İstatistik Analiz Penceresi
+![İstatistik Detay Penceresi](docs/screenshots/stat_details_popup.png)
 
 ---
 
