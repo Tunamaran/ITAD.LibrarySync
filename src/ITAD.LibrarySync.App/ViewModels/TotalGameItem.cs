@@ -1,4 +1,5 @@
 using ITAD.LibrarySync.Core.Launchers;
+using ITAD.LibrarySync.Core.Models;
 
 namespace ITAD.LibrarySync.App.ViewModels;
 
