@@ -130,8 +130,8 @@
                                             <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Margin="0,0,12,0" />
 
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding LauncherName}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                                <TextBlock Text="{Binding DisplayStatus}" Foreground="#64748B" FontSize="12" Margin="0,2,0,0"/>
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding DetectionStatus}" Foreground="#64748B" FontSize="12" Margin="0,2,0,0"/>
                                             </StackPanel>
 
                                             <Button Grid.Column="2" Content="{Binding DataContext.Lang[BtnDetails], RelativeSource={RelativeSource AncestorType=Window}}"
