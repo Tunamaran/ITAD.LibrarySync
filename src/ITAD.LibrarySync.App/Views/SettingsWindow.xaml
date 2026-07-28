@@ -546,6 +546,43 @@
                                     IsEnabled="{Binding CanCheckUpdates}"
                                     Visibility="{Binding HasUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
                         </StackPanel>
+
+                        <Separator Margin="0,16,0,14" Background="#E2E8F0" />
+
+                        <!-- Patreon Support Card -->
+                        <Border Background="#FFF1F2" BorderBrush="#FECDD3" BorderThickness="1" CornerRadius="8" Padding="14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="❤️" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Lang[PatreonHeader], Mode=OneWay}"
+                                                   FontWeight="Bold" FontSize="14" Foreground="#9F1239" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Lang[PatreonDesc], Mode=OneWay}"
+                                               FontSize="12" Foreground="#881337" TextWrapping="Wrap" LineHeight="16" />
+                                </StackPanel>
+
+                                <Button Grid.Column="1"
+                                        Content="{Binding Lang[BtnPatreonSupport], Mode=OneWay}"
+                                        Command="{Binding OpenPatreonCommand}"
+                                        Background="#FF424D" Foreground="White"
+                                        FontWeight="Bold" FontSize="12.5"
+                                        Padding="14,8" BorderThickness="0"
+                                        Cursor="Hand"
+                                        VerticalAlignment="Center">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="6" />
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </Grid>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

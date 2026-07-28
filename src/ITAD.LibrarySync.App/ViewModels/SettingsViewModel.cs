@@ -565,6 +565,19 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private static void OpenPatreon()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo("https://www.patreon.com/16495069/join") { UseShellExecute = true });
+        }
+        catch
+        {
+            // Ignore if browser launch fails
+        }
+    }
+
+    [RelayCommand]
     private void ViewStatDetails(string statMode)
     {
         if (string.IsNullOrWhiteSpace(statMode)) return;
