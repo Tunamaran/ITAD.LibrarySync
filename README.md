@@ -45,6 +45,10 @@
   Reads games directly from local encrypted launcher caches and Windows registries for Epic, Ubisoft, Battle.net, and EA App. No launcher login credentials required!
 - **🤖 Smart Match Engine (SmartMatchEngine):**
   Automatically normalizes game titles, handles franchise prefixes (*Sid Meier's, Tom Clancy's, EA SPORTS*), formats DLC colons (*Base: DLC*), and strips regional tags so games match ITAD database IDs seamlessly.
+- **📊 Interactive Summary Stat Cards & Detail Popups:**
+  Click any of the 4 interactive summary cards (*Total Synced Games, ITAD Match Rate, Active Platforms, Cross-Platform Games*) to open rich, searchable breakdown popups with single-click fix match tools.
+- **🔄 Inline Live Sync Progress & Real-Time Log Viewer:**
+  Monitor background or manual synchronization progress in real-time via an embedded log viewer card right inside the Sync & Matching tab.
 - **🧹 Automatic ITAD Obsolete Entry Purging:**
   Automatically identifies and deletes obsolete or mis-matched game IDs from your ITAD Waitlist/Collection right after a successful sync.
 - **🔍 Multi-Drive Deep Scanner:**
@@ -53,6 +57,8 @@
   Inspect your full game list, store IDs, detected folder paths (`📌 Resolved Path`), and detection methods (`🔍 Detection Source`) before running a sync.
 - **🧩 Unmatched Games & Custom Mappings Manager:**
   Review games not automatically matched in ITAD's catalog, paste an ITAD page URL (e.g., `https://isthereanydeal.com/game/syberia-ii/info/`) or slug to create custom mappings, view/delete saved rules, and trigger dedicated single-click syncs for custom mapped games!
+- **❤️ Integrated Patreon Support:**
+  Quick access to support project development on Patreon directly from the **Settings & Logs** tab.
 - **🌐 Dual Language Support (English & Türkçe):**
   Full English interface by default, with dynamic runtime switching to Turkish in Settings.
 - **⏰ Automatic & Tray Background Synchronization:**
@@ -150,6 +156,10 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
   Epic Games, Ubisoft Connect, Battle.net ve EA App kütüphanelerinizi bilgisayarınızdaki şifreli kütüphane dosyalarından ve sistem kayıt defterinden okur. Hiçbir platform kullanıcı adı/şifresi saklanmaz!
 - **🤖 Akıllı Eşleştirme Motoru (SmartMatchEngine):**
   Oyun isimlerini otomatik temizler, seri ön eklerini (*Sid Meier's, Tom Clancy's, EA SPORTS*) düzenler, DLC iki nokta üst üste biçimlendirmelerini (*Ana Oyun: DLC*) yapar ve ITAD veritabanı ID'leri ile kusursuz eşleştirir.
+- **📊 Etkileşimli İstatistik Kartları ve Açılır Detay Pencereleri:**
+  4 temel istatistik kartına (*Toplam Oyun, Eşleşme Oranı, Aktif Platformlar, Çapraz Oyunlar*) tıklayarak aranabilir detay pencerelerini açabilir, tek tıkla eşleştirme düzeltebilirsiniz.
+- **🔄 Kart İçi Canlı Senkronizasyon İlerlemesi ve Log Ekranı:**
+  Senkronizasyon & Eşleşmeler sekmesi içerisine entegre canlı log ekranı ve ilerleme çubuğu ile eşzamanlı aktarım durumunu takip edin.
 - **🧹 Otomatik ITAD Hatalı Kayıt Temizliği (Auto-Purge):**
   Başarılı bir senkronizasyonun ardından, ITAD hesabınızda bulunan eski veya yanlış eşleşmiş oyun ID'lerini tespit ederek ITAD profillerinizden otomatik olarak siler.
 - **🔍 Tüm Sürücüleri Derinlemesine Tarama (Multi-Drive Scan):**
@@ -158,6 +168,8 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
   Senkronize etmeden önce tüm oyun listenizi, mağaza ID'lerini, tespit edilen klasör yolunu (`📌 Tespit Edilen Yol`) ve tarama metodunu (`🔍 Tespit Metodu`) detaylarıyla inceleyin.
 - **🧩 Eşleşmeyen Oyun Yönetimi & Özel Eşleştirme Kuralları (Custom Mappings):**
   ITAD kataloğunda otomatik bulunamayan oyunları inceleyin, doğrudan ITAD web adresi (`https://isthereanydeal.com/game/syberia-ii/info/`) veya oyun slug'ı girerek eşleştirin, kurallarınızı yönetin ve sadece özel eşleştirilmiş oyunlarınızı tek tıkla ITAD'a aktarın!
+- **❤️ Entegre Patreon Desteği:**
+  **Ayarlar & Günlükler** sekmesindeki özel kart üzerinden projenin geliştirilmesine Patreon ile kolayca destek olabilirsiniz.
 - **🌐 Çift Dil Desteği (İngilizce & Türkçe):**
   Varsayılan İngilizce arayüz, Ayarlar sekmesinden tek tıkla anında Türkçe yapılabilir.
 - **⏰ Arka Planda Otomatik Senkronizasyon:**
