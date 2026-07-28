@@ -10,4 +10,6 @@ public sealed record SyncResult(
     int WaitlistAdded,
     int WaitlistRemoved,
     int GlobalWaitlistRemoved,
-    string? Error = null);
+    string? Error = null,
+    LauncherReadResult? ReadResult = null);
+

@@ -221,7 +221,8 @@ public sealed class SyncOrchestrator(
             WaitlistAdded: waitlist?.Added ?? 0,
             WaitlistRemoved: waitlist?.Removed ?? 0,
             GlobalWaitlistRemoved: globalWaitlistRemoved,
-            Error: effectiveError);
+            Error: effectiveError,
+            ReadResult: read);
     }
 
     private static bool IsInformationalConnectMessage(string? error) =>

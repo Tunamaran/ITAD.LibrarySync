@@ -117,12 +117,31 @@ public sealed partial class SettingsViewModel : ObservableObject
         RefreshXboxConnectionState();
         RefreshEaConnectionState();
         ApplySyncStatsFromService();
-        _syncStatusService.SyncCompleted += (_, _) => Application.Current?.Dispatcher?.Invoke(() => { ApplySyncStatsFromService(); RefreshInsights(); });
+        _syncStatusService.SyncCompleted += (_, results) => Application.Current?.Dispatcher?.Invoke(() =>
+        {
+            ApplySyncStatsFromService();
+            if (results != null)
+            {
+                foreach (var res in results)
+                {
+                    if (res.ReadResult != null)
+                    {
+                        var item = LauncherStatuses.FirstOrDefault(l => l.Launcher == res.Launcher);
+                        if (item != null)
+                        {
+                            ApplyReadResult(item, res.ReadResult);
+                        }
+                    }
+                }
+            }
+            RefreshInsights();
+        });
         SyncProgress.PropertyChanged += (_, _) => Application.Current?.Dispatcher?.Invoke(RefreshInsights);
         _itadAccountService.AccountInfoChanged += (_, _) => Application.Current?.Dispatcher?.Invoke(RefreshAccountName);
         _ = LoadUnmatchedTitlesAsync();
         _ = LoadCustomMappingsAsync();
         _ = RefreshLogsAsync();
+        _ = ScanUncheckedLaunchersAsync();
         RefreshInsights();
     }
 
@@ -891,7 +910,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         else
         {
             AutomaticallyMatchedCount = 0;
-            MatchRatePercentage = 100.0;
+            MatchRatePercentage = 0.0;
         }
 
         PlatformStats.Clear();
@@ -924,6 +943,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         foreach (var match in matches)
         {
             FilteredUnmatchedTitles.Add(match);
+        }
+    }
+
+    private async Task ScanUncheckedLaunchersAsync()
+    {
+        foreach (var l in LauncherStatuses.Where(l => l.IsEnabled && l.LastReadCache is null).ToList())
+        {
+            await TestReadAsync(l);
         }
     }
 }
