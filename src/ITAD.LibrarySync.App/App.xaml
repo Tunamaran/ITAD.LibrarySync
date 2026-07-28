@@ -217,23 +217,25 @@
         <!-- DataGrid Style -->
         <Style TargetType="DataGrid">
             <Setter Property="Background" Value="White" />
-            <Setter Property="BorderBrush" Value="#E2E8F0" />
+            <Setter Property="BorderBrush" Value="#CBD5E1" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="RowBackground" Value="White" />
             <Setter Property="AlternatingRowBackground" Value="#F8FAFC" />
-            <Setter Property="HorizontalGridLinesBrush" Value="#F1F5F9" />
-            <Setter Property="VerticalGridLinesBrush" Value="#F1F5F9" />
+            <Setter Property="HorizontalGridLinesBrush" Value="#E2E8F0" />
+            <Setter Property="VerticalGridLinesBrush" Value="#E2E8F0" />
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
             <Setter Property="FontSize" Value="12.5" />
             <Setter Property="RowHeight" Value="32" />
+            <Setter Property="ColumnHeaderHeight" Value="36" />
         </Style>
 
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#F1F5F9" />
-            <Setter Property="Foreground" Value="#475569" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Padding" Value="10,6" />
-            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Background" Value="#E2E8F0" />
+            <Setter Property="Foreground" Value="#0F172A" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="BorderThickness" Value="0,0,1,2" />
             <Setter Property="BorderBrush" Value="#CBD5E1" />
         </Style>
 

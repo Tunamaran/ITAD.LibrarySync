@@ -345,7 +345,7 @@
                                 <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="2*" />
                                 <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="1.2*" />
                                 <DataGridTextColumn Header="{Binding DataContext.Lang[ColReason], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding ReasonCode, Converter={StaticResource UnmatchedReasonConverter}}" Width="1.5*" />
-                                <DataGridTemplateColumn Width="75">
+                                <DataGridTemplateColumn Header="{Binding DataContext.Lang[ColAction], RelativeSource={RelativeSource AncestorType=Window}}" Width="80">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="{Binding DataContext.Lang[BtnFix], RelativeSource={RelativeSource AncestorType=Window}}"
@@ -383,7 +383,7 @@
                                 <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="2*" />
                                 <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="1.2*" />
                                 <DataGridTextColumn Header="{Binding DataContext.Lang[ColTargetItadId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding MappedId}" Width="1.4*" />
-                                <DataGridTemplateColumn Width="50">
+                                <DataGridTemplateColumn Header="{Binding DataContext.Lang[ColAction], RelativeSource={RelativeSource AncestorType=Window}}" Width="65">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="✕" Padding="6,2" FontWeight="Bold" Foreground="#DC2626"
