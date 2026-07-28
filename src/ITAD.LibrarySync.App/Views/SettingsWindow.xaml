@@ -135,7 +135,7 @@
                                             </StackPanel>
 
                                             <Button Grid.Column="2" Content="{Binding DataContext.Lang[BtnDetails], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Command="{Binding DataContext.TestPlatformCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}" VerticalAlignment="Center" Padding="10,4" />
                                         </Grid>
                                     </Border>
