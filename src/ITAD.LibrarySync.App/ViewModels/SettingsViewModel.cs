@@ -117,7 +117,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         RefreshXboxConnectionState();
         RefreshEaConnectionState();
         ApplySyncStatsFromService();
-        _syncStatusService.SyncCompleted += (_, _) => ApplySyncStatsFromService();
+        _syncStatusService.SyncCompleted += (_, _) => Application.Current?.Dispatcher?.Invoke(() => { ApplySyncStatsFromService(); RefreshInsights(); });
+        SyncProgress.PropertyChanged += (_, _) => Application.Current?.Dispatcher?.Invoke(RefreshInsights);
         _itadAccountService.AccountInfoChanged += (_, _) => Application.Current?.Dispatcher?.Invoke(RefreshAccountName);
         _ = LoadUnmatchedTitlesAsync();
         _ = LoadCustomMappingsAsync();
@@ -241,6 +242,20 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private int _enabledLaunchersCount;
+
+    [ObservableProperty]
+    private int _duplicateGamesCount;
+
+    [ObservableProperty]
+    private int _automaticallyMatchedCount;
+
+    [ObservableProperty]
+    private int _customMappedCount;
+
+    [ObservableProperty]
+    private int _unmatchedCount;
+
+    public ObservableCollection<LauncherPlatformStatItem> PlatformStats { get; } = [];
 
     [ObservableProperty]
     private string _logSearchText = string.Empty;
@@ -450,11 +465,12 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
-    private static void ApplyReadResult(LauncherSettingsItem launcher, LauncherReadResult result)
+    private void ApplyReadResult(LauncherSettingsItem launcher, LauncherReadResult result)
     {
         launcher.LastReadCache = result;
         launcher.DetectionStatus = LauncherReadResultDisplay.GetDetectionStatus(result);
         launcher.LastReadResult = LauncherReadResultDisplay.FormatScanSummary(result);
+        RefreshInsights();
     }
 
     [RelayCommand]
@@ -552,6 +568,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             item => item.IsEnabled);
         PersistSettings();
         _trayIconService.RefreshContextMenu();
+        RefreshInsights();
     }
 
     private void PersistSettings() => _appSettingsStorage.Save(_settings);
@@ -619,6 +636,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             }
         }
         ApplyUnmatchedFilter();
+        RefreshInsights();
     }
 
     [RelayCommand]
@@ -664,6 +682,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             CustomMappings.Add(item);
         }
+        RefreshInsights();
     }
 
     [RelayCommand]
@@ -830,21 +849,63 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         EnabledLaunchersCount = LauncherStatuses.Count(l => l.IsEnabled);
 
-        var totalRead = LauncherStatuses
-            .Where(l => l.IsEnabled && l.LastReadCache is not null)
-            .Sum(l => l.LastReadCache!.Owned.Count);
+        var allGames = new List<(string Title, string StoreId, LauncherId Launcher)>();
+        var platformGameCounts = new Dictionary<LauncherId, int>();
 
+        foreach (var l in LauncherStatuses.Where(l => l.IsEnabled))
+        {
+            int count = l.LastReadCache?.Owned.Count ?? 0;
+            platformGameCounts[l.Launcher] = count;
+
+            if (l.LastReadCache != null)
+            {
+                foreach (var g in l.LastReadCache.Owned)
+                {
+                    allGames.Add((g.Title, g.StoreId, l.Launcher));
+                }
+            }
+        }
+
+        var totalRead = allGames.Count;
         TotalSyncedGamesCount = totalRead;
 
-        var unmatchedCount = UnmatchedTitles.Count;
+        var duplicateCount = allGames
+            .Where(g => !string.IsNullOrWhiteSpace(g.Title))
+            .GroupBy(g => g.Title.Trim().ToLowerInvariant())
+            .Count(g => g.Select(x => x.Launcher).Distinct().Count() > 1);
+
+        DuplicateGamesCount = duplicateCount;
+
+        var unmatched = UnmatchedTitles.Count;
+        var customMapped = CustomMappings.Count;
+        UnmatchedCount = unmatched;
+        CustomMappedCount = customMapped;
+
         if (totalRead > 0)
         {
-            var matched = Math.Max(0, totalRead - unmatchedCount);
-            MatchRatePercentage = Math.Round((double)matched / totalRead * 100.0, 1);
+            var autoMatched = Math.Max(0, totalRead - unmatched - customMapped);
+            AutomaticallyMatchedCount = autoMatched;
+            var totalMatched = Math.Max(0, totalRead - unmatched);
+            MatchRatePercentage = Math.Round((double)totalMatched / totalRead * 100.0, 1);
         }
         else
         {
+            AutomaticallyMatchedCount = 0;
             MatchRatePercentage = 100.0;
+        }
+
+        PlatformStats.Clear();
+        var colors = new[] { "#0284C7", "#16A34A", "#9333EA", "#EA580C", "#DC2626", "#0891B2" };
+        int colorIdx = 0;
+
+        foreach (var l in LauncherStatuses.Where(l => l.IsEnabled))
+        {
+            int count = platformGameCounts.GetValueOrDefault(l.Launcher, 0);
+            double pct = totalRead > 0 ? Math.Round((double)count / totalRead * 100.0, 1) : 0.0;
+            var color = colors[colorIdx % colors.Length];
+            colorIdx++;
+
+            PlatformStats.Add(new LauncherPlatformStatItem(l.Launcher, l.DisplayName, count, pct, color));
         }
     }
 
