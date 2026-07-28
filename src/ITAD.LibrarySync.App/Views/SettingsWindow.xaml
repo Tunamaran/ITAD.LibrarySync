@@ -29,30 +29,42 @@
                         <!-- Enhanced Statistics Summary Panel -->
                         <TextBlock Text="{Binding Lang[StatsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8" />
                         
-                        <!-- 4 Summary Cards Grid -->
+                        <!-- 4 Summary Cards Grid (Clickable) -->
                         <UniformGrid Columns="4" Margin="-4,0,-4,12">
-                            <Border Background="#1A0284C7" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4">
+                            <Border Background="#1A0284C7" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4" Cursor="Hand" ToolTip="Detayları görüntülemek için tıklayın">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding ViewStatDetailsCommand}" CommandParameter="TotalGames" />
+                                </Border.InputBindings>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Lang[TotalSyncedGamesLabel], Mode=OneWay}" Foreground="#0369A1" FontSize="11.5" FontWeight="SemiBold" />
                                     <TextBlock Text="{Binding TotalSyncedGamesCount}" FontSize="22" FontWeight="Bold" Foreground="#0284C7" Margin="0,4,0,0" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#1A107C41" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4">
+                            <Border Background="#1A107C41" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4" Cursor="Hand" ToolTip="Detayları görüntülemek için tıklayın">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding ViewStatDetailsCommand}" CommandParameter="MatchRate" />
+                                </Border.InputBindings>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Lang[MatchRateLabel], Mode=OneWay}" Foreground="#15803D" FontSize="11.5" FontWeight="SemiBold" />
                                     <TextBlock Text="{Binding MatchRatePercentage, StringFormat=\{0\}%}" FontSize="22" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#1A5C2D91" BorderBrush="#E9D5FF" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4">
+                            <Border Background="#1A5C2D91" BorderBrush="#E9D5FF" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4" Cursor="Hand" ToolTip="Detayları görüntülemek için tıklayın">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding ViewStatDetailsCommand}" CommandParameter="ActivePlatforms" />
+                                </Border.InputBindings>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Lang[ActivePlatformsLabel], Mode=OneWay}" Foreground="#7E22CE" FontSize="11.5" FontWeight="SemiBold" />
                                     <TextBlock Text="{Binding EnabledLaunchersCount}" FontSize="22" FontWeight="Bold" Foreground="#9333EA" Margin="0,4,0,0" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#1AEA580C" BorderBrush="#FFEDD5" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4">
+                            <Border Background="#1AEA580C" BorderBrush="#FFEDD5" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4" Cursor="Hand" ToolTip="Detayları görüntülemek için tıklayın">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding ViewStatDetailsCommand}" CommandParameter="DuplicateGames" />
+                                </Border.InputBindings>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Lang[DuplicateGamesLabel], Mode=OneWay}" Foreground="#C2410C" FontSize="11.5" FontWeight="SemiBold" />
                                     <TextBlock Text="{Binding DuplicateGamesCount}" FontSize="22" FontWeight="Bold" Foreground="#EA580C" Margin="0,4,0,0" />

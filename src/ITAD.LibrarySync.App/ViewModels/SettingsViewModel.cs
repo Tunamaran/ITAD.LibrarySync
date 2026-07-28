@@ -513,6 +513,54 @@ public sealed partial class SettingsViewModel : ObservableObject
         window.ShowDialog();
     }
 
+    [RelayCommand]
+    private void ViewStatDetails(string statMode)
+    {
+        if (string.IsNullOrWhiteSpace(statMode)) return;
+
+        var totalGames = new List<TotalGameItem>();
+        foreach (var l in LauncherStatuses.Where(l => l.IsEnabled && l.LastReadCache is not null))
+        {
+            foreach (var g in l.LastReadCache!.Owned)
+            {
+                totalGames.Add(new TotalGameItem(g.Title, g.StoreId, l.Launcher, l.DisplayName));
+            }
+        }
+
+        var duplicateGames = totalGames
+            .Where(g => !string.IsNullOrWhiteSpace(g.Title))
+            .GroupBy(g => g.Title.Trim().ToLowerInvariant())
+            .Where(grp => grp.Select(x => x.Launcher).Distinct().Count() > 1)
+            .Select(grp => new DuplicateGameItem(
+                Title: grp.First().Title,
+                PlatformsList: string.Join(", ", grp.Select(x => x.DisplayPlatform).Distinct()),
+                StoreIdsList: string.Join(", ", grp.Select(x => x.StoreId).Distinct()),
+                PlatformCount: grp.Select(x => x.Launcher).Distinct().Count()
+            ))
+            .ToList();
+
+        var vm = new StatDetailsViewModel(
+            statMode,
+            totalGames,
+            duplicateGames,
+            LauncherStatuses,
+            UnmatchedTitles,
+            TotalSyncedGamesCount,
+            MatchRatePercentage,
+            EnabledLaunchersCount,
+            DuplicateGamesCount,
+            AutomaticallyMatchedCount,
+            CustomMappedCount,
+            UnmatchedCount);
+
+        var window = new StatDetailsWindow(vm)
+        {
+            Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+                     ?? Application.Current.MainWindow
+        };
+        window.ShowDialog();
+    }
+
     private static Task<bool> PromptConnectXboxAsync() =>
         Task.FromResult(
             MessageBox.Show(
