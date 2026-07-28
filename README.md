@@ -3,6 +3,8 @@
 # ITAD Library Sync
 
 <p align="center">
+  <a href="https://www.patreon.com/16495069/join" target="_blank"><img src="https://img.shields.io/badge/Support%20on-Patreon-FF424D?style=for-the-badge&logo=patreon&logoColor=white" alt="Support on Patreon" /></a>
+  &nbsp;&nbsp;
   <a href="#english-documentation"><img src="https://img.shields.io/badge/Language-English%20%F0%9F%87%AC%F0%9F%87%B7-blue?style=for-the-badge" alt="English Documentation" /></a>
   &nbsp;&nbsp;
   <a href="#turkish-documentation"><img src="https://img.shields.io/badge/Dil-T%C3%BCrk%C3%A7e%20%F0%9F%87%B9%F0%9F%87%B7-red?style=for-the-badge" alt="Türkçe Dokümantasyon" /></a>
@@ -13,6 +15,7 @@
 <a id="english-documentation"></a>
 ## 🇬🇧 ITAD Library Sync - English
 
+[![Support on Patreon](https://img.shields.io/badge/Support%20on-Patreon-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/16495069/join)
 [![GitHub Release](https://img.shields.io/github/v/release/Tunamaran/ITAD.LibrarySync?color=blue&style=for-the-badge)](https://github.com/Tunamaran/ITAD.LibrarySync/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20x64-0078D6?style=for-the-badge&logo=windows)](https://github.com/Tunamaran/ITAD.LibrarySync)
@@ -109,6 +112,8 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
 
 <a id="turkish-documentation"></a>
 ## 🇹🇷 ITAD Library Sync - Türkçe
+
+[![Patreon'da Destek Ol](https://img.shields.io/badge/Patreon'da-Destek%20Ol-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/16495069/join)
 
 **ITAD Library Sync**, **Epic Games Store, Ubisoft Connect, Battle.net, Xbox / Microsoft Store ve EA App** kütüphanelerinizdeki oyunları yerel olarak tarayıp [IsThereAnyDeal](https://isthereanydeal.com/) (ITAD) Koleksiyon ve İstek Listesi (Waitlist) profillerinize otomatik aktaran hafif, modern bir Windows WPF sistem tepsisi (system tray) uygulamasıdır.
 
