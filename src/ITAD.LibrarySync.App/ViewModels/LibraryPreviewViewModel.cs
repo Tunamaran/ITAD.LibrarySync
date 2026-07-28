@@ -16,17 +16,15 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
         LauncherName = launcherName;
         Summary = LauncherReadResultDisplay.FormatScanSummary(result);
         Status = LauncherReadResultDisplay.GetDetectionStatus(result);
-        ResolvedPath = result.ResolvedPath ?? "Default Client Path";
-        DetectionSource = result.DetectionSource ?? "Registry & Cache";
+        ResolvedPath = result.ResolvedPath ?? Lang["LibPreviewDefaultPath"];
+        DetectionSource = result.DetectionSource ?? Lang["LibPreviewDefaultSource"];
         HasResolvedPath = !string.IsNullOrWhiteSpace(result.ResolvedPath);
         PreviewWarning = LauncherReadResultDisplay.FormatPreviewWarning(result);
         HasWarning = !string.IsNullOrWhiteSpace(PreviewWarning);
 
         DetailLines = new ObservableCollection<string>(LauncherReadResultDisplay.GetPreviewDetailLines(result));
         HasDetails = DetailLines.Count > 0;
-        DetailsHeader = DetailLines.Count == 1
-            ? "Details (1 item)"
-            : $"Details ({DetailLines.Count} items)";
+        DetailsHeader = string.Format(Lang["LibPreviewDetailsHeader"], DetailLines.Count);
 
         _allOwned = result.Owned
             .Select(g => new LibraryGameRow(g.Title, g.StoreId))

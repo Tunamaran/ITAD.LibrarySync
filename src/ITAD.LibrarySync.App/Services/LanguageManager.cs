@@ -18,6 +18,11 @@ public sealed class LanguageManager : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public LanguageManager()
+    {
+        LauncherReadResultDisplay.StringResolver = GetString;
+    }
+
     private string _currentLanguage = "en";
 
     public static readonly IReadOnlyList<LanguageOption> AvailableLanguages =
@@ -128,6 +133,25 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "StatSearchPlaceholder" => "Filter by title, store ID, or platform…",
         "ColOwnedPlatforms" => "Owned Platforms",
         "ColScanPath" => "Scan Path & Method",
+        "StatusNotDetected" => "Not detected",
+        "StatusNotLoggedIn" => "Not logged in",
+        "StatusReady" => "Ready",
+        "StatusLimited" => "Limited",
+        "StatusError" => "Error",
+        "ScanSummaryFormat" => "{0} games ({1} owned, {2} wishlist)",
+        "ScanSummaryBnetNotice" => "Battle.net local cache may omit uninstalled owned titles",
+        "ScanSummaryEaPartial" => "partial library (local fallback)",
+        "ScanSummaryEaOnline" => "online EA library",
+        "ScanSummaryNoEntries" => "0 games — launcher detected, no readable library entries",
+        "ScanSummaryItemSkipped" => "1 item skipped",
+        "ScanSummaryItemsSkipped" => "{0} items skipped",
+        "StatSummaryTotalGames" => "{0} games in combined library",
+        "StatSummaryMatchRate" => "{0}% ITAD match rate across {1} games",
+        "StatSummaryActivePlatforms" => "{0} active launchers configured",
+        "StatSummaryDuplicateGames" => "{0} games owned across 2+ platforms",
+        "LibPreviewDefaultPath" => "Default Client Path",
+        "LibPreviewDefaultSource" => "Registry & Cache",
+        "LibPreviewDetailsHeader" => "Details ({0} items)",
         "CustomMappingsHeader" => "Custom Game Mappings",
         "ColGameTitle" => "Game Title",
         "ColLocalStoreId" => "Local Store ID",
@@ -409,6 +433,25 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "StatSearchPlaceholder" => "Oyun adı, mağaza ID veya platforma göre ara…",
         "ColOwnedPlatforms" => "Sahip Olunan Platformlar",
         "ColScanPath" => "Tespit Yolu ve Metodu",
+        "StatusNotDetected" => "Tespit edilemedi",
+        "StatusNotLoggedIn" => "Oturum açılmadı",
+        "StatusReady" => "Hazır",
+        "StatusLimited" => "Sınırlı",
+        "StatusError" => "Hata",
+        "ScanSummaryFormat" => "{0} oyun ({1} sahip olunan, {2} istek listesi)",
+        "ScanSummaryBnetNotice" => "Battle.net yerel önbelleği yüklü olmayan oyunları içermeyebilir",
+        "ScanSummaryEaPartial" => "kısmi kütüphane (yerel yedek)",
+        "ScanSummaryEaOnline" => "çevrimiçi EA kütüphanesi",
+        "ScanSummaryNoEntries" => "0 oyun — istemci tespit edildi, okunabilir kayıt yok",
+        "ScanSummaryItemSkipped" => "1 öge atlandı",
+        "ScanSummaryItemsSkipped" => "{0} öge atlandı",
+        "StatSummaryTotalGames" => "{0} adet okunan oyun kütüphanesi",
+        "StatSummaryMatchRate" => "{1} oyunda %{0} ITAD eşleşme oranı",
+        "StatSummaryActivePlatforms" => "{0} aktif platform yapılandırıldı",
+        "StatSummaryDuplicateGames" => "{0} oyun birden fazla platformda mevcut",
+        "LibPreviewDefaultPath" => "Varsayılan İstemci Yolu",
+        "LibPreviewDefaultSource" => "Kayıt Defteri ve Önbellek",
+        "LibPreviewDetailsHeader" => "Detaylar ({0} öge)",
         "CustomMappingsHeader" => "Özel Eşleşme Kuralları (Custom Mappings)",
         "ColGameTitle" => "Oyun Adı",
         "ColLocalStoreId" => "Yerel Mağaza ID",

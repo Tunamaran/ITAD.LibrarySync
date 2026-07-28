@@ -78,26 +78,26 @@ public sealed partial class StatDetailsViewModel : ObservableObject
             case "TotalGames":
                 WindowTitle = Lang["StatTitleTotalGames"];
                 HeaderTitle = Lang["StatTitleTotalGames"];
-                SummaryText = string.Format(Lang["StatsHeader"], totalCount);
+                SummaryText = string.Format(Lang["StatSummaryTotalGames"], totalCount);
                 break;
             case "MatchRate":
                 WindowTitle = Lang["StatTitleMatchRate"];
                 HeaderTitle = Lang["StatTitleMatchRate"];
-                SummaryText = $"{matchRatePct}% match rate across {totalCount} games";
+                SummaryText = string.Format(Lang["StatSummaryMatchRate"], matchRatePct, totalCount);
                 break;
             case "ActivePlatforms":
                 WindowTitle = Lang["StatTitleActivePlatforms"];
                 HeaderTitle = Lang["StatTitleActivePlatforms"];
-                SummaryText = $"{activePlatformCount} active launchers configured";
+                SummaryText = string.Format(Lang["StatSummaryActivePlatforms"], activePlatformCount);
                 break;
             case "DuplicateGames":
                 WindowTitle = Lang["StatTitleDuplicateGames"];
                 HeaderTitle = Lang["StatTitleDuplicateGames"];
-                SummaryText = $"{duplicateCount} games owned across 2+ platforms";
+                SummaryText = string.Format(Lang["StatSummaryDuplicateGames"], duplicateCount);
                 break;
             default:
-                WindowTitle = "Statistics Details";
-                HeaderTitle = "Statistics Details";
+                WindowTitle = Lang["StatsHeader"];
+                HeaderTitle = Lang["StatsHeader"];
                 SummaryText = string.Empty;
                 break;
         }

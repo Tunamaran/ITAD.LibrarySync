@@ -209,6 +209,16 @@ public sealed partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(DisplayVersionText));
         OnPropertyChanged(nameof(DisplayCurrentVersionText));
         UpdateStatusText = Lang["VersionUpToDate"];
+        RefreshXboxConnectionState();
+        RefreshEaConnectionState();
+        foreach (var launcher in LauncherStatuses)
+        {
+            if (launcher.LastReadCache is not null)
+            {
+                launcher.DetectionStatus = LauncherReadResultDisplay.GetDetectionStatus(launcher.LastReadCache);
+                launcher.LastReadResult = LauncherReadResultDisplay.FormatScanSummary(launcher.LastReadCache);
+            }
+        }
     }
 
     [ObservableProperty]
@@ -664,15 +674,15 @@ public sealed partial class SettingsViewModel : ObservableObject
     private void RefreshXboxConnectionState()
     {
         XboxConnectionStatus = _xboxOAuthService.IsAuthenticated()
-            ? _xboxOAuthService.GetGamertag() ?? "Connected"
-            : "Not connected";
+            ? _xboxOAuthService.GetGamertag() ?? Lang["WizardConnected"]
+            : Lang["WizardNotConnected"];
     }
 
     private void RefreshEaConnectionState()
     {
         EaConnectionStatus = _eaOAuthService.IsAuthenticated()
-            ? _eaOAuthService.GetStoredSession()?.DisplayName ?? "Connected"
-            : "Not connected";
+            ? _eaOAuthService.GetStoredSession()?.DisplayName ?? Lang["WizardConnected"]
+            : Lang["WizardNotConnected"];
     }
 
     private void ApplySyncStatsFromService()
