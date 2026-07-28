@@ -1,5 +1,5 @@
 using ITAD.LibrarySync.App.Services;
-using ITAD.LibrarySync.Core.Logging;
+using ITAD.LibrarySync.Core.Scheduling;
 
 namespace ITAD.LibrarySync.App.ViewModels;
 
