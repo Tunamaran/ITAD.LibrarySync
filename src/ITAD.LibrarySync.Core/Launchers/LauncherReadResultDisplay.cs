@@ -5,7 +5,24 @@ namespace ITAD.LibrarySync.Core.Launchers;
 
 public static class LauncherReadResultDisplay
 {
-    public static Func<string, string> StringResolver { get; set; } = key => key;
+    public static Func<string, string> StringResolver { get; set; } = GetEnglishDefault;
+
+    private static string GetEnglishDefault(string key) => key switch
+    {
+        "StatusNotDetected" => "Not detected",
+        "StatusNotLoggedIn" => "Not logged in",
+        "StatusReady" => "Ready",
+        "StatusLimited" => "Limited",
+        "StatusError" => "Error",
+        "ScanSummaryFormat" => "{0} games ({1} owned, {2} wishlist)",
+        "ScanSummaryBnetNotice" => "Battle.net local cache may omit uninstalled owned titles",
+        "ScanSummaryEaPartial" => "partial library (local fallback)",
+        "ScanSummaryEaOnline" => "online EA library",
+        "ScanSummaryNoEntries" => "0 games — launcher detected, no readable library entries",
+        "ScanSummaryItemSkipped" => "1 item skipped",
+        "ScanSummaryItemsSkipped" => "{0} items skipped",
+        _ => key
+    };
 
     public static string GetDetectionStatus(LauncherReadResult result, Func<string, string>? lang = null)
     {
