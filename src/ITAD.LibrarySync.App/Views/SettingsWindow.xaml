@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:ITAD.LibrarySync.App.Converters"
         Title="{Binding Lang[SettingsTitle], Mode=OneWay}"
-        Height="640"
-        Width="820"
-        MinHeight="500"
-        MinWidth="700"
+        Height="680"
+        Width="860"
+        MinHeight="540"
+        MinWidth="740"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize">
     <Window.Resources>
@@ -19,13 +19,41 @@
         </Grid.RowDefinitions>
 
         <TabControl Grid.Row="0">
-            <!-- 1. ITAD CONNECTION TAB -->
-            <TabItem Header="{Binding Lang[TabItad], Mode=OneWay}">
+            <!-- ============================================================ -->
+            <!-- 1. ACCOUNTS & PLATFORMS TAB -->
+            <!-- ============================================================ -->
+            <TabItem Header="{Binding Lang[TabAccountsAndPlatforms], Mode=OneWay}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
+                        
+                        <!-- Summary Statistics Cards (Option A: Top of Tab 1) -->
+                        <UniformGrid Columns="3" Margin="0,0,0,16">
+                            <Border Background="#1A0284C7" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="8" Padding="14" Margin="4">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Lang[TotalSyncedGamesLabel], Mode=OneWay}" Foreground="#0369A1" FontSize="12" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding TotalSyncedGamesCount}" FontSize="24" FontWeight="Bold" Foreground="#0284C7" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#1A107C41" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="14" Margin="4">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Lang[MatchRateLabel], Mode=OneWay}" Foreground="#15803D" FontSize="12" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding MatchRatePercentage, StringFormat=\{0\}%}" FontSize="24" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#1A5C2D91" BorderBrush="#E9D5FF" BorderThickness="1" CornerRadius="8" Padding="14" Margin="4">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Lang[ActivePlatformsLabel], Mode=OneWay}" Foreground="#7E22CE" FontSize="12" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding EnabledLaunchersCount}" FontSize="24" FontWeight="Bold" Foreground="#9333EA" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- ITAD Account Card -->
                         <TextBlock Text="{Binding Lang[ItadHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource TextPrimaryBrush}" />
                         
-                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,16,0,0">
+                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,8,0,0">
                             <StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -49,7 +77,7 @@
                             </StackPanel>
                         </Border>
 
-                        <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
+                        <StackPanel Margin="0,14,0,0" Orientation="Horizontal">
                             <Button Content="{Binding Lang[ConnectBtn], Mode=OneWay}"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     Width="130"
@@ -65,7 +93,7 @@
                                     Command="{Binding SyncNowCommand}" />
                         </StackPanel>
 
-                        <Border Background="#F0F9FF" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,16,0,0">
+                        <Border Background="#F0F9FF" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,14,0,16">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="💡" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Top" />
                                 <TextBlock Foreground="#0369A1" TextWrapping="Wrap" FontSize="12" LineHeight="17">
@@ -74,85 +102,55 @@
                                 </TextBlock>
                             </StackPanel>
                         </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
 
-            <!-- 2. PLATFORMS TAB -->
-            <TabItem Header="{Binding Lang[TabPlatforms], Mode=OneWay}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="12">
-                        <!-- Platform Scanning Info Card -->
-                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,12">
+                        <!-- Platform Launchers & Connected Accounts Section -->
+                        <TextBlock Text="{Binding Lang[PlatformInfoHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Margin="0,8,0,0" />
+                        
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,12">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="ℹ️" FontSize="15" Margin="0,0,8,0" VerticalAlignment="Top" />
-                                <TextBlock Foreground="#334155" TextWrapping="Wrap" FontSize="11.5" LineHeight="16">
-                                    <Run FontWeight="Bold" Text="{Binding Lang[PlatformTipsTitle], Mode=OneWay}" /><LineBreak />
-                                    <Run Text="{Binding Lang[PlatformTipsText], Mode=OneWay}" />
+                                <TextBlock Foreground="#475569" TextWrapping="Wrap" FontSize="12" LineHeight="17">
+                                    <Run FontWeight="Bold" Text="{Binding Lang[PlatformInfoCardTitle], Mode=OneWay}" /><LineBreak />
+                                    <Run Text="{Binding Lang[PlatformInfoCardText], Mode=OneWay}" />
                                 </TextBlock>
                             </StackPanel>
                         </Border>
 
-                        <DataGrid Margin="0,0,0,14"
-                                  ItemsSource="{Binding LauncherStatuses}"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="False"
-                                  CanUserDeleteRows="False"
-                                  HeadersVisibility="Column"
-                                  MaxHeight="260">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColPlatform], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Binding="{Binding DisplayName}"
-                                                    Width="*"
-                                                    IsReadOnly="True" />
-                                <DataGridCheckBoxColumn Header="{Binding DataContext.Lang[ColEnabled], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                       Binding="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"
-                                                       Width="65" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColStatus], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Binding="{Binding DetectionStatus}"
-                                                    Width="110"
-                                                    IsReadOnly="True" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLastSync], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Binding="{Binding LastSyncStats}"
-                                                    Width="*"
-                                                    IsReadOnly="True" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColResult], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Binding="{Binding LastReadResult}"
-                                                    Width="*"
-                                                    IsReadOnly="True" />
-                                <DataGridTemplateColumn Header="{Binding DataContext.Lang[ColTest], RelativeSource={RelativeSource AncestorType=Window}}" Width="80">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="{Binding DataContext.Lang[BtnTest], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Padding="6,2"
-                                                    ToolTip="{Binding DataContext.Lang[TestBtnTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Command="{Binding DataContext.TestReadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{Binding DataContext.Lang[ColDetails], RelativeSource={RelativeSource AncestorType=Window}}" Width="80">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="{Binding DataContext.Lang[BtnDetails], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Padding="6,2"
-                                                    ToolTip="{Binding DataContext.Lang[DetailsBtnTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <ItemsControl ItemsSource="{Binding LauncherStatuses}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
 
-                        <Grid Margin="0,0,0,8">
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Margin="0,0,12,0" />
+
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding LauncherName}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding DisplayStatus}" Foreground="#64748B" FontSize="12" Margin="0,2,0,0"/>
+                                            </StackPanel>
+
+                                            <Button Grid.Column="2" Content="{Binding DataContext.Lang[BtnTestDetails], RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    Command="{Binding DataContext.TestPlatformCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}" VerticalAlignment="Center" Padding="10,4" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Launcher Account Connections (Xbox & EA App) -->
+                        <Grid Margin="0,8,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Xbox Account Card -->
                             <Border Grid.Column="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Lang[XboxAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
@@ -164,7 +162,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- EA App Account Card -->
                             <Border Grid.Column="2" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Lang[EaAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
@@ -180,8 +177,10 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!-- 3. SYNCHRONIZATION TAB -->
-            <TabItem Header="{Binding Lang[TabSync], Mode=OneWay}">
+            <!-- ============================================================ -->
+            <!-- 2. SYNC & MATCHING TAB -->
+            <!-- ============================================================ -->
+            <TabItem Header="{Binding Lang[TabSyncAndMappings], Mode=OneWay}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
                         <!-- Inline Sync Progress Card -->
@@ -202,19 +201,16 @@
                                     </StackPanel>
                                 </DockPanel>
 
-                                <!-- Status Text -->
                                 <TextBlock Text="{Binding SyncProgress.StatusText}"
                                            FontSize="12.5" Foreground="#475569" FontWeight="Medium" Margin="0,2,0,6" />
 
-                                <!-- Indeterminate Progress Bar during sync -->
                                 <ProgressBar Height="6" Margin="0,4,0,10"
                                              IsIndeterminate="{Binding SyncProgress.IsSyncing}"
                                              Visibility="{Binding SyncProgress.IsSyncing, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
 
-                                <!-- Live Log Stream ListBox -->
                                 <ListBox x:Name="SyncInlineLogList"
                                          ItemsSource="{Binding SyncProgress.Lines}"
-                                         MaxHeight="160" MinHeight="70"
+                                         MaxHeight="140" MinHeight="65"
                                          FontFamily="Consolas" FontSize="11.5"
                                          Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"
                                          Padding="6"
@@ -223,148 +219,59 @@
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Text="{Binding Lang[SyncSettingsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
+                        <!-- Unmatched Games Section -->
+                        <TextBlock Text="{Binding Lang[UnmatchedGuideTitle], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Margin="0,4,0,0" />
                         
-                        <!-- Sync Guide Banner -->
-                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,16">
+                        <Border Background="#FEFCE8" BorderBrush="#FEF08A" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,6,0,12">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="⚙️" FontSize="15" Margin="0,0,8,0" VerticalAlignment="Top" />
-                                <TextBlock Foreground="#475569" TextWrapping="Wrap" FontSize="12" LineHeight="17">
-                                    <Run FontWeight="Bold" Text="{Binding Lang[SyncGuideTitle], Mode=OneWay}" /><LineBreak />
-                                    <Run Text="{Binding Lang[SyncGuideText], Mode=OneWay}" />
-                                </TextBlock>
+                                <TextBlock Text="💡" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Top" />
+                                <TextBlock Foreground="#713F12" TextWrapping="Wrap" FontSize="11.5" LineHeight="16"
+                                           Text="{Binding Lang[UnmatchedGuideText], Mode=OneWay}" />
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Margin="0,4,0,6" Text="{Binding Lang[SyncIntervalLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" />
-                        <ComboBox Width="240"
-                                  HorizontalAlignment="Left"
-                                  ToolTip="{Binding Lang[SyncIntervalTooltip], Mode=OneWay}"
-                                  ItemsSource="{Binding IntervalOptions}"
-                                  SelectedItem="{Binding SelectedInterval}" />
+                        <!-- Toolbar & Search Box -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <CheckBox Margin="0,18,0,0"
-                                  Content="{Binding Lang[SyncOnStartupLabel], Mode=OneWay}"
-                                  ToolTip="{Binding Lang[SyncOnStartupTooltip], Mode=OneWay}"
-                                  IsChecked="{Binding SyncOnStartup}" />
+                            <TextBox Grid.Column="0"
+                                     Margin="0,0,8,0"
+                                     VerticalAlignment="Center"
+                                     Text="{Binding UnmatchedSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="{Binding Lang[SearchUnmatchedTooltip], Mode=OneWay}" />
 
-                        <CheckBox Margin="0,10,0,0"
-                                  Content="{Binding Lang[ConfirmBeforeSyncLabel], Mode=OneWay}"
-                                  ToolTip="{Binding Lang[ConfirmBeforeSyncTooltip], Mode=OneWay}"
-                                  IsChecked="{Binding ConfirmBeforeSync}" />
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-
-            <!-- 4. STATISTICS TAB -->
-            <TabItem Header="{Binding Lang[TabStats], Mode=OneWay}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="12">
-                        <TextBlock Text="{Binding Lang[StatsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
-                        <UniformGrid Columns="3" Margin="0,16,0,16">
-                            <Border Background="#1A0284C7" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="8" Padding="16" Margin="4">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Lang[TotalSyncedGamesLabel], Mode=OneWay}" Foreground="#0369A1" FontSize="12" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding TotalSyncedGamesCount}" FontSize="26" FontWeight="Bold" Foreground="#0284C7" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Background="#1A107C41" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="16" Margin="4">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Lang[MatchRateLabel], Mode=OneWay}" Foreground="#15803D" FontSize="12" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding MatchRatePercentage, StringFormat=\{0\}%}" FontSize="26" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Background="#1A5C2D91" BorderBrush="#E9D5FF" BorderThickness="1" CornerRadius="8" Padding="16" Margin="4">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Lang[ActivePlatformsLabel], Mode=OneWay}" Foreground="#7E22CE" FontSize="12" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding EnabledLaunchersCount}" FontSize="26" FontWeight="Bold" Foreground="#9333EA" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-
-                        <TextBlock Text="{Binding Lang[CustomMappingsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="14" Margin="0,8,0,8" />
-                        <DataGrid ItemsSource="{Binding CustomMappings}"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="False"
-                                  CanUserDeleteRows="False"
-                                  IsReadOnly="True"
-                                  MaxHeight="180"
-                                  HeadersVisibility="Column">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColPlatform], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Launcher}" Width="95" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="*" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="130" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColTargetItadId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding MappedId}" Width="140" />
-                                <DataGridTemplateColumn Width="70">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="{Binding DataContext.Lang[BtnDelete], RelativeSource={RelativeSource AncestorType=Window}}" Padding="6,2"
-                                                    ToolTip="{Binding DataContext.Lang[DeleteMappingTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    Command="{Binding DataContext.RemoveCustomMappingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-
-            <!-- 5. UNMATCHED GAMES TAB -->
-            <TabItem Header="{Binding Lang[TabUnmatched], Mode=OneWay}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="12">
-                        <!-- Guide -->
-                        <Border Background="#FEFCE8" BorderBrush="#FEF08A" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="🛠️" FontSize="15" Margin="0,0,8,0" VerticalAlignment="Top" />
-                                <TextBlock Foreground="#854D0E" TextWrapping="Wrap" FontSize="11.5" LineHeight="16">
-                                    <Run FontWeight="Bold" Text="{Binding Lang[UnmatchedGuideTitle], Mode=OneWay}" /><LineBreak />
-                                    <Run Text="{Binding Lang[UnmatchedGuideText], Mode=OneWay}" />
-                                </TextBlock>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Content="{Binding Lang[BtnRefresh], Mode=OneWay}"
+                                        Command="{Binding LoadUnmatchedTitlesCommand}"
+                                        Margin="0,0,6,0" Padding="10,4" />
+                                <Button Content="{Binding Lang[BtnClearList], Mode=OneWay}"
+                                        Command="{Binding ClearUnmatchedTitlesCommand}"
+                                        Padding="10,4" />
                             </StackPanel>
-                        </Border>
+                        </Grid>
 
-                        <!-- Toolbar -->
-                        <DockPanel Margin="0,0,0,8">
-                            <Button DockPanel.Dock="Right"
-                                    Content="{Binding Lang[BtnClearList], Mode=OneWay}"
-                                    Padding="12,4"
-                                    Margin="8,0,0,0"
-                                    ToolTip="{Binding Lang[ClearListTooltip], Mode=OneWay}"
-                                    Command="{Binding ClearUnmatchedTitlesCommand}" />
-                            <Button DockPanel.Dock="Right"
-                                    Content="{Binding Lang[BtnRefresh], Mode=OneWay}"
-                                    Padding="12,4"
-                                    ToolTip="{Binding Lang[RefreshListTooltip], Mode=OneWay}"
-                                    Command="{Binding LoadUnmatchedTitlesCommand}" />
-                            <TextBox Text="{Binding UnmatchedSearchText, UpdateSourceTrigger=PropertyChanged}"
-                                     VerticalContentAlignment="Center"
-                                     Padding="6,4" />
-                        </DockPanel>
-
-                        <!-- Unmatched Games DataGrid -->
                         <DataGrid ItemsSource="{Binding FilteredUnmatchedTitles}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
                                   IsReadOnly="True"
+                                  MaxHeight="200"
                                   HeadersVisibility="Column"
-                                  MaxHeight="280">
+                                  Margin="0,0,0,16">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColPlatform], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Launcher}" Width="90" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="*" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="120" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColReason], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding ReasonCode, Converter={StaticResource UnmatchedReasonConverter}}" Width="1.2*" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColDate], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding DetectedAt, StringFormat=\{0:g\}}" Width="110" />
-                                <DataGridTemplateColumn Header="{Binding DataContext.Lang[ColAction], RelativeSource={RelativeSource AncestorType=Window}}" Width="75">
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColPlatform], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Launcher}" Width="85" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="2*" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="1.2*" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColReason], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding ReasonCode, Converter={StaticResource UnmatchedReasonConverter}}" Width="1.5*" />
+                                <DataGridTemplateColumn Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="{Binding DataContext.Lang[BtnFix], RelativeSource={RelativeSource AncestorType=Window}}" Padding="6,2"
+                                            <Button Content="{Binding DataContext.Lang[BtnFixMatch], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Style="{StaticResource PrimaryButtonStyle}"
+                                                    Padding="8,2"
                                                     Command="{Binding DataContext.FixMatchCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}" />
                                         </DataTemplate>
@@ -373,16 +280,13 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <!-- Custom Mappings Section -->
-                        <TextBlock Text="{Binding Lang[CustomMappingsHeader], Mode=OneWay}"
-                                   FontWeight="SemiBold" FontSize="14"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                   Margin="0,18,0,8" />
-
-                        <Border Background="#F0FDF4" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10">
+                        <!-- Custom Game Mappings Section -->
+                        <TextBlock Text="{Binding Lang[CustomMappingsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" Margin="0,4,0,0" />
+                        
+                        <Border Background="#F0FDF4" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,6,0,10">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="✅" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                <TextBlock Foreground="#166534" FontSize="11.5" VerticalAlignment="Center"
+                                <TextBlock Text="✉️" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Top" />
+                                <TextBlock Foreground="#166534" TextWrapping="Wrap" FontSize="11.5" LineHeight="16"
                                            Text="{Binding Lang[CustomMappingsGuideText], Mode=OneWay}" />
                             </StackPanel>
                         </Border>
@@ -392,18 +296,19 @@
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
                                   IsReadOnly="True"
+                                  MaxHeight="180"
                                   HeadersVisibility="Column"
-                                  MaxHeight="200">
+                                  Margin="0,0,0,8">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColPlatform], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Launcher}" Width="80" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="*" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="120" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColMappedId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding MappedId}" Width="140" />
-                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColDate], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding CreatedAt, StringFormat=\{0:g\}}" Width="110" />
-                                <DataGridTemplateColumn Header="{Binding DataContext.Lang[ColAction], RelativeSource={RelativeSource AncestorType=Window}}" Width="60">
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColPlatform], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Launcher}" Width="85" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColGameTitle], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Title}" Width="2*" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLocalStoreId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding StoreId}" Width="1.2*" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColTargetItadId], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding MappedId}" Width="1.4*" />
+                                <DataGridTemplateColumn Width="50">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="❌" Padding="6,2" ToolTip="{Binding DataContext.Lang[BtnRemoveMapping], RelativeSource={RelativeSource AncestorType=Window}}"
+                                            <Button Content="✕" Padding="6,2" FontWeight="Bold" Foreground="#DC2626"
+                                                    ToolTip="{Binding DataContext.Lang[DeleteMappingTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Command="{Binding DataContext.RemoveCustomMappingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}" />
                                         </DataTemplate>
@@ -412,123 +317,138 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Button Content="{Binding Lang[BtnSyncCustomMappings], Mode=OneWay}"
+                        <Button HorizontalAlignment="Right"
+                                Content="{Binding Lang[BtnSyncCustomMappings], Mode=OneWay}"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                Padding="14,6"
-                                Margin="0,10,0,0"
-                                HorizontalAlignment="Right"
+                                Padding="12,6"
                                 ToolTip="{Binding Lang[SyncCustomMappingsTooltip], Mode=OneWay}"
                                 Command="{Binding SyncCustomMappingsCommand}" />
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
-            <!-- 6. LOGS TAB -->
-            <TabItem Header="{Binding Lang[TabLogs], Mode=OneWay}">
-                <Grid Margin="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <Border Grid.Row="0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📋" FontSize="15" Margin="0,0,8,0" VerticalAlignment="Center" />
-                            <TextBlock Foreground="#64748B" FontSize="12" VerticalAlignment="Center" Text="{Binding Lang[LogsGuideText], Mode=OneWay}" />
-                        </StackPanel>
-                    </Border>
-
-                    <DockPanel Grid.Row="1" Margin="0,0,0,8">
-                        <Button DockPanel.Dock="Right"
-                                Content="{Binding Lang[BtnOpenLogFolder], Mode=OneWay}"
-                                Padding="12,4"
-                                Margin="8,0,0,0"
-                                ToolTip="{Binding Lang[OpenLogFolderTooltip], Mode=OneWay}"
-                                Command="{Binding OpenLogFolderCommand}" />
-                        <Button DockPanel.Dock="Right"
-                                Content="{Binding Lang[BtnRefresh], Mode=OneWay}"
-                                Padding="12,4"
-                                Margin="8,0,0,0"
-                                ToolTip="{Binding Lang[RefreshLogsTooltip], Mode=OneWay}"
-                                Command="{Binding RefreshLogsCommand}" />
-                        <ComboBox DockPanel.Dock="Right"
-                                  Width="100"
-                                  Margin="8,0,0,0"
-                                  ToolTip="{Binding Lang[LogFilterTooltip], Mode=OneWay}"
-                                  ItemsSource="{Binding LogFilterOptions}"
-                                  SelectedItem="{Binding SelectedLogFilter}" />
-                        <TextBox Text="{Binding LogSearchText, UpdateSourceTrigger=PropertyChanged}"
-                                 VerticalContentAlignment="Center"
-                                 Padding="6,4" />
-                    </DockPanel>
-                    <DataGrid Grid.Row="2"
-                              ItemsSource="{Binding FilteredLogs}"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="False"
-                              CanUserDeleteRows="False"
-                              IsReadOnly="True"
-                              HeadersVisibility="Column">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding DataContext.Lang[ColTime], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Timestamp, StringFormat=\{0:HH:mm:ss\}}" Width="85" />
-                            <DataGridTextColumn Header="{Binding DataContext.Lang[ColLevel], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Level}" Width="75" />
-                            <DataGridTextColumn Header="{Binding DataContext.Lang[ColMessage], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Message}" Width="*" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </TabItem>
-
-            <!-- 7. GENERAL TAB -->
-            <TabItem Header="{Binding Lang[TabGeneral], Mode=OneWay}">
+            <!-- ============================================================ -->
+            <!-- 3. SETTINGS & LOGS TAB -->
+            <!-- ============================================================ -->
+            <TabItem Header="{Binding Lang[TabSettingsAndLogs], Mode=OneWay}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
-                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,16">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="ITAD Library Sync" FontWeight="Bold" FontSize="15" Foreground="{StaticResource TextPrimaryBrush}" />
-                                    <TextBlock Text="{Binding Lang[AppSubtitle], Mode=OneWay}" FontSize="12" Foreground="#64748B" Margin="0,2,0,0" />
-                                </StackPanel>
-                                <Border Grid.Column="1" Background="#0284C7" CornerRadius="12" Padding="10,4" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding DisplayVersionText, Mode=OneWay}" Foreground="White" FontWeight="Bold" FontSize="12" />
-                                </Border>
-                            </Grid>
-                        </Border>
+                        <!-- Synchronization Configuration -->
+                        <TextBlock Text="{Binding Lang[SyncSettingsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
+                        
+                        <TextBlock Margin="0,8,0,6" Text="{Binding Lang[SyncIntervalLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" />
+                        <ComboBox Width="240"
+                                  HorizontalAlignment="Left"
+                                  ToolTip="{Binding Lang[SyncIntervalTooltip], Mode=OneWay}"
+                                  ItemsSource="{Binding IntervalOptions}"
+                                  SelectedItem="{Binding SelectedInterval}" />
 
-                        <TextBlock Text="{Binding Lang[AppPreferencesHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
-                        <CheckBox Margin="0,12,0,0"
+                        <CheckBox Margin="0,14,0,0"
+                                  Content="{Binding Lang[SyncOnStartupLabel], Mode=OneWay}"
+                                  ToolTip="{Binding Lang[SyncOnStartupTooltip], Mode=OneWay}"
+                                  IsChecked="{Binding SyncOnStartup}" />
+
+                        <CheckBox Margin="0,10,0,0"
+                                  Content="{Binding Lang[ConfirmBeforeSyncLabel], Mode=OneWay}"
+                                  ToolTip="{Binding Lang[ConfirmBeforeSyncTooltip], Mode=OneWay}"
+                                  IsChecked="{Binding ConfirmBeforeSync}" />
+
+                        <Separator Margin="0,16,0,14" Background="#E2E8F0" />
+
+                        <!-- Application Preferences -->
+                        <TextBlock Text="{Binding Lang[AppSettingsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
+                        
+                        <CheckBox Margin="0,10,0,0"
                                   Content="{Binding Lang[StartWithWindowsLabel], Mode=OneWay}"
                                   ToolTip="{Binding Lang[StartWithWindowsTooltip], Mode=OneWay}"
                                   IsChecked="{Binding StartWithWindows}" />
+
+                        <CheckBox Margin="0,10,0,0"
+                                  Content="{Binding Lang[MinimizeToTrayLabel], Mode=OneWay}"
+                                  ToolTip="{Binding Lang[MinimizeToTrayTooltip], Mode=OneWay}"
+                                  IsChecked="{Binding MinimizeToTray}" />
+
                         <CheckBox Margin="0,10,0,0"
                                   Content="{Binding Lang[ShowNotificationsLabel], Mode=OneWay}"
                                   ToolTip="{Binding Lang[ShowNotificationsTooltip], Mode=OneWay}"
                                   IsChecked="{Binding ShowNotifications}" />
 
-                        <TextBlock Margin="0,14,0,6" Text="{Binding Lang[LanguageLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" />
-                        <ComboBox Width="220"
-                                  HorizontalAlignment="Left"
-                                  ToolTip="{Binding Lang[LanguageTooltip], Mode=OneWay}"
-                                  ItemsSource="{Binding LanguageOptions}"
-                                  SelectedItem="{Binding SelectedLanguage}" />
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Margin="0,14,0,6" Text="{Binding Lang[LogLevelLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" />
-                        <ComboBox Width="220"
-                                  HorizontalAlignment="Left"
-                                  ToolTip="{Binding Lang[LogLevelTooltip], Mode=OneWay}"
-                                  ItemsSource="{Binding LogLevelOptions}"
-                                  SelectedItem="{Binding SelectedLogLevel}" />
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding Lang[LanguageLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" Margin="0,0,0,4"/>
+                                <ComboBox Width="200"
+                                          HorizontalAlignment="Left"
+                                          ToolTip="{Binding Lang[LanguageTooltip], Mode=OneWay}"
+                                          ItemsSource="{Binding LanguageOptions}"
+                                          SelectedItem="{Binding SelectedLanguage}" />
+                            </StackPanel>
 
-                        <Separator Margin="0,20,0,16" Background="#E2E8F0" />
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{Binding Lang[LogLevelLabel], Mode=OneWay}" Foreground="#64748B" FontSize="13" Margin="0,0,0,4"/>
+                                <ComboBox Width="200"
+                                          HorizontalAlignment="Left"
+                                          ToolTip="{Binding Lang[LogLevelTooltip], Mode=OneWay}"
+                                          ItemsSource="{Binding LogLevelOptions}"
+                                          SelectedItem="{Binding SelectedLogLevel}" />
+                            </StackPanel>
+                        </Grid>
 
+                        <Separator Margin="0,16,0,14" Background="#E2E8F0" />
+
+                        <!-- System Logs Viewer -->
+                        <TextBlock Text="{Binding Lang[LogsHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
+                        
+                        <Grid Margin="0,8,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0"
+                                     Margin="0,0,8,0"
+                                     VerticalAlignment="Center"
+                                     Text="{Binding LogSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="{Binding Lang[SearchLogsTooltip], Mode=OneWay}" />
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Content="{Binding Lang[BtnOpenLogFolder], Mode=OneWay}"
+                                        Command="{Binding OpenLogFolderCommand}"
+                                        Margin="0,0,6,0" Padding="10,4" />
+                                <Button Content="{Binding Lang[BtnRefreshLogs], Mode=OneWay}"
+                                        Command="{Binding RefreshLogsCommand}"
+                                        Padding="10,4" />
+                            </StackPanel>
+                        </Grid>
+
+                        <DataGrid ItemsSource="{Binding FilteredLogs}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  MaxHeight="180"
+                                  HeadersVisibility="Column"
+                                  Margin="0,0,0,16">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColTime], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding TimestampDisplay}" Width="80" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColLevel], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Level}" Width="70" />
+                                <DataGridTextColumn Header="{Binding DataContext.Lang[ColMessage], RelativeSource={RelativeSource AncestorType=Window}}" Binding="{Binding Message}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Separator Margin="0,0,0,14" Background="#E2E8F0" />
+
+                        <!-- Application Updates -->
                         <TextBlock Text="{Binding Lang[AppUpdatesHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="15" />
-                        <TextBlock Margin="0,6,0,0" FontSize="13" Text="{Binding DisplayCurrentVersionText, Mode=OneWay}" />
-                        <TextBlock Margin="0,4,0,12" Foreground="#64748B" Text="{Binding UpdateStatusText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <TextBlock Margin="0,4,0,0" FontSize="13" Text="{Binding DisplayCurrentVersionText, Mode=OneWay}" />
+                        <TextBlock Margin="0,2,0,8" Foreground="#64748B" Text="{Binding UpdateStatusText, Mode=OneWay}" TextWrapping="Wrap" />
 
-                        <ProgressBar Margin="0,0,0,12" Height="8" Value="{Binding DownloadProgress, Mode=OneWay}"
+                        <ProgressBar Margin="0,0,0,10" Height="8" Value="{Binding DownloadProgress, Mode=OneWay}"
                                      Visibility="{Binding IsDownloadingUpdate, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
 
                         <StackPanel Orientation="Horizontal">

@@ -56,6 +56,9 @@ public sealed class LanguageManager : INotifyPropertyChanged
     private static string GetEnglishString(string key) => key switch
     {
         "SettingsTitle" => "ITAD Library Sync — Settings",
+        "TabAccountsAndPlatforms" => "Accounts & Platforms",
+        "TabSyncAndMappings" => "Sync & Matching",
+        "TabSettingsAndLogs" => "Settings & Logs",
         "TabItad" => "ITAD Connection",
         "TabPlatforms" => "Platforms",
         "TabSync" => "Synchronization",
@@ -315,6 +318,9 @@ public sealed class LanguageManager : INotifyPropertyChanged
     private static string GetTurkishString(string key) => key switch
     {
         "SettingsTitle" => "ITAD Library Sync — Ayarlar",
+        "TabAccountsAndPlatforms" => "Hesaplar & Platformlar",
+        "TabSyncAndMappings" => "Senkronizasyon & Eşleşmeler",
+        "TabSettingsAndLogs" => "Ayarlar & Günlükler",
         "TabItad" => "ITAD Bağlantısı",
         "TabPlatforms" => "Platformlar",
         "TabSync" => "Senkronizasyon",
