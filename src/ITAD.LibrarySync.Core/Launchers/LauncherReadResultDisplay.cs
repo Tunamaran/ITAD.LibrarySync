@@ -21,6 +21,7 @@ public static class LauncherReadResultDisplay
         "ScanSummaryNoEntries" => "0 games — launcher detected, no readable library entries",
         "ScanSummaryItemSkipped" => "1 item skipped",
         "ScanSummaryItemsSkipped" => "{0} items skipped",
+        "ScanSummarySomeItemsSkipped" => "some items skipped",
         _ => key
     };
 
@@ -76,7 +77,7 @@ public static class LauncherReadResultDisplay
             if (skipSuffix is not null)
                 return $"{summary} — {skipSuffix}";
 
-            return $"{summary} — {lang("ScanSummaryItemSkipped")}";
+            return $"{summary} — {lang("ScanSummarySomeItemsSkipped")}";
         }
 
         if (result.IsDetected && result.Launcher == LauncherId.Xbox)
