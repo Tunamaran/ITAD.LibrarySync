@@ -420,7 +420,8 @@
                                   HorizontalAlignment="Left"
                                   ToolTip="{Binding Lang[SyncIntervalTooltip], Mode=OneWay}"
                                   ItemsSource="{Binding IntervalOptions}"
-                                  SelectedItem="{Binding SelectedInterval}" />
+                                  SelectedItem="{Binding SelectedIntervalOption}"
+                                  DisplayMemberPath="DisplayName" />
 
                         <CheckBox Margin="0,14,0,0"
                                   Content="{Binding Lang[SyncOnStartupLabel], Mode=OneWay}"
@@ -474,7 +475,8 @@
                                           HorizontalAlignment="Left"
                                           ToolTip="{Binding Lang[LogLevelTooltip], Mode=OneWay}"
                                           ItemsSource="{Binding LogLevelOptions}"
-                                          SelectedItem="{Binding SelectedLogLevel}" />
+                                          SelectedItem="{Binding SelectedLogLevelOption}"
+                                          DisplayMemberPath="DisplayName" />
                             </StackPanel>
                         </Grid>
 

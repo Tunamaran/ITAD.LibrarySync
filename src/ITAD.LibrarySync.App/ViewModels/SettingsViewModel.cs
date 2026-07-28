@@ -157,11 +157,48 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public ObservableCollection<LogEntry> FilteredLogs { get; } = [];
 
-    public IReadOnlyList<SyncInterval> IntervalOptions { get; } =
-        Enum.GetValues<SyncInterval>().Cast<SyncInterval>().ToArray();
+    public IReadOnlyList<SyncIntervalOption> IntervalOptions { get; } =
+    [
+        new(SyncInterval.Disabled, "IntervalDisabled"),
+        new(SyncInterval.Every6Hours, "IntervalEvery6Hours"),
+        new(SyncInterval.Every12Hours, "IntervalEvery12Hours"),
+        new(SyncInterval.Every24Hours, "IntervalEvery24Hours"),
+        new(SyncInterval.Weekly, "IntervalWeekly")
+    ];
 
-    public IReadOnlyList<AppLogLevel> LogLevelOptions { get; } =
-        Enum.GetValues<AppLogLevel>().Cast<AppLogLevel>().ToArray();
+    public IReadOnlyList<LogLevelOption> LogLevelOptions { get; } =
+    [
+        new(AppLogLevel.Debug, "LogLevelDebug"),
+        new(AppLogLevel.Info, "LogLevelInfo"),
+        new(AppLogLevel.Warning, "LogLevelWarning"),
+        new(AppLogLevel.Error, "LogLevelError")
+    ];
+
+    public SyncIntervalOption SelectedIntervalOption
+    {
+        get => IntervalOptions.FirstOrDefault(o => o.Interval == SelectedInterval) ?? IntervalOptions[1];
+        set
+        {
+            if (value is not null && SelectedInterval != value.Interval)
+            {
+                SelectedInterval = value.Interval;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public LogLevelOption SelectedLogLevelOption
+    {
+        get => LogLevelOptions.FirstOrDefault(o => o.Level == SelectedLogLevel) ?? LogLevelOptions[1];
+        set
+        {
+            if (value is not null && SelectedLogLevel != value.Level)
+            {
+                SelectedLogLevel = value.Level;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     public IReadOnlyList<string> LogFilterOptions { get; } = ["ALL", "INFO", "ERROR"];
 
@@ -211,6 +248,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         UpdateStatusText = Lang["VersionUpToDate"];
         RefreshXboxConnectionState();
         RefreshEaConnectionState();
+        OnPropertyChanged(nameof(IntervalOptions));
+        OnPropertyChanged(nameof(LogLevelOptions));
+        OnPropertyChanged(nameof(SelectedIntervalOption));
+        OnPropertyChanged(nameof(SelectedLogLevelOption));
         foreach (var launcher in LauncherStatuses)
         {
             if (launcher.LastReadCache is not null)
@@ -592,6 +633,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _settings.Interval = value;
         PersistSettings();
         _syncScheduler.Apply(_settings.ToSyncScheduleOptions());
+        OnPropertyChanged(nameof(SelectedIntervalOption));
     }
 
     partial void OnSyncOnStartupChanged(bool value)
@@ -624,6 +666,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         _settings.LogLevel = value;
         PersistSettings();
+        OnPropertyChanged(nameof(SelectedLogLevelOption));
     }
 
     partial void OnIsConnectedChanged(bool value)
