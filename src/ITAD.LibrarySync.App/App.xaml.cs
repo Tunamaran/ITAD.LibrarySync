@@ -75,7 +75,7 @@ public partial class App : Application
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             _singleInstance = new SingleInstanceService();
-            if (!_singleInstance.TryBecomePrimary(ActivateRunningInstance))
+            if (!_singleInstance.TryBecomePrimary(ActivateRunningInstanceOnUiThread))
             {
                 Shutdown(0);
                 return;
@@ -134,8 +134,15 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private void ActivateRunningInstance() =>
-        _trayIconService?.Activate();
+    private void ActivateRunningInstanceOnUiThread()
+    {
+        if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+            return;
+
+        Dispatcher.BeginInvoke(ActivateRunningInstance);
+    }
+
+    private void ActivateRunningInstance() => _trayIconService?.Activate();
 
     private void ApplyNormalStartup(AppSettings settings, bool isAutostart = false, bool skipSyncOnStartup = false)
     {

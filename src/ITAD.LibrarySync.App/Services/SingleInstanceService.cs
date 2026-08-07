@@ -11,6 +11,7 @@ public sealed class SingleInstanceService : IDisposable
     private Mutex? _mutex;
     private EventWaitHandle? _activateEvent;
     private CancellationTokenSource? _listenerCts;
+    private Task? _listenerTask;
     private Action? _onActivate;
 
     public bool TryBecomePrimary(Action onActivate)
@@ -26,7 +27,7 @@ public sealed class SingleInstanceService : IDisposable
 
         _activateEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ActivateEventName);
         _listenerCts = new CancellationTokenSource();
-        _ = ListenForActivationAsync(_listenerCts.Token);
+        _listenerTask = Task.Run(() => ListenForActivation(_listenerCts.Token));
         return true;
     }
 
@@ -42,20 +43,20 @@ public sealed class SingleInstanceService : IDisposable
         }
     }
 
-    private async Task ListenForActivationAsync(CancellationToken ct)
+    private void ListenForActivation(CancellationToken ct)
     {
         while (!ct.IsCancellationRequested && _activateEvent is not null)
         {
             try
             {
-                var signaled = await Task.Run(
-                    () => _activateEvent.WaitOne(TimeSpan.FromMilliseconds(500)),
-                    ct);
+                var signaledHandle = WaitHandle.WaitAny([_activateEvent, ct.WaitHandle]);
+                if (signaledHandle == 1)
+                    break;
 
-                if (signaled)
+                if (signaledHandle == 0)
                     _onActivate?.Invoke();
             }
-            catch (OperationCanceledException)
+            catch (ObjectDisposedException) when (ct.IsCancellationRequested)
             {
                 break;
             }
@@ -64,10 +65,30 @@ public sealed class SingleInstanceService : IDisposable
 
     public void Dispose()
     {
-        _listenerCts?.Cancel();
-        _listenerCts?.Dispose();
+        var listenerCts = _listenerCts;
+        var listenerTask = _listenerTask;
+        listenerCts?.Cancel();
+
+        // Wait for the listener to leave WaitAny before disposing its handles.
+        // Disposing them first can surface an ObjectDisposedException during app exit.
+        var listenerStopped = false;
+        try
+        {
+            listenerStopped = listenerTask is null || listenerTask.Wait(TimeSpan.FromSeconds(1));
+        }
+        catch (AggregateException)
+        {
+            // A listener callback must not turn application shutdown into a crash.
+            listenerStopped = true;
+        }
+        if (listenerStopped)
+        {
+            listenerCts?.Dispose();
+            _activateEvent?.Dispose();
+        }
+
         _listenerCts = null;
-        _activateEvent?.Dispose();
+        _listenerTask = null;
         _activateEvent = null;
 
         if (_mutex is null)
