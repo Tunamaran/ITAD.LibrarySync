@@ -406,6 +406,9 @@ public partial class App : Application
         services.AddSingleton<ICloudSaveMappingStorage, CloudSaveMappingStorage>();
         services.AddSingleton<IGameSaveDiscoveryService, GameSaveDiscoveryService>();
         services.AddSingleton<ICloudSaveOrchestrator, CloudSaveOrchestrator>();
+        services.AddSingleton<PcgwSavePathCache>();
+        services.AddSingleton<IPcgwApiClient>(sp => new PcgwApiClient(new HttpClient(), sp.GetService<FileLogger>()));
+        services.AddSingleton<IPcgwSaveLookupService, PcgwSaveLookupService>();
         services.AddTransient<CloudSaveSettingsViewModel>();
 
         services.AddTransient<SettingsViewModel>();

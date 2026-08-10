@@ -20,6 +20,7 @@ public sealed class AppSettings
     public bool StartWithWindows { get; set; }
     public bool ShowNotifications { get; set; } = true;
     public bool ConfirmBeforeSync { get; set; } = true;
+    public bool UsePcgwLiveLookup { get; set; }
     public AppLogLevel LogLevel { get; set; } = AppLogLevel.Info;
     public Dictionary<LauncherId, bool> EnabledLaunchers { get; set; } = CreateDefaultEnabledLaunchers();
     public Dictionary<LauncherId, string> LastSyncStatsByLauncher { get; set; } = new();

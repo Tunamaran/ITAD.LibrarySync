@@ -614,6 +614,10 @@
                                         <Run Text="{Binding SelectedProvider.Root, Mode=OneWay}" />
                                     </TextBlock>
                                 </StackPanel>
+                                <CheckBox Content="{Binding Lang[CloudLiveLookupLabel], Mode=OneWay}"
+                                          IsChecked="{Binding UsePcgwLookup}"
+                                          ToolTip="{Binding Lang[CloudLiveLookupTooltip], Mode=OneWay}"
+                                          Margin="0,10,0,0" FontSize="12" />
                             </StackPanel>
                         </Border>
 

@@ -6,6 +6,7 @@ using ITAD.LibrarySync.App.Services;
 using ITAD.LibrarySync.Core.Launchers;
 using ITAD.LibrarySync.Core.Logging;
 using ITAD.LibrarySync.Core.Models;
+using ITAD.LibrarySync.Core.Scheduling;
 using ITAD.LibrarySync.Core.Services;
 using ITAD.LibrarySync.Core.Sync;
 
@@ -19,11 +20,16 @@ namespace ITAD.LibrarySync.App.ViewModels;
 /// </summary>
 public sealed partial class CloudSaveSettingsViewModel : ObservableObject
 {
+    /// <summary>Maximum live PCGamingWiki page lookups per detection run.</summary>
+    private const int MaxLiveLookupsPerScan = 10;
+
     private readonly ICloudProviderLocator _locator;
     private readonly IGameSaveDiscoveryService _discovery;
     private readonly ICloudSaveOrchestrator _orchestrator;
     private readonly ICloudSaveMappingStorage _storage;
+    private readonly IPcgwSaveLookupService _pcgw;
     private readonly IReadOnlyList<ILauncherReader> _readers;
+    private readonly AppSettingsStorage _settingsStorage;
     private readonly FileLogger _logger;
 
     public CloudSaveSettingsViewModel(
@@ -31,15 +37,21 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         IGameSaveDiscoveryService discovery,
         ICloudSaveOrchestrator orchestrator,
         ICloudSaveMappingStorage storage,
+        IPcgwSaveLookupService pcgw,
         IReadOnlyList<ILauncherReader> readers,
+        AppSettingsStorage settingsStorage,
         FileLogger logger)
     {
         _locator = locator;
         _discovery = discovery;
         _orchestrator = orchestrator;
         _storage = storage;
+        _pcgw = pcgw;
         _readers = readers;
+        _settingsStorage = settingsStorage;
         _logger = logger;
+
+        UsePcgwLookup = _settingsStorage.Load().UsePcgwLiveLookup;
 
         foreach (var provider in _locator.GetAvailableProviders())
             Providers.Add(new CloudProviderOption(provider, _locator.GetCloudRoot(provider)!));
@@ -66,6 +78,16 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string _statusText = string.Empty;
+
+    [ObservableProperty]
+    private bool _usePcgwLookup;
+
+    partial void OnUsePcgwLookupChanged(bool value)
+    {
+        var settings = _settingsStorage.Load();
+        settings.UsePcgwLiveLookup = value;
+        _settingsStorage.Save(settings);
+    }
 
     public bool IsProviderAvailable => SelectedProvider is not null;
 
@@ -97,6 +119,9 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         try
         {
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var remainingLookups = MaxLiveLookupsPerScan;
+            var limitReached = false;
+            var lookingUp = false;
             Games.Clear();
 
             foreach (var reader in _readers)
@@ -119,20 +144,58 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                         continue;
 
                     var saveInfo = await _discovery.FindForTitleAsync(game.Title);
+                    var foundViaLive = false;
+                    if (saveInfo is null && UsePcgwLookup)
+                    {
+                        if (remainingLookups <= 0)
+                        {
+                            limitReached = true;
+                        }
+                        else
+                        {
+                            var lookup = await _pcgw.LookupAsync(game.Title);
+                            if (lookup.UsedLiveRequest)
+                            {
+                                if (!lookingUp)
+                                {
+                                    StatusText = Lang["CloudStatusLookingUp"];
+                                    lookingUp = true;
+                                }
+
+                                remainingLookups--;
+                            }
+
+                            // Cache hits are free and do not consume the budget.
+                            saveInfo = lookup.Info;
+                            foundViaLive = lookup.UsedLiveRequest && saveInfo is not null;
+                        }
+                    }
+
                     var row = new CloudSaveGameViewModel(game, saveInfo, LauncherDisplayNames.Get(reader.Launcher))
                     {
                         StatusText = saveInfo is null
                             ? Lang["CloudStatusNoSaveFolder"]
-                            : saveInfo.Exists
-                                ? Lang["CloudStatusFound"]
-                                : Lang["CloudStatusMissing"],
-                        StatusColor = saveInfo is null ? "#D97706" : saveInfo.Exists ? "#16A34A" : "#EA580C"
+                            : foundViaLive
+                                ? Lang["CloudStatusPcgwFound"]
+                                : saveInfo.Exists
+                                    ? Lang["CloudStatusFound"]
+                                    : Lang["CloudStatusMissing"],
+                        StatusColor = saveInfo is null
+                            ? "#D97706"
+                            : foundViaLive
+                                ? "#0891B2"
+                                : saveInfo.Exists
+                                    ? "#16A34A"
+                                    : "#EA580C"
                     };
                     Games.Add(TrackSelection(row));
                 }
             }
 
-            StatusText = string.Format(Lang["CloudStatusGamesFormat"], Games.Count);
+            var summary = string.Format(Lang["CloudStatusGamesFormat"], Games.Count);
+            if (limitReached)
+                summary += " " + Lang["CloudStatusLookupLimit"];
+            StatusText = summary;
             OnPropertyChanged(nameof(CanMigrate));
             OnPropertyChanged(nameof(CanPreview));
         }
