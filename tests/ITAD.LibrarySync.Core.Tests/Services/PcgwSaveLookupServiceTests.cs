@@ -23,7 +23,10 @@ public sealed class PcgwSaveLookupServiceTests : IDisposable
     {
         var api = new Mock<IPcgwApiClient>();
         api.Setup(x => x.LookupSavePathAsync("Terraria", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PcgwSaveInfo("Terraria", @"%USERPROFILE%\Documents\My Games\Terraria"));
+            .ReturnsAsync(new PcgwSaveInfo(
+                "Terraria",
+                @"%USERPROFILE%\Documents\My Games\Terraria",
+                "https://www.pcgamingwiki.com/wiki/Terraria"));
 
         var service = new PcgwSaveLookupService(api.Object, new PcgwSavePathCache(_cacheDir));
 
@@ -32,7 +35,11 @@ public sealed class PcgwSaveLookupServiceTests : IDisposable
 
         Assert.True(first.UsedLiveRequest);
         Assert.NotNull(first.Info);
-        Assert.Equal(@"%USERPROFILE%\Documents\My Games\Terraria", first.Info.SourcePath);
+        // ToGameSaveInfo expands environment variables.
+        var expected = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Documents", "My Games", "Terraria");
+        Assert.Equal(expected, first.Info.SourcePath, ignoreCase: true);
 
         Assert.False(second.UsedLiveRequest); // cache hit does not consume the live budget
         Assert.NotNull(second.Info);
@@ -66,7 +73,10 @@ public sealed class PcgwSaveLookupServiceTests : IDisposable
         var expected = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "PCGWTestGame");
         var api = new Mock<IPcgwApiClient>();
         api.Setup(x => x.LookupSavePathAsync("Test Game", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PcgwSaveInfo("Test Game", @"%USERPROFILE%\PCGWTestGame"));
+            .ReturnsAsync(new PcgwSaveInfo(
+                "Test Game",
+                @"%USERPROFILE%\PCGWTestGame",
+                "https://www.pcgamingwiki.com/wiki/Test_Game"));
 
         var service = new PcgwSaveLookupService(api.Object, new PcgwSavePathCache(_cacheDir));
 

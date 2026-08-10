@@ -115,6 +115,7 @@ public static partial class PcgwSavePathParser
     {
         var args = new List<string>();
         var depth = 0;
+        var wikiDepth = 0;
         var current = new StringBuilder();
 
         for (var i = 2; i < block.Length - 1; i++)
@@ -134,7 +135,22 @@ public static partial class PcgwSavePathParser
                 current.Append("}}");
                 i++;
             }
-            else if (block[i] == '|' && depth == 0)
+            else if (block[i] == '[' && block[i + 1] == '[')
+            {
+                // Wiki links ([[page|label]]) are atomic: their '|' is not an argument separator.
+                wikiDepth++;
+                current.Append("[[");
+                i++;
+            }
+            else if (block[i] == ']' && block[i + 1] == ']')
+            {
+                if (wikiDepth > 0)
+                    wikiDepth--;
+
+                current.Append("]]");
+                i++;
+            }
+            else if (block[i] == '|' && depth == 0 && wikiDepth == 0)
             {
                 args.Add(current.ToString());
                 current.Clear();
