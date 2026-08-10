@@ -104,7 +104,10 @@ public sealed class CloudSaveOrchestratorTests : IDisposable
         var source = Path.Combine(_root, "Source");
         Directory.CreateDirectory(source);
 
-        var orchestrator = CreateOrchestrator(root: null);
+        // Bypass CreateOrchestrator(): its `root ?? _root` would swallow a null root.
+        var storage = new CloudSaveMappingStorage(_storageFile);
+        var orchestrator = new CloudSaveOrchestrator(new StubLocator(null), storage);
+
         var previews = await orchestrator.PreviewAsync(CloudProvider.OneDrive, [new GameSaveInfo("Game", source, Exists: true)]);
 
         var preview = Assert.Single(previews);
