@@ -402,6 +402,12 @@ public partial class App : Application
 
         services.AddSingleton<OAuthFlowService>();
 
+        services.AddSingleton<ICloudProviderLocator>(CloudProviderLocator.CreateDefault());
+        services.AddSingleton<ICloudSaveMappingStorage, CloudSaveMappingStorage>();
+        services.AddSingleton<IGameSaveDiscoveryService, GameSaveDiscoveryService>();
+        services.AddSingleton<ICloudSaveOrchestrator, CloudSaveOrchestrator>();
+        services.AddTransient<CloudSaveSettingsViewModel>();
+
         services.AddTransient<SettingsViewModel>();
 
         services.AddTransient<FirstRunWizardViewModel>();

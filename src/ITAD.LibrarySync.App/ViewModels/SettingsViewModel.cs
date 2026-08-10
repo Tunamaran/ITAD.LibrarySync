@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITAD.LibrarySync.App.Launchers;
@@ -44,6 +45,16 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public SyncProgressService SyncProgress { get; }
 
+    public CloudSaveSettingsViewModel CloudSaves { get; }
+
+    // Pass-throughs so DataGrid action templates can reach the Cloud Saves tab
+    // commands through the Window DataContext (same pattern as the other tabs).
+    public ICommand CloudRestoreCommand => CloudSaves.RestoreCommand;
+
+    public ICommand CloudRemoveMappingCommand => CloudSaves.RemoveMappingCommand;
+
+    public ICommand CloudSetSaveFolderCommand => CloudSaves.SetSaveFolderCommand;
+
     public SettingsViewModel(
         OAuthFlowService oauthFlow,
         XboxOAuthFlowService xboxOAuthFlow,
@@ -65,8 +76,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         IUpdateCheckerService updateCheckerService,
         ICustomMappingService customMappingService,
         ILogReaderService logReaderService,
-        SyncProgressService syncProgressService)
+        SyncProgressService syncProgressService,
+        CloudSaveSettingsViewModel cloudSaves)
     {
+        CloudSaves = cloudSaves;
         SyncProgress = syncProgressService;
         _oauthFlow = oauthFlow;
         _xboxOAuthFlow = xboxOAuthFlow;

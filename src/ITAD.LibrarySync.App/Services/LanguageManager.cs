@@ -59,6 +59,31 @@ public sealed class LanguageManager : INotifyPropertyChanged
         _ => GetEnglishString(key)
     };
 
+    /// <summary>
+    /// Localizes the language-neutral detection-source strings produced by the Core
+    /// launcher readers (e.g. "Registry", "Multi-Drive Scan (C:\)").
+    /// </summary>
+    public string LocalizeDetectionSource(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return raw ?? string.Empty;
+
+        const string multiDrivePrefix = "Multi-Drive Scan (";
+        if (raw.StartsWith(multiDrivePrefix, StringComparison.Ordinal) &&
+            raw.EndsWith(")", StringComparison.Ordinal))
+        {
+            var root = raw[multiDrivePrefix.Length..^1];
+            return string.Format(this["DetectionSourceMultiDrive"], root);
+        }
+
+        return raw switch
+        {
+            "Registry" => this["DetectionSourceRegistry"],
+            "Registry & Local Cache" => this["DetectionSourceLocalCache"],
+            _ => raw
+        };
+    }
+
     private static string GetEnglishString(string key) => key switch
     {
         "SettingsTitle" => "ITAD Library Sync — Settings",
@@ -153,6 +178,59 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "StatSummaryDuplicateGames" => "{0} games owned across 2+ platforms",
         "LibPreviewDefaultPath" => "Default Client Path",
         "LibPreviewDefaultSource" => "Registry & Cache",
+        "DetectionSourceRegistry" => "Registry",
+        "DetectionSourceLocalCache" => "Registry & Local Cache",
+        "DetectionSourceMultiDrive" => "Multi-Drive Scan ({0})",
+        "ItadAccountDefault" => "ITAD Account",
+        "TabCloudSaves" => "Cloud Saves",
+        "CloudSavesIntro" => "Back up your game save folders to OneDrive, Google Drive or Dropbox. Files are copied into <root>\\ITAD_GameSaves and the original folder is replaced with an NTFS junction, so your games keep saving to the same path while the cloud client uploads the files. Junctions need no admin rights.",
+        "CloudProviderLabel" => "Cloud Provider",
+        "CloudProviderRootLabel" => "Root:",
+        "CloudProviderOneDrive" => "OneDrive",
+        "CloudProviderGoogleDrive" => "Google Drive",
+        "CloudProviderDropbox" => "Dropbox",
+        "CloudNoProvider" => "No cloud sync folder detected. Install and sign in to OneDrive, Google Drive or Dropbox first.",
+        "CloudStatusReady" => "Ready.",
+        "CloudStatusDetecting" => "Detecting games…",
+        "CloudStatusGamesFormat" => "{0} game(s) detected.",
+        "CloudStatusMigrating" => "Migrating save folders…",
+        "CloudStatusMigratedFormat" => "Migration finished: {0}/{1} succeeded.",
+        "CloudStatusMigrated" => "Migrated",
+        "CloudStatusFailed" => "Failed",
+        "CloudStatusRestored" => "Backup restored.",
+        "CloudStatusFound" => "Found",
+        "CloudStatusMissing" => "Source missing",
+        "CloudStatusNoSaveFolder" => "No save folder",
+        "CloudStatusAlreadyMigrated" => "Already migrated",
+        "CloudStatusOrphanJunction" => "Junction without mapping",
+        "CloudStatusStaleMapping" => "Mapping without junction",
+        "CloudStatusConflict" => "Target exists",
+        "CloudStatusUnavailable" => "Cloud folder unavailable",
+        "CloudConfirmMigrateTitle" => "Confirm Cloud Migration",
+        "CloudConfirmMigrateText" => "Move {0} selected game(s) to {1}? The save folders will be replaced with junctions.",
+        "CloudConfirmRestoreTitle" => "Confirm Restore",
+        "CloudConfirmRestoreText" => "Restore the backup of '{0}'? The junction will be removed and your save files moved back to the original location.",
+        "CloudNoSelection" => "No games selected.",
+        "CloudBrowseTitle" => "Select a save folder",
+        "BtnCloudDetect" => "Detect Games",
+        "BtnCloudSelectAll" => "Select All",
+        "BtnCloudSelectNone" => "Clear",
+        "BtnCloudSetFolder" => "Set…",
+        "BtnCloudSetFolderTooltip" => "Choose the save folder for this game",
+        "BtnCloudPreview" => "Preview",
+        "BtnCloudMigrate" => "Migrate Selected",
+        "BtnCloudRestore" => "Restore",
+        "CloudGamesHeader" => "Installed Games",
+        "CloudActiveHeader" => "Active Cloud Backups",
+        "ColCloudSelect" => "Sel.",
+        "ColCloudTitle" => "Game",
+        "ColCloudPlatform" => "Platform",
+        "ColCloudSource" => "Source Folder",
+        "ColCloudTarget" => "Cloud Target",
+        "ColCloudStatus" => "Status",
+        "ColCloudProvider" => "Provider",
+        "ColCloudCreated" => "Created",
+        "ColCloudAction" => "Action",
         "LibPreviewDetailsHeader" => "Details ({0} items)",
         "StatCardClickTooltip" => "Click to view detailed breakdown",
         "OAuthConnectTitle" => "Connect to IsThereAnyDeal",
@@ -468,6 +546,59 @@ public sealed class LanguageManager : INotifyPropertyChanged
         "StatSummaryDuplicateGames" => "{0} oyun birden fazla platformda mevcut",
         "LibPreviewDefaultPath" => "Varsayılan İstemci Yolu",
         "LibPreviewDefaultSource" => "Kayıt Defteri ve Önbellek",
+        "DetectionSourceRegistry" => "Kayıt Defteri",
+        "DetectionSourceLocalCache" => "Kayıt Defteri ve Yerel Önbellek",
+        "DetectionSourceMultiDrive" => "Çoklu Sürücü Taraması ({0})",
+        "ItadAccountDefault" => "ITAD Hesabı",
+        "TabCloudSaves" => "Bulut Kayıtları",
+        "CloudSavesIntro" => "Oyun kayıt dosyalarınızı OneDrive, Google Drive veya Dropbox'a yedekleyin. Dosyalar <kök>\\ITAD_GameSaves klasörüne kopyalanır ve orijinal klasör bir NTFS junction ile değiştirilir; oyunlar aynı yola kaydetmeye devam ederken bulut istemcisi dosyaları yükler. Junction için yönetici yetkisi gerekmez.",
+        "CloudProviderLabel" => "Bulut Sağlayıcı",
+        "CloudProviderRootLabel" => "Kök:",
+        "CloudProviderOneDrive" => "OneDrive",
+        "CloudProviderGoogleDrive" => "Google Drive",
+        "CloudProviderDropbox" => "Dropbox",
+        "CloudNoProvider" => "Bulut senkron klasörü bulunamadı. Önce OneDrive, Google Drive veya Dropbox'ı kurup oturum açın.",
+        "CloudStatusReady" => "Hazır.",
+        "CloudStatusDetecting" => "Oyunlar tespit ediliyor…",
+        "CloudStatusGamesFormat" => "{0} oyun tespit edildi.",
+        "CloudStatusMigrating" => "Kayıt klasörleri taşınıyor…",
+        "CloudStatusMigratedFormat" => "Taşıma tamamlandı: {0}/{1} başarılı.",
+        "CloudStatusMigrated" => "Taşındı",
+        "CloudStatusFailed" => "Başarısız",
+        "CloudStatusRestored" => "Yedek geri yüklendi.",
+        "CloudStatusFound" => "Bulundu",
+        "CloudStatusMissing" => "Kaynak yok",
+        "CloudStatusNoSaveFolder" => "Kayıt klasörü yok",
+        "CloudStatusAlreadyMigrated" => "Zaten taşınmış",
+        "CloudStatusOrphanJunction" => "Eşleşmesiz junction",
+        "CloudStatusStaleMapping" => "Junctionsuz eşleşme",
+        "CloudStatusConflict" => "Hedef mevcut",
+        "CloudStatusUnavailable" => "Bulut klasörü kullanılamıyor",
+        "CloudConfirmMigrateTitle" => "Bulut Taşımayı Onayla",
+        "CloudConfirmMigrateText" => "{0} seçili oyun {1} konumuna taşınsın mı? Kayıt klasörleri junction ile değiştirilecek.",
+        "CloudConfirmRestoreTitle" => "Geri Yüklemeyi Onayla",
+        "CloudConfirmRestoreText" => "'{0}' yedeği geri yüklensin mi? Junction kaldırılacak ve kayıt dosyalarınız orijinal konuma taşınacak.",
+        "CloudNoSelection" => "Oyun seçilmedi.",
+        "CloudBrowseTitle" => "Kayıt klasörü seçin",
+        "BtnCloudDetect" => "Oyunları Tespit Et",
+        "BtnCloudSelectAll" => "Tümünü Seç",
+        "BtnCloudSelectNone" => "Temizle",
+        "BtnCloudSetFolder" => "Ayarla…",
+        "BtnCloudSetFolderTooltip" => "Bu oyun için kayıt klasörünü seçin",
+        "BtnCloudPreview" => "Önizle",
+        "BtnCloudMigrate" => "Seçilenleri Taşı",
+        "BtnCloudRestore" => "Geri Yükle",
+        "CloudGamesHeader" => "Kurulu Oyunlar",
+        "CloudActiveHeader" => "Aktif Bulut Yedekleri",
+        "ColCloudSelect" => "Seç.",
+        "ColCloudTitle" => "Oyun",
+        "ColCloudPlatform" => "Platform",
+        "ColCloudSource" => "Kaynak Klasör",
+        "ColCloudTarget" => "Bulut Hedefi",
+        "ColCloudStatus" => "Durum",
+        "ColCloudProvider" => "Sağlayıcı",
+        "ColCloudCreated" => "Oluşturma",
+        "ColCloudAction" => "İşlem",
         "LibPreviewDetailsHeader" => "Detaylar ({0} öge)",
         "StatCardClickTooltip" => "Detayları görüntülemek için tıklayın",
         "OAuthConnectTitle" => "IsThereAnyDeal'a Bağlan",

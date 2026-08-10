@@ -17,7 +17,9 @@ public sealed partial class LibraryPreviewViewModel : ObservableObject
         Summary = LauncherReadResultDisplay.FormatScanSummary(result);
         Status = LauncherReadResultDisplay.GetDetectionStatus(result);
         ResolvedPath = result.ResolvedPath ?? Lang["LibPreviewDefaultPath"];
-        DetectionSource = result.DetectionSource ?? Lang["LibPreviewDefaultSource"];
+        DetectionSource = result.DetectionSource is not null
+            ? Lang.LocalizeDetectionSource(result.DetectionSource)
+            : Lang["LibPreviewDefaultSource"];
         HasResolvedPath = !string.IsNullOrWhiteSpace(result.ResolvedPath);
         PreviewWarning = LauncherReadResultDisplay.FormatPreviewWarning(result);
         HasWarning = !string.IsNullOrWhiteSpace(PreviewWarning);

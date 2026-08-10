@@ -48,7 +48,7 @@ internal static class LauncherReadHelper
             error = $"Unable to read library: {string.Join("; ", errorMessages)}";
 
         var resolvedPathStr = clientPath != default ? clientPath.ToString() : null;
-        var detectionSource = treatAsInstalled ? "Kayıt Defteri (Registry)" : "Kayıt Defteri & Yerel Önbellek";
+        var detectionSource = treatAsInstalled ? "Registry" : "Registry & Local Cache";
 
         return new LauncherReadResult(
             launcher,

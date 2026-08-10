@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "title": "The Witcher 3: Wild Hunt",
+      "titles": [ "The Witcher 3", "Witcher 3", "The Witcher 3 Wild Hunt" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\The Witcher 3" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/The_Witcher_3:_Wild_Hunt"
+    },
+    {
+      "title": "Cyberpunk 2077",
+      "titles": [ "Cyberpunk 2077" ],
+      "savePaths": [ "%USERPROFILE%\\Saved Games\\CD Projekt Red\\Cyberpunk 2077" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Cyberpunk_2077"
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim Special Edition",
+      "titles": [ "Skyrim Special Edition", "Skyrim SE", "Skyrim" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\My Games\\Skyrim Special Edition" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/The_Elder_Scrolls_V:_Skyrim_Special_Edition"
+    },
+    {
+      "title": "Fallout 4",
+      "titles": [ "Fallout 4" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\My Games\\Fallout4" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Fallout_4"
+    },
+    {
+      "title": "Grand Theft Auto V",
+      "titles": [ "GTA V", "GTA 5", "Grand Theft Auto 5" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\Rockstar Games\\GTA V" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Grand_Theft_Auto_V"
+    },
+    {
+      "title": "Red Dead Redemption 2",
+      "titles": [ "RDR2", "Red Dead Redemption II" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\Rockstar Games\\RDR2" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Red_Dead_Redemption_2"
+    },
+    {
+      "title": "Sid Meier's Civilization VI",
+      "titles": [ "Civilization VI", "Civ VI" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\My Games\\Sid Meier's Civilization VI" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Sid_Meier%27s_Civilization_VI"
+    },
+    {
+      "title": "Assassin's Creed Odyssey",
+      "titles": [ "Assassin's Creed Odyssey", "AC Odyssey" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\Assassin's Creed Odyssey" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Assassin%27s_Creed_Odyssey"
+    },
+    {
+      "title": "Far Cry 5",
+      "titles": [ "Far Cry 5" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\My Games\\Far Cry 5" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Far_Cry_5"
+    },
+    {
+      "title": "Baldur's Gate 3",
+      "titles": [ "Baldur's Gate 3", "BG3" ],
+      "savePaths": [ "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Baldur%27s_Gate_3"
+    },
+    {
+      "title": "Elden Ring",
+      "titles": [ "Elden Ring" ],
+      "savePaths": [ "%APPDATA%\\EldenRing" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Elden_Ring"
+    },
+    {
+      "title": "Sekiro: Shadows Die Twice",
+      "titles": [ "Sekiro", "Sekiro Shadows Die Twice" ],
+      "savePaths": [ "%APPDATA%\\Sekiro" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Sekiro:_Shadows_Die_Twice"
+    },
+    {
+      "title": "Dark Souls III",
+      "titles": [ "Dark Souls 3", "Dark Souls III" ],
+      "savePaths": [ "%APPDATA%\\DarkSoulsIII" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Dark_Souls_III"
+    },
+    {
+      "title": "Hollow Knight",
+      "titles": [ "Hollow Knight" ],
+      "savePaths": [ "%USERPROFILE%\\AppData\\LocalLow\\Team Cherry\\Hollow Knight" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Hollow_Knight"
+    },
+    {
+      "title": "Stardew Valley",
+      "titles": [ "Stardew Valley" ],
+      "savePaths": [ "%APPDATA%\\StardewValley" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Stardew_Valley"
+    },
+    {
+      "title": "Terraria",
+      "titles": [ "Terraria" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\My Games\\Terraria" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Terraria"
+    },
+    {
+      "title": "Factorio",
+      "titles": [ "Factorio" ],
+      "savePaths": [ "%APPDATA%\\Factorio" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Factorio"
+    },
+    {
+      "title": "RimWorld",
+      "titles": [ "RimWorld" ],
+      "savePaths": [ "%USERPROFILE%\\AppData\\LocalLow\\Ludeon Studios\\RimWorld by Ludeon Studios" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/RimWorld"
+    },
+    {
+      "title": "Divinity: Original Sin 2",
+      "titles": [ "Divinity Original Sin 2", "Divinity: Original Sin 2 Definitive Edition" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\Larian Studios\\Divinity Original Sin 2" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Divinity:_Original_Sin_2"
+    },
+    {
+      "title": "Mass Effect Legendary Edition",
+      "titles": [ "Mass Effect Legendary Edition", "Mass Effect LE" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\BioWare\\Mass Effect Legendary Edition" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Mass_Effect_Legendary_Edition"
+    },
+    {
+      "title": "Dragon Age: Inquisition",
+      "titles": [ "Dragon Age Inquisition", "Dragon Age 3" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\BioWare\\Dragon Age Inquisition" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Dragon_Age:_Inquisition"
+    },
+    {
+      "title": "God of War",
+      "titles": [ "God of War" ],
+      "savePaths": [ "%USERPROFILE%\\Saved Games\\God of War" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/God_of_War_(2018)"
+    },
+    {
+      "title": "DOOM Eternal",
+      "titles": [ "DOOM Eternal" ],
+      "savePaths": [ "%USERPROFILE%\\Saved Games\\id Software\\DOOM Eternal" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/DOOM_Eternal"
+    },
+    {
+      "title": "The Binding of Isaac: Rebirth",
+      "titles": [ "The Binding of Isaac Rebirth", "Binding of Isaac Afterbirth" ],
+      "savePaths": [ "%USERPROFILE%\\Documents\\My Games\\Binding of Isaac Afterbirth+" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/The_Binding_of_Isaac:_Rebirth"
+    },
+    {
+      "title": "Subnautica",
+      "titles": [ "Subnautica" ],
+      "savePaths": [ "%USERPROFILE%\\AppData\\LocalLow\\Unknown Worlds\\Subnautica" ],
+      "sourceUrl": "https://www.pcgamingwiki.com/wiki/Subnautica"
+    }
+  ]
+}

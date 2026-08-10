@@ -45,7 +45,7 @@ public sealed class EpicReader : ILauncherReader
                     {
                         IsDetected = true,
                         ResolvedPath = multiPath,
-                        DetectionSource = $"Çoklu Sürücü Taraması ({Path.GetPathRoot(multiPath)})"
+                        DetectionSource = $"Multi-Drive Scan ({Path.GetPathRoot(multiPath)})"
                     };
                 }
             }

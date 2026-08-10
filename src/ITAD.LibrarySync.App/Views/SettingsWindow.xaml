@@ -586,6 +586,150 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+
+            <TabItem Header="{Binding Lang[TabCloudSaves], Mode=OneWay}">
+                <ScrollViewer DataContext="{Binding CloudSaves}"
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="16">
+                    <StackPanel>
+                        <Border Background="#F0FDF4" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                            <TextBlock Text="{Binding Lang[CloudSavesIntro], Mode=OneWay}"
+                                       FontSize="12" Foreground="#166534" TextWrapping="Wrap" LineHeight="17" />
+                        </Border>
+
+                        <!-- Provider selection -->
+                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Lang[CloudProviderLabel], Mode=OneWay}"
+                                           FontWeight="Bold" FontSize="13" Margin="0,0,0,6" />
+                                <StackPanel Orientation="Horizontal">
+                                    <ComboBox ItemsSource="{Binding Providers}"
+                                              SelectedItem="{Binding SelectedProvider}"
+                                              Width="280" HorizontalAlignment="Left"
+                                              IsEnabled="{Binding CanDetect}" />
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0"
+                                               FontSize="12" Foreground="#64748B">
+                                        <Run Text="{Binding Lang[CloudProviderRootLabel], Mode=OneWay}" />
+                                        <Run Text=" " />
+                                        <Run Text="{Binding SelectedProvider.Root, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Installed games -->
+                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="{Binding Lang[CloudGamesHeader], Mode=OneWay}"
+                                               FontWeight="Bold" FontSize="13" VerticalAlignment="Center" />
+                                    <Button Content="{Binding Lang[BtnCloudDetect], Mode=OneWay}"
+                                            Command="{Binding DetectGamesCommand}"
+                                            IsEnabled="{Binding CanDetect}"
+                                            Margin="12,0,0,0" Padding="10,4" />
+                                    <Button Content="{Binding Lang[BtnCloudSelectAll], Mode=OneWay}"
+                                            Command="{Binding SelectAllCommand}"
+                                            Margin="8,0,0,0" Padding="10,4" />
+                                    <Button Content="{Binding Lang[BtnCloudSelectNone], Mode=OneWay}"
+                                            Command="{Binding SelectNoneCommand}"
+                                            Margin="8,0,0,0" Padding="10,4" />
+                                    <Button Content="{Binding Lang[BtnCloudPreview], Mode=OneWay}"
+                                            Command="{Binding PreviewCommand}"
+                                            IsEnabled="{Binding CanPreview}"
+                                            Margin="8,0,0,0" Padding="10,4" />
+                                    <Button Content="{Binding Lang[BtnCloudMigrate], Mode=OneWay}"
+                                            Command="{Binding MigrateCommand}"
+                                            IsEnabled="{Binding CanMigrate}"
+                                            Margin="8,0,0,0" Padding="10,4"
+                                            Background="#16A34A" Foreground="White" BorderThickness="0"
+                                            FontWeight="Bold" />
+                                </StackPanel>
+
+                                <DataGrid ItemsSource="{Binding Games}"
+                                          AutoGenerateColumns="False" CanUserAddRows="False"
+                                          CanUserDeleteRows="False" CanUserSortColumns="True"
+                                          IsReadOnly="False" HeadersVisibility="Column"
+                                          GridLinesVisibility="Horizontal"
+                                          MaxHeight="280" MinHeight="120"
+                                          SelectionMode="Single" SelectionUnit="FullRow">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudSelect], Mode=OneWay}" Binding="{Binding IsSelected}" Width="50" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudTitle], Mode=OneWay}" Binding="{Binding Title}" Width="1.3*" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudPlatform], Mode=OneWay}" Binding="{Binding Platform}" Width="110" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudSource], Mode=OneWay}" Binding="{Binding SourcePath}" Width="1.6*" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudTarget], Mode=OneWay}" Binding="{Binding TargetPath}" Width="1.6*" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudStatus], Mode=OneWay}" Binding="{Binding StatusText}" Width="1.1*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{Binding StatusColor}" />
+                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudAction], Mode=OneWay}" Width="70">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="{Binding DataContext.Lang[BtnCloudSetFolder], RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            Command="{Binding DataContext.CloudSetSaveFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            IsEnabled="{Binding CanSetFolder}"
+                                                            ToolTip="{Binding DataContext.Lang[BtnCloudSetFolderTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            Padding="8,2" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Active mappings -->
+                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Lang[CloudActiveHeader], Mode=OneWay}"
+                                           FontWeight="Bold" FontSize="13" Margin="0,0,0,8" />
+                                <DataGrid ItemsSource="{Binding Mappings}"
+                                          AutoGenerateColumns="False" CanUserAddRows="False"
+                                          CanUserDeleteRows="False" CanUserSortColumns="True"
+                                          IsReadOnly="True" HeadersVisibility="Column"
+                                          GridLinesVisibility="Horizontal"
+                                          MaxHeight="220" MinHeight="80"
+                                          SelectionMode="Single" SelectionUnit="FullRow">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudTitle], Mode=OneWay}" Binding="{Binding Title}" Width="1.2*" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudSource], Mode=OneWay}" Binding="{Binding SourcePath}" Width="1.6*" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudTarget], Mode=OneWay}" Binding="{Binding TargetPath}" Width="1.6*" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudProvider], Mode=OneWay}" Binding="{Binding ProviderDisplay}" Width="90" />
+                                        <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudCreated], Mode=OneWay}" Binding="{Binding CreatedDisplay}" Width="120" />
+                                        <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudAction], Mode=OneWay}" Width="130">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Content="{Binding DataContext.Lang[BtnCloudRestore], RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                Command="{Binding DataContext.CloudRestoreCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="8,2" Margin="0,0,6,0" />
+                                                        <Button Content="✕" Padding="6,2" FontWeight="Bold" Foreground="#DC2626"
+                                                                Command="{Binding DataContext.CloudRemoveMappingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                CommandParameter="{Binding}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Status line -->
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
+                            <TextBlock Text="{Binding StatusText, Mode=OneWay}"
+                                       FontSize="12" Foreground="#334155" TextWrapping="Wrap" />
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
         </TabControl>
 
         <Button Grid.Row="1"
