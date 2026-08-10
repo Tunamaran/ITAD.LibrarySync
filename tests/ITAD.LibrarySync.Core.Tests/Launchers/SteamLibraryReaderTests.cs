@@ -43,15 +43,11 @@ public sealed class SteamLibraryReaderTests : IDisposable
             """);
 
         // libraryfolders.vdf pointing at a second library.
-        await File.WriteAllTextAsync(Path.Combine(rootApps, "libraryfolders.vdf"), $"""
-            "libraryfolders"
-            {{
-                "0"
-                {{
-                    "path"		"{_secondLibrary.Replace("\\", "\\\\")}"
-                }}
-            }}
-            """);
+        var libraryFoldersVdf =
+            "\"libraryfolders\"\n{\n\t\"0\"\n\t{\n\t\t\"path\"\t\t\"" +
+            _secondLibrary.Replace("\\", "\\\\") +
+            "\"\n\t}\n}\n";
+        await File.WriteAllTextAsync(Path.Combine(rootApps, "libraryfolders.vdf"), libraryFoldersVdf);
 
         // Second library: one installed game + a duplicate appid of Terraria.
         var secondApps = Path.Combine(_secondLibrary, "steamapps");

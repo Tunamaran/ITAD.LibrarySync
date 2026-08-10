@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using ITAD.LibrarySync.Core.Models;
 
 namespace ITAD.LibrarySync.App.ViewModels;
