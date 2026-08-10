@@ -11,6 +11,7 @@ namespace ITAD.LibrarySync.Core.Launchers;
 public sealed class EpicReader : ILauncherReader
 {
     private static readonly Settings OwnedGamesSettings = new() { OwnedOnly = true };
+    private static readonly Settings InstalledGamesSettings = new() { OwnedOnly = true, InstalledOnly = true };
 
     public LauncherId Launcher => LauncherId.Epic;
 
@@ -50,7 +51,22 @@ public sealed class EpicReader : ILauncherReader
                 }
             }
 
-            return Task.FromResult(result);
+            // Installed-only pass for Cloud Saves (the owned pass may include
+            // games that are no longer installed).
+            var installedResults = handler.FindAllGames(InstalledGamesSettings);
+            var installed = LauncherReadHelper.ReadOwnedGames(
+                LauncherId.Epic,
+                clientPath,
+                FileSystem.Shared,
+                installedResults,
+                game => LauncherReadHelper.MapGame(
+                    LauncherId.Epic,
+                    game.GameId,
+                    game.GameName,
+                    game.RunTime,
+                    game.LastRunDate)).Owned;
+
+            return Task.FromResult(result with { Installed = installed });
         }
         catch (Exception ex)
         {

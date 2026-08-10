@@ -11,6 +11,7 @@ namespace ITAD.LibrarySync.Core.Launchers;
 public sealed class BattleNetReader : ILauncherReader
 {
     private static readonly Settings OwnedGamesSettings = new() { OwnedOnly = true };
+    private static readonly Settings InstalledGamesSettings = new() { OwnedOnly = true, InstalledOnly = true };
 
     public LauncherId Launcher => LauncherId.BattleNet;
 
@@ -30,7 +31,7 @@ public sealed class BattleNetReader : ILauncherReader
                 clientPath);
             var results = handler.FindAllGames(OwnedGamesSettings);
 
-            return Task.FromResult(LauncherReadHelper.ReadOwnedGames(
+            var result = LauncherReadHelper.ReadOwnedGames(
                 LauncherId.BattleNet,
                 clientPath,
                 FileSystem.Shared,
@@ -41,7 +42,25 @@ public sealed class BattleNetReader : ILauncherReader
                     game.DirName,
                     null,
                     game.LastPlayed),
-                treatAsInstalled: isInstalled));
+                treatAsInstalled: isInstalled);
+
+            // Installed-only pass for Cloud Saves (product.db may keep entries
+            // for products that are no longer installed).
+            var installedResults = handler.FindAllGames(InstalledGamesSettings);
+            var installed = LauncherReadHelper.ReadOwnedGames(
+                LauncherId.BattleNet,
+                clientPath,
+                FileSystem.Shared,
+                installedResults,
+                game => LauncherReadHelper.MapGame(
+                    LauncherId.BattleNet,
+                    game.ProductId.Value,
+                    game.DirName,
+                    null,
+                    game.LastPlayed),
+                treatAsInstalled: isInstalled).Owned;
+
+            return Task.FromResult(result with { Installed = installed });
         }
         catch (Exception ex)
         {

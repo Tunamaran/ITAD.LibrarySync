@@ -12,6 +12,7 @@ namespace ITAD.LibrarySync.Core.Launchers;
 public sealed class UbisoftReader : ILauncherReader
 {
     private static readonly Settings OwnedGamesSettings = new() { OwnedOnly = true };
+    private static readonly Settings InstalledGamesSettings = new() { OwnedOnly = true, InstalledOnly = true };
 
     public LauncherId Launcher => LauncherId.Ubisoft;
 
@@ -51,12 +52,27 @@ public sealed class UbisoftReader : ILauncherReader
                 }
             }
 
+            // Installed-only pass for Cloud Saves (the owned pass also covers
+            // games in the account cache that are no longer installed).
+            var installedResults = handler.FindAllGames(InstalledGamesSettings);
+            var installed = LauncherReadHelper.ReadOwnedGames(
+                LauncherId.Ubisoft,
+                clientPath,
+                FileSystem.Shared,
+                installedResults,
+                game => LauncherReadHelper.MapGame(
+                    LauncherId.Ubisoft,
+                    game.GameId,
+                    game.GameName,
+                    game.RunTime,
+                    game.LastRunDate)).Owned;
+
             var localOwned = UbisoftLocalLibraryReader.ReadOwnedGames();
             if (localOwned.Count == 0)
-                return Task.FromResult(gameCollectorResult with { Installed = gameCollectorResult.Owned });
+                return Task.FromResult(gameCollectorResult with { Installed = installed });
 
             return Task.FromResult(
-                MergeOwnedLibraries(localOwned, gameCollectorResult) with { Installed = gameCollectorResult.Owned });
+                MergeOwnedLibraries(localOwned, gameCollectorResult) with { Installed = installed });
         }
         catch (Exception ex)
         {
