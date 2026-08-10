@@ -63,6 +63,10 @@
   Full English interface by default, with dynamic runtime switching to Turkish in Settings.
 - **⏰ Automatic & Tray Background Synchronization:**
   Runs silently in the system tray with customizable auto-sync intervals (6h, 12h, 24h, weekly) or manual one-click sync.
+- **☁️ Cloud Save Backup (OneDrive / Google Drive / Dropbox):**
+  Pick the games installed on your PC and move their save folders into your cloud folder with one click. The game keeps saving to the same path while your files are uploaded and stay safe — and you can undo everything anytime.
+- **🔎 Live Save-Folder Lookup (PCGamingWiki):**
+  When a game's save folder is unknown, the app can look it up live on PCGamingWiki (optional, cached) — Steam support included.
 
 ---
 
@@ -97,6 +101,18 @@
   Works 100% locally from EA's encrypted `IS` cache file on your PC. You do not need to sign in to EA inside the app. If decryption fails, simply open and launch EA App once while online so EA can refresh its local cache key.
 - **Xbox / Microsoft Store:**
   Combines PC local app manifest scanning with Xbox Live Title History. Connect your Xbox account under **Settings → Platforms → Xbox Connect** for full coverage including Xbox Game Pass games.
+
+---
+
+### ☁️ Cloud Save Backup (Settings → Cloud Saves)
+
+Backs up game save folders to your personal cloud so they survive re-installs or a formatted PC:
+
+1. **Choose your cloud folder** — the app detects OneDrive, Google Drive and Dropbox automatically, including drive-letter mounts and localized folder names (e.g. `Drive'ım`).
+2. **Pick the games to back up** — only games *installed* on this PC are listed (Epic, Ubisoft, Battle.net, EA App, Xbox and **Steam**). Save folders come from the built-in database or a live PCGamingWiki lookup (optional, cached for 30 days).
+3. **Move to cloud** — the selected saves are copied into `<cloud>\ITAD_GameSaves\...` and each original folder is replaced by an NTFS junction, so games keep saving to the same path while your cloud client uploads the files. No admin rights are needed, and everything can be restored from the same tab.
+
+> **Steam is supported only for Cloud Saves** — it is not part of the ITAD library sync.
 
 ---
 
@@ -174,6 +190,10 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
   Varsayılan İngilizce arayüz, Ayarlar sekmesinden tek tıkla anında Türkçe yapılabilir.
 - **⏰ Arka Planda Otomatik Senkronizasyon:**
   Sistem tepsisinde (tray) sessizce çalışır; belirlediğiniz zaman aralıklarında (6 saat, 12 saat, 24 saat, haftalık) kütüphanelerinizi güncel tutar.
+- **☁️ Bulut Kayıt Yedeği (OneDrive / Google Drive / Dropbox):**
+  Bilgisayarınıza kurulu oyunları seçin, kayıt klasörleri tek tıkla bulut klasörünüze taşınsın. Oyun aynı yere kaydetmeye devam ederken dosyalarınız bulutta güvende kalır — istediğiniz an geri alabilirsiniz.
+- **🔎 Canlı Kayıt Klasörü Bulma (PCGamingWiki):**
+  Oyunun kayıt klasörü bilinmiyorsa uygulama PCGamingWiki'den canlı arayabilir (isteğe bağlı, önbellekli) — Steam desteği dahil.
 
 ---
 
@@ -199,6 +219,18 @@ dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained t
    - **Ayarlar → Platformlar** sekmesinden istediğiniz platformun yanındaki **Test Et** veya **Detaylar** butonuna basarak okunan oyunları kontrol edin.
 4. **Senkronize Edin:**
    - Ayarlar penceresinden **"Şimdi Senkronize Et"** butonuna basın veya sağ alttaki sistem tepsisi simgesine sağ tıklayıp **"Şimdi Senkronize Et"** seçeneğini seçin.
+
+---
+
+### ☁️ Bulut Kayıt Yedeği (Ayarlar → Bulut Kayıtları)
+
+Oyun kayıt dosyalarınızı kişisel bulutunuza yedekler; yeniden kurulum veya format sonrasında kayıtlarınız güvende kalır:
+
+1. **Bulut klasörünüzü seçin** — uygulama OneDrive, Google Drive ve Dropbox'ı otomatik algılar; sürücü harfi bağlantıları ve yerelleştirilmiş klasör adları (`Drive'ım` gibi) dahil.
+2. **Yedeklenecek oyunları seçin** — yalnızca bu bilgisayara *kurulu* oyunlar listelenir (Epic, Ubisoft, Battle.net, EA App, Xbox ve **Steam**). Kayıt klasörleri yerleşik veritabanından veya isteğe bağlı PCGamingWiki canlı aramasından gelir (30 gün önbellekli).
+3. **Buluta taşıyın** — seçilen kayıtlar `<bulut>\ITAD_GameSaves\...` klasörüne kopyalanır ve her orijinal klasör bir NTFS bağlantısı (junction) ile değiştirilir; oyunlar aynı yere kaydetmeye devam ederken dosyalarınız bulut istemciniz tarafından yüklenir. Yönetici yetkisi gerekmez ve her şey aynı sekmeden geri alınabilir.
+
+> **Steam yalnızca Bulut Kayıtları için desteklenir** — ITAD kütüphane senkronunun bir parçası değildir.
 
 ---
 
