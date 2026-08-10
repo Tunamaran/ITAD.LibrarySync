@@ -12,5 +12,11 @@ public sealed record LauncherReadResult(
     string? ResolvedPath = null,
     string? DetectionSource = null)
 {
+    /// <summary>
+    /// Games physically installed on this PC (vs merely owned on the account).
+    /// When <c>null</c>, callers should treat <see cref="Owned"/> as installed.
+    /// </summary>
+    public IReadOnlyList<StoreGame>? Installed { get; init; }
+
     public IReadOnlyList<string> WarningMessages { get; } = Warnings ?? [];
 }

@@ -92,7 +92,7 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
 
             if (storeLibraryReader is null)
 
-                return FilterXboxLocalScanNoise(installedResult);
+                return FilterXboxLocalScanNoise(installedResult) with { Installed = installedResult.Owned };
 
 
 
@@ -120,6 +120,8 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
 
                         Owned = merged,
 
+                        Installed = installedResult.Owned,
+
                         Error = apiRead.Warning ?? TitleHistoryLimitedMessage
 
                     };
@@ -137,6 +139,8 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
                     IsLoggedIn = true,
 
                     Owned = merged,
+
+                    Installed = installedResult.Owned,
 
                     Error = null
 
@@ -166,6 +170,8 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
 
                     IsLoggedIn = false,
 
+                    Installed = installedResult.Owned,
+
                     Error = XboxConnectMessage
 
                 };
@@ -177,7 +183,7 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
                 if (installedResult.Owned.Count > 0)
                 {
                     return AppendWarnings(
-                        FilterXboxLocalScanNoise(installedResult) with { IsLoggedIn = true },
+                        FilterXboxLocalScanNoise(installedResult) with { IsLoggedIn = true, Installed = installedResult.Owned },
                         ex.Message);
                 }
 
@@ -185,6 +191,7 @@ public sealed class XboxReader(IMicrosoftStoreLibraryReader? storeLibraryReader 
                 {
                     IsDetected = isInstalled,
                     IsLoggedIn = false,
+                    Installed = installedResult.Owned,
                     Error = null,
                     Warnings = [ex.Message]
                 };

@@ -409,6 +409,7 @@ public partial class App : Application
         services.AddSingleton<PcgwSavePathCache>();
         services.AddSingleton<IPcgwApiClient>(sp => new PcgwApiClient(new HttpClient(), sp.GetService<FileLogger>()));
         services.AddSingleton<IPcgwSaveLookupService, PcgwSaveLookupService>();
+        services.AddSingleton<SteamLibraryReader>();
         services.AddTransient<CloudSaveSettingsViewModel>();
 
         services.AddTransient<SettingsViewModel>();

@@ -30,17 +30,18 @@ public sealed class EaReader(EaOnlineLibraryReader? onlineLibraryReader = null) 
                     IsDetected = true,
                     IsLoggedIn = true,
                     Error = null
-                });
+                }) with { Installed = local.Owned };
             }
 
             if (onlineLibraryReader is not null)
             {
                 var online = await onlineLibraryReader.TryReadAsync(ct);
                 if (online is { Owned.Count: > 0 })
-                    return online;
+                    return online with { Installed = [] };
             }
 
-            return FormatEaResult(EaReadResultMerger.MergeRegistryFallback(local));
+            var fallback = EaReadResultMerger.MergeRegistryFallback(local);
+            return FormatEaResult(fallback) with { Installed = fallback.Owned };
         }
         catch (Exception ex)
         {

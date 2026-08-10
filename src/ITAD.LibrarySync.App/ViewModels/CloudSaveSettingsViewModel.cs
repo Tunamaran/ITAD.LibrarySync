@@ -28,9 +28,13 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
     private readonly ICloudSaveOrchestrator _orchestrator;
     private readonly ICloudSaveMappingStorage _storage;
     private readonly IPcgwSaveLookupService _pcgw;
+    private readonly SteamLibraryReader _steam;
     private readonly IReadOnlyList<ILauncherReader> _readers;
     private readonly AppSettingsStorage _settingsStorage;
     private readonly FileLogger _logger;
+    private int _remainingLiveLookups;
+    private bool _liveLookupLimitReached;
+    private bool _lookingUp;
 
     public CloudSaveSettingsViewModel(
         ICloudProviderLocator locator,
@@ -38,6 +42,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         ICloudSaveOrchestrator orchestrator,
         ICloudSaveMappingStorage storage,
         IPcgwSaveLookupService pcgw,
+        SteamLibraryReader steam,
         IReadOnlyList<ILauncherReader> readers,
         AppSettingsStorage settingsStorage,
         FileLogger logger)
@@ -47,6 +52,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         _orchestrator = orchestrator;
         _storage = storage;
         _pcgw = pcgw;
+        _steam = steam;
         _readers = readers;
         _settingsStorage = settingsStorage;
         _logger = logger;
@@ -119,11 +125,13 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         try
         {
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var remainingLookups = MaxLiveLookupsPerScan;
-            var limitReached = false;
-            var lookingUp = false;
+            _remainingLiveLookups = MaxLiveLookupsPerScan;
+            _liveLookupLimitReached = false;
+            _lookingUp = false;
             Games.Clear();
 
+            // Only INSTALLED games are scanned — owned-but-not-installed titles
+            // have no local save folder and would only add noise.
             foreach (var reader in _readers)
             {
                 LauncherReadResult result;
@@ -137,63 +145,23 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                     continue;
                 }
 
-                foreach (var game in result.Owned)
-                {
-                    var key = GameMatcher.NormalizeTitle(game.Title);
-                    if (string.IsNullOrWhiteSpace(key) || !seen.Add(key))
-                        continue;
+                foreach (var game in result.Installed ?? result.Owned)
+                    await AddGameRowAsync(game.Title, LauncherDisplayNames.Get(reader.Launcher), seen);
+            }
 
-                    var saveInfo = await _discovery.FindForTitleAsync(game.Title);
-                    var foundViaLive = false;
-                    if (saveInfo is null && UsePcgwLookup)
-                    {
-                        if (remainingLookups <= 0)
-                        {
-                            limitReached = true;
-                        }
-                        else
-                        {
-                            var lookup = await _pcgw.LookupAsync(game.Title);
-                            if (lookup.UsedLiveRequest)
-                            {
-                                if (!lookingUp)
-                                {
-                                    StatusText = Lang["CloudStatusLookingUp"];
-                                    lookingUp = true;
-                                }
-
-                                remainingLookups--;
-                            }
-
-                            // Cache hits are free and do not consume the budget.
-                            saveInfo = lookup.Info;
-                            foundViaLive = lookup.UsedLiveRequest && saveInfo is not null;
-                        }
-                    }
-
-                    var row = new CloudSaveGameViewModel(game, saveInfo, LauncherDisplayNames.Get(reader.Launcher))
-                    {
-                        StatusText = saveInfo is null
-                            ? Lang["CloudStatusNoSaveFolder"]
-                            : foundViaLive
-                                ? Lang["CloudStatusPcgwFound"]
-                                : saveInfo.Exists
-                                    ? Lang["CloudStatusFound"]
-                                    : Lang["CloudStatusMissing"],
-                        StatusColor = saveInfo is null
-                            ? "#D97706"
-                            : foundViaLive
-                                ? "#0891B2"
-                                : saveInfo.Exists
-                                    ? "#16A34A"
-                                    : "#EA580C"
-                    };
-                    Games.Add(TrackSelection(row));
-                }
+            // Steam — supported only for Cloud Saves, never for the ITAD sync pipeline.
+            try
+            {
+                foreach (var game in await _steam.GetInstalledGamesAsync())
+                    await AddGameRowAsync(game.Title, Lang["CloudPlatformSteam"], seen);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"CloudSaveSettingsViewModel: Steam scan failed — {ex.Message}");
             }
 
             var summary = string.Format(Lang["CloudStatusGamesFormat"], Games.Count);
-            if (limitReached)
+            if (_liveLookupLimitReached)
                 summary += " " + Lang["CloudStatusLookupLimit"];
             StatusText = summary;
             OnPropertyChanged(nameof(CanMigrate));
@@ -203,6 +171,60 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    private async Task AddGameRowAsync(string title, string platform, HashSet<string> seen)
+    {
+        var key = GameMatcher.NormalizeTitle(title);
+        if (string.IsNullOrWhiteSpace(key) || !seen.Add(key))
+            return;
+
+        var saveInfo = await _discovery.FindForTitleAsync(title);
+        var foundViaLive = false;
+        if (saveInfo is null && UsePcgwLookup)
+        {
+            if (_remainingLiveLookups <= 0)
+            {
+                _liveLookupLimitReached = true;
+            }
+            else
+            {
+                var lookup = await _pcgw.LookupAsync(title);
+                if (lookup.UsedLiveRequest)
+                {
+                    if (!_lookingUp)
+                    {
+                        StatusText = Lang["CloudStatusLookingUp"];
+                        _lookingUp = true;
+                    }
+
+                    _remainingLiveLookups--;
+                }
+
+                // Cache hits are free and do not consume the budget.
+                saveInfo = lookup.Info;
+                foundViaLive = lookup.UsedLiveRequest && saveInfo is not null;
+            }
+        }
+
+        var row = new CloudSaveGameViewModel(title, saveInfo, platform)
+        {
+            StatusText = saveInfo is null
+                ? Lang["CloudStatusNoSaveFolder"]
+                : foundViaLive
+                    ? Lang["CloudStatusPcgwFound"]
+                    : saveInfo.Exists
+                        ? Lang["CloudStatusFound"]
+                        : Lang["CloudStatusMissing"],
+            StatusColor = saveInfo is null
+                ? "#D97706"
+                : foundViaLive
+                    ? "#0891B2"
+                    : saveInfo.Exists
+                        ? "#16A34A"
+                        : "#EA580C"
+        };
+        Games.Add(TrackSelection(row));
     }
 
     [RelayCommand]

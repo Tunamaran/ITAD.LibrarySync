@@ -53,9 +53,10 @@ public sealed class UbisoftReader : ILauncherReader
 
             var localOwned = UbisoftLocalLibraryReader.ReadOwnedGames();
             if (localOwned.Count == 0)
-                return Task.FromResult(gameCollectorResult);
+                return Task.FromResult(gameCollectorResult with { Installed = gameCollectorResult.Owned });
 
-            return Task.FromResult(MergeOwnedLibraries(localOwned, gameCollectorResult));
+            return Task.FromResult(
+                MergeOwnedLibraries(localOwned, gameCollectorResult) with { Installed = gameCollectorResult.Owned });
         }
         catch (Exception ex)
         {

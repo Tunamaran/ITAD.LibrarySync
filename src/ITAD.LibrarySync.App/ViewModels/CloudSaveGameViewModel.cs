@@ -1,4 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using ITAD.LibrarySync.Core.Models;
 
 namespace ITAD.LibrarySync.App.ViewModels;
@@ -12,15 +11,12 @@ public sealed partial class CloudSaveGameViewModel : ObservableObject
 {
     private GameSaveInfo? _saveInfo;
 
-    public CloudSaveGameViewModel(StoreGame game, GameSaveInfo? saveInfo, string platform)
+    public CloudSaveGameViewModel(string title, GameSaveInfo? saveInfo, string platform)
     {
-        Game = game;
-        Title = game.Title;
+        Title = title;
         Platform = platform;
         SetSaveInfo(saveInfo);
     }
-
-    public StoreGame Game { get; }
 
     public string Title { get; }
 
