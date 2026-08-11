@@ -110,6 +110,8 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
 
     public bool CanPreview => !IsBusy && IsProviderAvailable && Games.Any(game => game.IsSelected && game.HasSaveFolder);
 
+    public bool CanLookupSelected => !IsBusy && Games.Any(game => game.IsSelected && !game.HasSaveFolder);
+
     partial void OnSelectedProviderChanged(CloudProviderOption? value)
     {
         OnPropertyChanged(nameof(IsProviderAvailable));
@@ -126,6 +128,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(CanDetect));
         OnPropertyChanged(nameof(CanMigrate));
         OnPropertyChanged(nameof(CanPreview));
+        OnPropertyChanged(nameof(CanLookupSelected));
     }
 
     [RelayCommand]
@@ -178,6 +181,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
             SaveScanState();
             OnPropertyChanged(nameof(CanMigrate));
             OnPropertyChanged(nameof(CanPreview));
+            OnPropertyChanged(nameof(CanLookupSelected));
         }
         finally
         {
@@ -237,6 +241,74 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                         : "#EA580C"
         };
         Games.Add(TrackSelection(row));
+    }
+
+    /// <summary>
+    /// Runs a PCGamingWiki lookup only for the games the user selected that still
+    /// have no save folder — no API calls are made for anything else, so traffic
+    /// stays exactly as large as the user asked for.
+    /// </summary>
+    [RelayCommand]
+    private async Task LookupSelectedAsync()
+    {
+        var selected = Games.Where(game => game.IsSelected && !game.HasSaveFolder).ToList();
+        if (selected.Count == 0)
+        {
+            StatusText = Lang["CloudNoLookupSelection"];
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            _remainingLiveLookups = MaxLiveLookupsPerScan;
+            _liveLookupLimitReached = false;
+            _lookingUp = false;
+
+            var found = 0;
+            foreach (var row in selected)
+            {
+                if (_remainingLiveLookups <= 0)
+                {
+                    _liveLookupLimitReached = true;
+                    break;
+                }
+
+                var lookup = await _pcgw.LookupAsync(row.Title);
+                if (lookup.UsedLiveRequest)
+                {
+                    if (!_lookingUp)
+                    {
+                        StatusText = Lang["CloudStatusLookingUp"];
+                        _lookingUp = true;
+                    }
+
+                    _remainingLiveLookups--;
+                }
+
+                // Cache hits and negative results leave the row untouched.
+                if (lookup.Info is null)
+                    continue;
+
+                row.SetSaveInfo(lookup.Info);
+                row.StatusText = Lang["CloudStatusPcgwFound"];
+                row.StatusColor = "#0891B2";
+                found++;
+            }
+
+            var summary = string.Format(Lang["CloudStatusLookupResultFormat"], found);
+            if (_liveLookupLimitReached)
+                summary += " " + Lang["CloudStatusLookupLimit"];
+            StatusText = summary;
+            SaveScanState();
+            OnPropertyChanged(nameof(CanMigrate));
+            OnPropertyChanged(nameof(CanPreview));
+            OnPropertyChanged(nameof(CanLookupSelected));
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -361,6 +433,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         SaveScanState();
         OnPropertyChanged(nameof(CanMigrate));
         OnPropertyChanged(nameof(CanPreview));
+        OnPropertyChanged(nameof(CanLookupSelected));
     }
 
     [RelayCommand]
@@ -443,6 +516,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
 
         OnPropertyChanged(nameof(CanMigrate));
         OnPropertyChanged(nameof(CanPreview));
+        OnPropertyChanged(nameof(CanLookupSelected));
     }
 
     /// <summary>
@@ -477,6 +551,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
             {
                 OnPropertyChanged(nameof(CanMigrate));
                 OnPropertyChanged(nameof(CanPreview));
+                OnPropertyChanged(nameof(CanLookupSelected));
                 SaveScanState();
             }
         };

@@ -488,6 +488,11 @@
                                     <Button Content="{Binding Lang[BtnCloudSelectNone], Mode=OneWay}"
                                             Command="{Binding SelectNoneCommand}"
                                             Margin="8,0,0,0" Padding="10,4" />
+                                    <Button Content="{Binding Lang[BtnCloudLookupSelected], Mode=OneWay}"
+                                            Command="{Binding LookupSelectedCommand}"
+                                            IsEnabled="{Binding CanLookupSelected}"
+                                            ToolTip="{Binding Lang[BtnCloudLookupSelectedTooltip], Mode=OneWay}"
+                                            Margin="8,0,0,0" Padding="10,4" />
                                 </StackPanel>
 
                                 <DataGrid ItemsSource="{Binding Games}"
