@@ -62,7 +62,14 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         foreach (var provider in _locator.GetAvailableProviders())
             Providers.Add(new CloudProviderOption(provider, _locator.GetCloudRoot(provider)!));
 
-        SelectedProvider = Providers.FirstOrDefault();
+        // Restore the last scan's game list first — it must survive app restarts
+        // and is only replaced by the next scan.
+        RestoreScannedGames();
+
+        var settings = _settingsStorage.Load();
+        SelectedProvider = Providers.FirstOrDefault(candidate =>
+                string.Equals(candidate.Provider.ToString(), settings.CloudSaveProvider, StringComparison.OrdinalIgnoreCase))
+            ?? Providers.FirstOrDefault();
         StatusText = Providers.Count == 0 ? Lang["CloudNoProvider"] : Lang["CloudStatusReady"];
 
         _ = RefreshMappingsAsync();
@@ -108,6 +115,10 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(IsProviderAvailable));
         OnPropertyChanged(nameof(CanMigrate));
         OnPropertyChanged(nameof(CanPreview));
+
+        // Remember the user's choice until they change it again.
+        if (value is not null)
+            SaveScanState();
     }
 
     partial void OnIsBusyChanged(bool value)
@@ -164,6 +175,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
             if (_liveLookupLimitReached)
                 summary += " " + Lang["CloudStatusLookupLimit"];
             StatusText = summary;
+            SaveScanState();
             OnPropertyChanged(nameof(CanMigrate));
             OnPropertyChanged(nameof(CanPreview));
         }
@@ -294,6 +306,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                 selected.Select(row => row.GetSaveInfo()!).ToList());
 
             ApplyResults(results);
+            SaveScanState();
             await RefreshMappingsAsync();
             StatusText = string.Format(
                 Lang["CloudStatusMigratedFormat"],
@@ -345,6 +358,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         row.SetSaveInfo(info);
         row.StatusText = info.Exists ? Lang["CloudStatusFound"] : Lang["CloudStatusMissing"];
         row.StatusColor = info.Exists ? "#16A34A" : "#EA580C";
+        SaveScanState();
         OnPropertyChanged(nameof(CanMigrate));
         OnPropertyChanged(nameof(CanPreview));
     }
@@ -405,6 +419,53 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
             Mappings.Add(new CloudSaveMappingItem(mapping));
     }
 
+    /// <summary>
+    /// Re-creates the game rows of the last scan from settings so the list stays
+    /// visible until the next scan replaces it.
+    /// </summary>
+    private void RestoreScannedGames()
+    {
+        var entries = _settingsStorage.Load().CloudScannedGames;
+        foreach (var entry in entries)
+        {
+            var saveInfo = string.IsNullOrWhiteSpace(entry.SourcePath)
+                ? null
+                : _discovery.CreateManual(entry.Title, entry.SourcePath);
+
+            var row = new CloudSaveGameViewModel(entry.Title, saveInfo, entry.Platform)
+            {
+                IsSelected = entry.IsSelected,
+                StatusText = entry.StatusText,
+                StatusColor = entry.StatusColor
+            };
+            Games.Add(TrackSelection(row));
+        }
+
+        OnPropertyChanged(nameof(CanMigrate));
+        OnPropertyChanged(nameof(CanPreview));
+    }
+
+    /// <summary>
+    /// Persists the current game list and provider selection so both survive
+    /// app restarts. The list is only replaced by the next scan.
+    /// </summary>
+    private void SaveScanState()
+    {
+        var settings = _settingsStorage.Load();
+        settings.CloudScannedGames = Games.Select(game => new CloudScannedGameEntry
+        {
+            Title = game.Title,
+            Platform = game.Platform,
+            SourcePath = game.SourcePath,
+            IsSelected = game.IsSelected,
+            StatusText = game.StatusText,
+            StatusColor = game.StatusColor
+        }).ToList();
+        if (SelectedProvider is not null)
+            settings.CloudSaveProvider = SelectedProvider.Provider.ToString();
+        _settingsStorage.Save(settings);
+    }
+
     private List<CloudSaveGameViewModel> SelectedRows() =>
         Games.Where(game => game.IsSelected && game.HasSaveFolder).ToList();
 
@@ -416,6 +477,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
             {
                 OnPropertyChanged(nameof(CanMigrate));
                 OnPropertyChanged(nameof(CanPreview));
+                SaveScanState();
             }
         };
         return item;

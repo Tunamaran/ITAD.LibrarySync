@@ -21,6 +21,8 @@ public sealed class AppSettings
     public bool ShowNotifications { get; set; } = true;
     public bool ConfirmBeforeSync { get; set; } = true;
     public bool UsePcgwLiveLookup { get; set; }
+    public string? CloudSaveProvider { get; set; }
+    public List<CloudScannedGameEntry> CloudScannedGames { get; set; } = new();
     public AppLogLevel LogLevel { get; set; } = AppLogLevel.Info;
     public Dictionary<LauncherId, bool> EnabledLaunchers { get; set; } = CreateDefaultEnabledLaunchers();
     public Dictionary<LauncherId, string> LastSyncStatsByLauncher { get; set; } = new();
