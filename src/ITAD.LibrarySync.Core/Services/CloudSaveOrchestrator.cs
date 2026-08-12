@@ -274,7 +274,17 @@ public sealed class CloudSaveOrchestrator : ICloudSaveOrchestrator
         try
         {
             if (_pathExists(backupPath) && !_pathExists(source))
-                Directory.Move(backupPath, source);
+            {
+                try
+                {
+                    Directory.Move(backupPath, source);
+                }
+                catch
+                {
+                    CopyDirectory(backupPath, source);
+                    try { Directory.Delete(backupPath, recursive: true); } catch { }
+                }
+            }
         }
         catch
         {
