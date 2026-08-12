@@ -16,25 +16,63 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      - name: Determine & Auto-Increment Version
+        id: versioning
+        shell: powershell
+        run: |
+          [xml]$proj = Get-Content src/ITAD.LibrarySync.App/ITAD.LibrarySync.App.csproj
+          $currentVersion = $proj.Project.PropertyGroup.Version
+          if ([string]::IsNullOrWhiteSpace($currentVersion)) { $currentVersion = "1.0.0" }
+
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+              $v = [version]$currentVersion
+              $newVersion = "{0}.{1}.{2}" -f $v.Major, $v.Minor, ($v.Build + 1)
+              
+              Write-Host "Auto-incrementing version from $currentVersion to $newVersion"
+              $proj.Project.PropertyGroup.Version = $newVersion
+              $proj.Save("$PWD/src/ITAD.LibrarySync.App/ITAD.LibrarySync.App.csproj")
+              
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git add src/ITAD.LibrarySync.App/ITAD.LibrarySync.App.csproj
+              git commit -m "chore(release): auto-bump version to $newVersion [skip ci]"
+              git tag "v$newVersion"
+              git push origin master --tags
+              
+              $version = $newVersion
+          } else {
+              $refName = "${{ github.ref_name }}"
+              if ($refName -like "v*") {
+                  $version = $refName.TrimStart('v')
+              } else {
+                  $version = $currentVersion
+              }
+          }
+          
+          Write-Host "Final Release Version: $version"
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+          echo "TAG_NAME=v$version" >> $env:GITHUB_ENV
+
       - name: Run Tests
         run: dotnet test --configuration Release
 
       - name: Publish App
         run: |
-          dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+          dotnet publish src/ITAD.LibrarySync.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$env:VERSION -o publish
           Compress-Archive -Path publish/* -DestinationPath ITAD.LibrarySync-win-x64.zip
 
       - name: Build Inno Setup Installer
         run: |
           choco install innosetup -y
-          $version = "${{ github.ref_name }}".TrimStart('v')
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=$version installer/setup.iss
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=$env:VERSION installer/setup.iss
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -47,6 +85,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG_NAME }}
           files: |
             ITAD.LibrarySync-win-x64.zip
             Output/*.exe
