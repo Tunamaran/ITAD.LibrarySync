@@ -81,7 +81,7 @@ public static class EaPcSignGenerator
                 BoardSerial = boardSerial,
                 BiosSerial = biosSerial,
                 DiskSerial = diskSerial,
-                Mac = mac,
+                Mac = mac ?? string.Empty,
                 MachineId = HashFnv1a(machineBuffer.ToString()).ToString(),
                 GpuDeviceId = gpuDeviceId
             };

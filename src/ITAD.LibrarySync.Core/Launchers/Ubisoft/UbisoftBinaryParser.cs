@@ -82,7 +82,7 @@ internal static class UbisoftBinaryParser
                     break;
 
                 owned.Add(launchId.Value);
-                if (launchId2 != launchId)
+                if (launchId2.HasValue && launchId2 != launchId)
                     owned.Add(launchId2.Value);
 
                 globalOffset += recordSize.Value;

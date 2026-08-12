@@ -11,7 +11,7 @@ public sealed class StoreContextLibraryReader(IWindowHandleProvider windowHandle
 {
     private static readonly string[] ProductKinds = ["Game", "Application"];
 
-    internal const uint ErrorNoSuchUserHResult = 0x80070525;
+    internal const int ErrorNoSuchUserHResult = unchecked((int)0x80070525);
 
     public Task<MicrosoftStoreLibraryReadResult> ReadOwnedGamesAsync(CancellationToken ct = default)
     {

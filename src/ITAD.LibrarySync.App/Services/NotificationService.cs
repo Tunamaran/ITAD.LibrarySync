@@ -81,8 +81,10 @@ public sealed class NotificationService(AppSettingsStorage appSettingsStorage)
             .AddText(body)
             .Show(toast =>
             {
+#pragma warning disable CA1416
                 toast.Tag = "ITADLibrarySync";
                 toast.Group = "Sync";
+#pragma warning restore CA1416
             });
     }
 

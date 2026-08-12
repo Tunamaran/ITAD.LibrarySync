@@ -146,7 +146,10 @@ public partial class App : Application
 
     private void ApplyNormalStartup(AppSettings settings, bool isAutostart = false, bool skipSyncOnStartup = false)
     {
-        _serviceProvider!.GetRequiredService<WindowsStartupService>().Apply(settings.StartWithWindows);
+        if (_serviceProvider is null)
+            return;
+
+        _serviceProvider.GetRequiredService<WindowsStartupService>().Apply(settings.StartWithWindows);
 
         var tokenStorage = _serviceProvider.GetRequiredService<TokenStorage>();
         if (tokenStorage.Load() is not null)

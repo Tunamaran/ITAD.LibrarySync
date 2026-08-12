@@ -132,7 +132,7 @@ internal static class UbisoftLocalLibraryReader
 
     private static string ResolveTitle(UbisoftConfigurationFile config)
     {
-        var title = config.root.display_name ?? config.root.name ?? string.Empty;
+        var title = config.root?.display_name ?? config.root?.name ?? string.Empty;
         if (config.localizations?.Default is { } localization)
             title = Localize(title, localization);
 
@@ -144,7 +144,7 @@ internal static class UbisoftLocalLibraryReader
         }
 
         if (IsPlaceholderTitle(title) &&
-            !string.IsNullOrWhiteSpace(config.root.uplay?.game_code) &&
+            !string.IsNullOrWhiteSpace(config.root?.uplay?.game_code) &&
             !IsPlaceholderTitle(config.root.uplay.game_code))
         {
             title = config.root.uplay.game_code;
@@ -156,7 +156,7 @@ internal static class UbisoftLocalLibraryReader
 
     private static string ResolveStoreId(UbisoftConfigurationFile config, string title)
     {
-        var iconFile = config.root.icon_image ?? config.root.thumb_image ?? string.Empty;
+        var iconFile = config.root?.icon_image ?? config.root?.thumb_image ?? string.Empty;
         if (config.localizations?.Default is { } iconLocalization)
             iconFile = Localize(iconFile, iconLocalization);
 

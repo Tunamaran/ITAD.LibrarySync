@@ -15,8 +15,7 @@ public sealed class CollectionSyncService(
     MicrosoftStoreSyncPayloadPreparer microsoftStoreSyncPayloadPreparer,
     EaStoreSyncPayloadPreparer eaStoreSyncPayloadPreparer,
     CollectionSyncFaultIsolator faultIsolator,
-    FileLogger logger,
-    IUnmatchedTitlesService? unmatchedTitles = null) : ICollectionSyncService
+    FileLogger logger) : ICollectionSyncService
 {
     public async Task<ItadSyncResponse?> SyncAsync(
         LauncherReadResult read,
