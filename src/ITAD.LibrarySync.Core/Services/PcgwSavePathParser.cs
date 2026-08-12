@@ -24,19 +24,47 @@ public static partial class PcgwSavePathParser
         ["documents"] = "%USERPROFILE%\\Documents",
         ["appdata"] = "%APPDATA%",
         ["localappdata"] = "%LOCALAPPDATA%",
+        ["locallow"] = "%USERPROFILE%\\AppData\\LocalLow",
+        ["appdata\\locallow"] = "%USERPROFILE%\\AppData\\LocalLow",
+        ["userprofile\\appdata\\locallow"] = "%USERPROFILE%\\AppData\\LocalLow",
         ["home"] = "%USERPROFILE%",
-        ["public"] = "%PUBLIC%"
+        ["public"] = "%PUBLIC%",
+        ["programdata"] = "%PROGRAMDATA%",
+        ["saved games"] = "%USERPROFILE%\\Saved Games",
+        ["userprofile\\saved games"] = "%USERPROFILE%\\Saved Games",
+        ["steam"] = "%ProgramFiles(x86)%\\Steam",
+
+        // Dynamic user ID placeholders mapped to wildcard marker for directory resolution
+        ["uid"] = "*",
+        ["steamid"] = "*",
+        ["steamid3"] = "*",
+        ["steamid64"] = "*",
+        ["user-id"] = "*",
+        ["userid"] = "*",
+        ["id"] = "*",
+        ["accountid"] = "*",
+        ["profileid"] = "*",
+        ["username"] = "*"
     };
 
     /// <summary>
     /// Returns the first resolvable Windows save path from the wikitext, or
-    /// <c>null</c> when no Windows row exists or all rows are unresolvable.
-    /// The result keeps <c>%USERPROFILE%</c>-style variables (no trailing slash).
+    /// <c>null</c> when no Windows-compatible row exists or all rows are unresolvable.
     /// </summary>
     public static string? ParseWindowsSavePath(string? wikitext)
     {
+        return ParseWindowsSavePaths(wikitext).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Returns all resolvable Windows/Launcher save path candidates from the wikitext.
+    /// </summary>
+    public static IReadOnlyList<string> ParseWindowsSavePaths(string? wikitext)
+    {
         if (string.IsNullOrWhiteSpace(wikitext))
-            return null;
+            return [];
+
+        var results = new List<string>();
 
         foreach (var block in EnumerateSaveDataBlocks(wikitext))
         {
@@ -45,7 +73,7 @@ public static partial class PcgwSavePathParser
                 continue;
 
             // args: [template name, platform, path, ...]
-            if (!string.Equals(args[1].Trim(), "Windows", StringComparison.OrdinalIgnoreCase))
+            if (!IsWindowsCompatiblePlatform(args[1]))
                 continue;
 
             foreach (var rawPath in args.Skip(2))
@@ -54,11 +82,52 @@ public static partial class PcgwSavePathParser
                 if (string.IsNullOrWhiteSpace(expanded))
                     continue;
 
-                return expanded.TrimEnd('\\', '/');
+                var trimmed = expanded.TrimEnd('\\', '/');
+                if (!results.Contains(trimmed, StringComparer.OrdinalIgnoreCase))
+                {
+                    results.Add(trimmed);
+                }
             }
         }
 
-        return null;
+        return results;
+    }
+
+    private static bool IsWindowsCompatiblePlatform(string rawPlatform)
+    {
+        if (string.IsNullOrWhiteSpace(rawPlatform))
+            return false;
+
+        var platform = rawPlatform.Trim();
+
+        if (platform.Equals("Windows", StringComparison.OrdinalIgnoreCase) ||
+            platform.Equals("PC", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (platform.StartsWith("Steam", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Epic", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("GOG", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Ubisoft", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Uplay", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Origin", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("EA", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Battle.net", StringComparison.OrdinalIgnoreCase) ||
+            platform.StartsWith("Xbox", StringComparison.OrdinalIgnoreCase))
+        {
+            if (platform.Contains("Linux", StringComparison.OrdinalIgnoreCase) ||
+                platform.Contains("Mac", StringComparison.OrdinalIgnoreCase) ||
+                platform.Contains("OS X", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private static IEnumerable<string> EnumerateSaveDataBlocks(string text)

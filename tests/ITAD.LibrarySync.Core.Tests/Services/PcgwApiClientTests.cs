@@ -86,7 +86,7 @@ public sealed class PcgwApiClientTests
             ? SearchJson
             : url.Contains("prop=sections")
                 ? SectionsJson
-                : """{"parse":{"title":"Terraria","pageid":149,"wikitext":"{{Game data/saves|Windows|{{p|steam}}\\userdata\\}}"}}""");
+                : """{"parse":{"title":"Terraria","pageid":149,"wikitext":"{{Game data/saves|Windows|{{p|unknown_custom_placeholder}}\\userdata\\}}"}}""");
         using var client = new HttpClient(handler);
         var api = new PcgwApiClient(client, requestPacing: TimeSpan.Zero);
 

@@ -13,5 +13,5 @@ public interface IPcgwSaveLookupService
     /// <see cref="PcgwLookupResult.UsedLiveRequest"/> is true only when an actual
     /// API request was made (cache hits do not consume a live-lookup budget).
     /// </summary>
-    Task<PcgwLookupResult> LookupAsync(string gameTitle, CancellationToken ct = default);
+    Task<PcgwLookupResult> LookupAsync(string gameTitle, bool forceLive = false, CancellationToken ct = default);
 }

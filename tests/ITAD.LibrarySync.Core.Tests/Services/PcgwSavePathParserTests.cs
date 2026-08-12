@@ -4,7 +4,6 @@ namespace ITAD.LibrarySync.Core.Tests.Services;
 
 public sealed class PcgwSavePathParserTests
 {
-    // Real wikitext of the "Save game data location" section of Terraria (fetched live).
     private const string TerrariaSection = """
 ===Save game data location===
 {{Game data|
@@ -12,6 +11,15 @@ public sealed class PcgwSavePathParserTests
 {{Game data/saves|Steam|{{p|steam}}\userdata\{{p|uid}}\105600\remote\achievements-steam.dat|{{p|steam}}\userdata\{{p|uid}}\105600\remote\players\*.plr|{{p|steam}}\userdata\{{p|uid}}\105600\remote\worlds\*.wld}}
 {{Game data/saves|OS X|{{p|osxhome}}/Library/Application Support/Terraria/}}
 {{Game data/saves|Linux|{{p|xdgdatahome}}/Terraria/Players/*.plr|{{p|xdgdatahome}}/Terraria/Worlds/*.wld}}
+}}
+""";
+
+    private const string RoadCraftSection = """
+===Save game data location===
+{{Game data|
+{{Game data/saves|Epic Games Launcher|{{p|localappdata}}\Saber\RoadCraftGame\storage\EOS\user\{{p|uid}}\Main\save\}}
+{{Game data/saves|Steam|{{p|localappdata}}\Saber\RoadCraftGame\storage\steam\user\{{p|uid}}\Main\save\}}
+{{Game data/saves|Steam Play (Linux)|<SteamLibrary-folder>/steamapps/compatdata/2104890/pfx/}}
 }}
 """;
 
@@ -24,6 +32,16 @@ public sealed class PcgwSavePathParserTests
     }
 
     [Fact]
+    public void ParseWindowsSavePath_RoadCraftSection_ReturnsLauncherCandidatePaths()
+    {
+        var paths = PcgwSavePathParser.ParseWindowsSavePaths(RoadCraftSection);
+
+        Assert.Equal(2, paths.Count);
+        Assert.Equal(@"%LOCALAPPDATA%\Saber\RoadCraftGame\storage\EOS\user\*\Main\save", paths[0]);
+        Assert.Equal(@"%LOCALAPPDATA%\Saber\RoadCraftGame\storage\steam\user\*\Main\save", paths[1]);
+    }
+
+    [Fact]
     public void ParseWindowsSavePath_SupportsGameDataRowVariant()
     {
         const string wikitext = "===Save game data location===\n{{Game data/row|Windows|{{p|userprofile}}\\Saves\\Game\\}}";
@@ -32,12 +50,12 @@ public sealed class PcgwSavePathParserTests
     }
 
     [Fact]
-    public void ParseWindowsSavePath_NoWindowsRow_ReturnsNull()
+    public void ParseWindowsSavePath_ExcludesLinuxOnlyRows_ReturnsNull()
     {
         const string wikitext = """
 {{Game data|
-{{Game data/saves|Steam|{{p|steam}}\userdata\}}
 {{Game data/saves|Linux|{{p|xdgdatahome}}/Game/}}
+{{Game data/saves|Steam Play (Linux)|<SteamLibrary-folder>/steamapps/compatdata/123/pfx/}}
 }}
 """;
 
@@ -45,21 +63,11 @@ public sealed class PcgwSavePathParserTests
     }
 
     [Fact]
-    public void ParseWindowsSavePath_UnresolvablePlaceholder_ReturnsNull()
+    public void ParseWindowsSavePath_ResolvesDynamicUserPlaceholders()
     {
-        const string wikitext = "{{Game data/saves|Windows|{{p|steam}}\\userdata\\{{p|uid}}\\1234\\}}";
+        const string wikitext = "{{Game data/saves|Windows|{{p|localappdata}}\\Company\\Game\\{{p|uid}}\\save\\}}";
 
-        Assert.Null(PcgwSavePathParser.ParseWindowsSavePath(wikitext));
-    }
-
-    [Fact]
-    public void ParseWindowsSavePath_SkipsUnresolvableRowAndUsesNext()
-    {
-        const string wikitext =
-            "{{Game data/saves|Windows|{{p|steam}}\\userdata\\}}\n" +
-            "{{Game data/saves|Windows|{{p|appdata}}\\Game\\}}";
-
-        Assert.Equal(@"%APPDATA%\Game", PcgwSavePathParser.ParseWindowsSavePath(wikitext));
+        Assert.Equal(@"%LOCALAPPDATA%\Company\Game\*\save", PcgwSavePathParser.ParseWindowsSavePath(wikitext));
     }
 
     [Fact]

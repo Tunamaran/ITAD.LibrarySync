@@ -65,6 +65,11 @@ public sealed class PcgwSaveLookupServiceTests : IDisposable
         Assert.False(second.UsedLiveRequest); // negative cache hit
         Assert.Null(second.Info);
         api.Verify(x => x.LookupSavePathAsync("Unknown Game", It.IsAny<CancellationToken>()), Times.Once);
+
+        // Third call with forceLive: true bypasses cache
+        var third = await service.LookupAsync("Unknown Game", forceLive: true);
+        Assert.True(third.UsedLiveRequest);
+        api.Verify(x => x.LookupSavePathAsync("Unknown Game", It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [Fact]

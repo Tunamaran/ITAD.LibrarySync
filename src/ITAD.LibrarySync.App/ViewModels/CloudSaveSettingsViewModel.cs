@@ -274,7 +274,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                     break;
                 }
 
-                var lookup = await _pcgw.LookupAsync(row.Title);
+                var lookup = await _pcgw.LookupAsync(row.Title, forceLive: true);
                 if (lookup.UsedLiveRequest)
                 {
                     if (!_lookingUp)

@@ -51,8 +51,8 @@ public sealed class PcgwApiClient : IPcgwApiClient
             if (wikitext is null)
                 return null;
 
-            var savePath = PcgwSavePathParser.ParseWindowsSavePath(wikitext);
-            if (savePath is null)
+            var candidatePaths = PcgwSavePathParser.ParseWindowsSavePaths(wikitext);
+            if (candidatePaths.Count == 0)
             {
                 _logger?.LogInfo($"PcgwApiClient: no resolvable Windows save path on '{pageTitle}'.");
                 return null;
@@ -60,8 +60,9 @@ public sealed class PcgwApiClient : IPcgwApiClient
 
             return new PcgwSaveInfo(
                 pageTitle,
-                savePath,
-                $"https://www.pcgamingwiki.com/wiki/{Uri.EscapeDataString(pageTitle.Replace(' ', '_'))}");
+                candidatePaths[0],
+                $"https://www.pcgamingwiki.com/wiki/{Uri.EscapeDataString(pageTitle.Replace(' ', '_'))}",
+                candidatePaths);
         }
         catch (Exception ex)
         {

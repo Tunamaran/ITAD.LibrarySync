@@ -13,18 +13,21 @@ public sealed class PcgwSaveLookupService(
     PcgwSavePathCache cache,
     FileLogger? logger = null) : IPcgwSaveLookupService
 {
-    public async Task<PcgwLookupResult> LookupAsync(string gameTitle, CancellationToken ct = default)
+    public async Task<PcgwLookupResult> LookupAsync(string gameTitle, bool forceLive = false, CancellationToken ct = default)
     {
-        var (isHit, cached) = await cache.TryGetAsync(gameTitle, ct);
-        if (isHit)
+        if (!forceLive)
         {
-            if (cached is null)
+            var (isHit, cached) = await cache.TryGetAsync(gameTitle, ct);
+            if (isHit)
             {
-                logger?.LogInfo($"PCGW lookup: '{gameTitle}' served from negative cache.");
-                return new PcgwLookupResult(UsedLiveRequest: false, Info: null);
-            }
+                if (cached is null)
+                {
+                    logger?.LogInfo($"PCGW lookup: '{gameTitle}' served from negative cache.");
+                    return new PcgwLookupResult(UsedLiveRequest: false, Info: null);
+                }
 
-            return new PcgwLookupResult(UsedLiveRequest: false, Info: ToGameSaveInfo(gameTitle, cached));
+                return new PcgwLookupResult(UsedLiveRequest: false, Info: ToGameSaveInfo(gameTitle, cached));
+            }
         }
 
         var found = await api.LookupSavePathAsync(gameTitle, ct);
@@ -41,12 +44,31 @@ public sealed class PcgwSaveLookupService(
 
     private static GameSaveInfo ToGameSaveInfo(string gameTitle, PcgwSaveInfo info)
     {
-        var resolved = Environment.ExpandEnvironmentVariables(info.SavePath).TrimEnd('\\', '/');
+        var candidates = info.CandidatePaths ?? [info.SavePath];
+        string bestPath = info.SavePath;
+        bool bestExists = false;
+
+        foreach (var candidate in candidates)
+        {
+            var (resolvedPath, exists) = WildcardPathResolver.Resolve(candidate);
+            if (exists)
+            {
+                bestPath = resolvedPath;
+                bestExists = true;
+                break;
+            }
+
+            if (string.Equals(bestPath, info.SavePath, StringComparison.OrdinalIgnoreCase))
+            {
+                bestPath = resolvedPath;
+            }
+        }
+
         return new GameSaveInfo(
             Title: gameTitle,
-            SourcePath: resolved,
+            SourcePath: bestPath,
             SourceUrl: info.SourceUrl,
             IsInstalled: true,
-            Exists: Directory.Exists(resolved));
+            Exists: bestExists);
     }
 }

@@ -6,4 +6,5 @@ namespace ITAD.LibrarySync.Core.Models;
 public sealed record PcgwSaveInfo(
     string PageTitle,
     string SavePath,
-    string? SourceUrl = null);
+    string? SourceUrl = null,
+    IReadOnlyList<string>? CandidatePaths = null);
