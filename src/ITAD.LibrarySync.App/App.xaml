@@ -49,17 +49,26 @@
             <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="UseLayoutRounding" Value="True" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+            <Setter Property="TextOptions.TextRenderingMode" Value="Auto" />
         </Style>
 
         <!-- Button Style -->
         <Style TargetType="Button">
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
             <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="#0F172A" />
-            <Setter Property="Background" Value="#F1F5F9" />
+            <Setter Property="Background" Value="#F8FAFC" />
             <Setter Property="BorderBrush" Value="#CBD5E1" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Padding" Value="14,7" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -79,14 +88,15 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#E2E8F0" />
+                                <Setter TargetName="border" Property="Background" Value="#F1F5F9" />
                                 <Setter TargetName="border" Property="BorderBrush" Value="#94A3B8" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#CBD5E1" />
+                                <Setter TargetName="border" Property="Background" Value="#E2E8F0" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="border" Property="Opacity" Value="0.55" />
+                                <Setter TargetName="border" Property="Opacity" Value="0.5" />
+                                <Setter Property="Cursor" Value="Arrow" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -105,6 +115,10 @@
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}" />
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHoverBrush}" />
                 </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#075985" />
+                    <Setter Property="BorderBrush" Value="#075985" />
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -112,10 +126,12 @@
         <Style TargetType="TextBox">
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="Padding" Value="10,7" />
+            <Setter Property="MinHeight" Value="34" />
             <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="#CBD5E1" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -125,17 +141,32 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="6"
                                 SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
                                 <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
                                 <Setter TargetName="border" Property="BorderThickness" Value="1.5" />
                             </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#94A3B8" />
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- ComboBox Style -->
+        <Style TargetType="ComboBox">
+            <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#CBD5E1" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
         <!-- TabControl & TabItem Styles (Modern Segmented Pill Bar) -->
@@ -174,11 +205,12 @@
 
         <Style TargetType="TabItem">
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
-            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="#64748B" />
-            <Setter Property="Padding" Value="4,7" />
+            <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="2,0" />
+            <Setter Property="MinHeight" Value="36" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Template">
@@ -206,7 +238,7 @@
                                 <Setter TargetName="border" Property="Background" Value="#0284C7" />
                                 <Setter TargetName="border" Property="BorderBrush" Value="#0284C7" />
                                 <Setter Property="Foreground" Value="White" />
-                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -221,26 +253,28 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="RowBackground" Value="White" />
             <Setter Property="AlternatingRowBackground" Value="#F8FAFC" />
-            <Setter Property="HorizontalGridLinesBrush" Value="#E2E8F0" />
-            <Setter Property="VerticalGridLinesBrush" Value="#E2E8F0" />
+            <Setter Property="HorizontalGridLinesBrush" Value="#F1F5F9" />
+            <Setter Property="VerticalGridLinesBrush" Value="#F1F5F9" />
             <Setter Property="FontFamily" Value="{StaticResource MainFontFamily}" />
             <Setter Property="FontSize" Value="12.5" />
-            <Setter Property="RowHeight" Value="32" />
-            <Setter Property="ColumnHeaderHeight" Value="36" />
+            <Setter Property="RowHeight" Value="36" />
+            <Setter Property="ColumnHeaderHeight" Value="38" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#E2E8F0" />
-            <Setter Property="Foreground" Value="#0F172A" />
-            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Background" Value="#F1F5F9" />
+            <Setter Property="Foreground" Value="#334155" />
+            <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="FontSize" Value="12.5" />
-            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="Padding" Value="12,8" />
             <Setter Property="BorderThickness" Value="0,0,1,2" />
-            <Setter Property="BorderBrush" Value="#CBD5E1" />
+            <Setter Property="BorderBrush" Value="#E2E8F0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
         <Style TargetType="DataGridCell">
-            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="Padding" Value="12,4" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridCell">

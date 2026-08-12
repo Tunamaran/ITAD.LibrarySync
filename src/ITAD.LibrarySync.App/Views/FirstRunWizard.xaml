@@ -74,7 +74,7 @@
                 <Button Margin="0,20,0,0"
                         HorizontalAlignment="Left"
                         Style="{StaticResource PrimaryButtonStyle}"
-                        Width="130"
+                        MinWidth="130" MinHeight="36" Padding="16,8"
                         Content="{Binding Lang[WizardItadConnectBtn], Mode=OneWay}"
                         Command="{Binding ConnectCommand}" />
                 
@@ -159,12 +159,12 @@
 
             <Button Grid.Column="0"
                     HorizontalAlignment="Left"
-                    Width="90"
+                    MinWidth="100" MinHeight="36" Padding="16,8"
                     Content="{Binding Lang[WizardBtnBack], Mode=OneWay}"
                     Command="{Binding GoBackCommand}" />
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Width="95"
+                <Button MinWidth="100" MinHeight="36" Padding="16,8"
                         Margin="0,0,8,0"
                         Content="{Binding Lang[WizardBtnNext], Mode=OneWay}"
                         Command="{Binding GoNextCommand}">
@@ -179,7 +179,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button Width="95"
+                <Button MinWidth="100" MinHeight="36" Padding="16,8"
                         Content="{Binding Lang[WizardBtnFinish], Mode=OneWay}"
                         IsDefault="True"
                         Command="{Binding FinishCommand}">

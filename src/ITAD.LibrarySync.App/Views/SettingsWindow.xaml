@@ -166,16 +166,16 @@
                         <StackPanel Margin="0,14,0,0" Orientation="Horizontal">
                             <Button Content="{Binding Lang[ConnectBtn], Mode=OneWay}"
                                     Style="{StaticResource PrimaryButtonStyle}"
-                                    Width="130"
+                                    MinWidth="120"
                                     Margin="0,0,8,0"
                                     Command="{Binding ConnectCommand}" />
                             <Button Content="{Binding Lang[DisconnectBtn], Mode=OneWay}"
-                                    Width="130"
+                                    MinWidth="120"
+                                    Margin="0,0,12,0"
                                     Command="{Binding DisconnectCommand}" />
                             <Button Content="{Binding Lang[SyncNowBtn], Mode=OneWay}"
                                     Style="{StaticResource PrimaryButtonStyle}"
-                                    Width="160"
-                                    Margin="12,0,0,0"
+                                    MinWidth="150"
                                     Command="{Binding SyncNowCommand}" />
                         </StackPanel>
 
@@ -205,7 +205,7 @@
                         <ItemsControl ItemsSource="{Binding LauncherStatuses}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,8">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
@@ -213,16 +213,16 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Margin="0,0,14,0" />
 
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="13.5" Foreground="#0F172A"/>
                                                 <TextBlock Text="{Binding DetectionStatus}" Foreground="#64748B" FontSize="12" Margin="0,2,0,0"/>
                                             </StackPanel>
 
                                             <Button Grid.Column="2" Content="{Binding DataContext.Lang[BtnDetails], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" VerticalAlignment="Center" Padding="10,4" />
+                                                    CommandParameter="{Binding}" VerticalAlignment="Center" MinWidth="85" MinHeight="32" Padding="12,5" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -233,28 +233,28 @@
                         <Grid Margin="0,8,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
+                            <Border Grid.Column="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding Lang[XboxAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding XboxConnectionStatus, Mode=OneWay}" Foreground="#64748B" Margin="0,2,0,8"/>
+                                    <TextBlock Text="{Binding Lang[XboxAccountHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="13.5"/>
+                                    <TextBlock Text="{Binding XboxConnectionStatus, Mode=OneWay}" Foreground="#64748B" FontSize="12" Margin="0,3,0,10"/>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="{Binding Lang[BtnConnectXbox], Mode=OneWay}" Command="{Binding ConnectXboxCommand}" Margin="0,0,8,0"/>
-                                        <Button Content="{Binding Lang[BtnDisconnectXbox], Mode=OneWay}" Command="{Binding DisconnectXboxCommand}"/>
+                                        <Button Content="{Binding Lang[BtnConnectXbox], Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ConnectXboxCommand}" MinWidth="110" Margin="0,0,8,0"/>
+                                        <Button Content="{Binding Lang[BtnDisconnectXbox], Mode=OneWay}" Command="{Binding DisconnectXboxCommand}" MinWidth="110"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
-                            <Border Grid.Column="2" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
+                            <Border Grid.Column="2" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding Lang[EaAccountHeader], Mode=OneWay}" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding EaConnectionStatus, Mode=OneWay}" Foreground="#64748B" Margin="0,2,0,8"/>
+                                    <TextBlock Text="{Binding Lang[EaAccountHeader], Mode=OneWay}" FontWeight="SemiBold" FontSize="13.5"/>
+                                    <TextBlock Text="{Binding EaConnectionStatus, Mode=OneWay}" Foreground="#64748B" FontSize="12" Margin="0,3,0,10"/>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="{Binding Lang[BtnConnectEa], Mode=OneWay}" Command="{Binding ConnectEaCommand}" Margin="0,0,8,0"/>
-                                        <Button Content="{Binding Lang[BtnDisconnectEa], Mode=OneWay}" Command="{Binding DisconnectEaCommand}"/>
+                                        <Button Content="{Binding Lang[BtnConnectEa], Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ConnectEaCommand}" MinWidth="110" Margin="0,0,8,0"/>
+                                        <Button Content="{Binding Lang[BtnDisconnectEa], Mode=OneWay}" Command="{Binding DisconnectEaCommand}" MinWidth="110"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -337,10 +337,10 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Content="{Binding Lang[BtnRefresh], Mode=OneWay}"
                                         Command="{Binding LoadUnmatchedTitlesCommand}"
-                                        Margin="0,0,6,0" Padding="10,4" />
+                                        MinWidth="90" MinHeight="34" Margin="0,0,6,0" Padding="12,6" />
                                 <Button Content="{Binding Lang[BtnClearList], Mode=OneWay}"
                                         Command="{Binding ClearUnmatchedTitlesCommand}"
-                                        Padding="10,4" />
+                                        MinWidth="90" MinHeight="34" Padding="12,6" />
                             </StackPanel>
                         </Grid>
 
@@ -349,20 +349,20 @@
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
                                   IsReadOnly="True"
-                                  MaxHeight="200"
+                                  MaxHeight="220"
                                   HeadersVisibility="Column"
                                   Margin="0,0,0,16">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColPlatform], Mode=OneWay}" Binding="{Binding Launcher}" Width="85" />
+                                <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColPlatform], Mode=OneWay}" Binding="{Binding Launcher}" Width="100" />
                                 <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColGameTitle], Mode=OneWay}" Binding="{Binding Title}" Width="2*" />
                                 <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColLocalStoreId], Mode=OneWay}" Binding="{Binding StoreId}" Width="1.2*" />
                                 <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColReason], Mode=OneWay}" Binding="{Binding ReasonCode, Converter={StaticResource UnmatchedReasonConverter}}" Width="1.5*" />
-                                <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColAction], Mode=OneWay}" Width="80">
+                                <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColAction], Mode=OneWay}" Width="125">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="{Binding DataContext.Lang[BtnFix], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Style="{StaticResource PrimaryButtonStyle}"
-                                                    Padding="8,2"
+                                                    MinHeight="28" MinWidth="85" Padding="10,4"
                                                     Command="{Binding DataContext.FixMatchCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}" />
                                         </DataTemplate>
@@ -391,14 +391,14 @@
                                   HeadersVisibility="Column"
                                   Margin="0,0,0,8">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColPlatform], Mode=OneWay}" Binding="{Binding Launcher}" Width="85" />
+                                <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColPlatform], Mode=OneWay}" Binding="{Binding Launcher}" Width="100" />
                                 <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColGameTitle], Mode=OneWay}" Binding="{Binding Title}" Width="2*" />
                                 <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColLocalStoreId], Mode=OneWay}" Binding="{Binding StoreId}" Width="1.2*" />
                                 <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColTargetItadId], Mode=OneWay}" Binding="{Binding MappedId}" Width="1.4*" />
-                                <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColAction], Mode=OneWay}" Width="65">
+                                <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColAction], Mode=OneWay}" Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="✕" Padding="6,2" FontWeight="Bold" Foreground="#DC2626"
+                                            <Button Content="✕" MinWidth="32" MinHeight="26" Padding="6,2" FontWeight="Bold" Foreground="#DC2626" Background="#FEE2E2" BorderBrush="#FCA5A5" BorderThickness="1"
                                                     ToolTip="{Binding DataContext.Lang[DeleteMappingTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
                                                     Command="{Binding DataContext.RemoveCustomMappingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}" />
@@ -411,7 +411,7 @@
                         <Button HorizontalAlignment="Right"
                                 Content="{Binding Lang[BtnSyncCustomMappings], Mode=OneWay}"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                Padding="12,6"
+                                MinWidth="160" MinHeight="36" Padding="16,8"
                                 ToolTip="{Binding Lang[SyncCustomMappingsTooltip], Mode=OneWay}"
                                 Command="{Binding SyncCustomMappingsCommand}" />
                     </StackPanel>
@@ -477,22 +477,23 @@
                                 <TextBlock Text="{Binding Lang[CloudStep2Hint], Mode=OneWay}"
                                            FontSize="11.5" Foreground="#64748B" TextWrapping="Wrap" LineHeight="16" Margin="0,0,0,10" />
 
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                     <Button Content="{Binding Lang[BtnCloudDetect], Mode=OneWay}"
+                                            Style="{StaticResource PrimaryButtonStyle}"
                                             Command="{Binding DetectGamesCommand}"
                                             IsEnabled="{Binding CanDetect}"
-                                            Padding="10,4" />
+                                            MinHeight="34" Padding="12,6" />
                                     <Button Content="{Binding Lang[BtnCloudSelectAll], Mode=OneWay}"
                                             Command="{Binding SelectAllCommand}"
-                                            Margin="8,0,0,0" Padding="10,4" />
+                                            Margin="8,0,0,0" MinHeight="34" Padding="12,6" />
                                     <Button Content="{Binding Lang[BtnCloudSelectNone], Mode=OneWay}"
                                             Command="{Binding SelectNoneCommand}"
-                                            Margin="8,0,0,0" Padding="10,4" />
+                                            Margin="8,0,0,0" MinHeight="34" Padding="12,6" />
                                     <Button Content="{Binding Lang[BtnCloudLookupSelected], Mode=OneWay}"
                                             Command="{Binding LookupSelectedCommand}"
                                             IsEnabled="{Binding CanLookupSelected}"
                                             ToolTip="{Binding Lang[BtnCloudLookupSelectedTooltip], Mode=OneWay}"
-                                            Margin="8,0,0,0" Padding="10,4" />
+                                            Margin="8,0,0,0" MinHeight="34" Padding="12,6" />
                                 </StackPanel>
 
                                 <DataGrid ItemsSource="{Binding Games}"
@@ -516,7 +517,7 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudAction], Mode=OneWay}" Width="70">
+                                        <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudAction], Mode=OneWay}" Width="125">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Button Content="{Binding DataContext.Lang[BtnCloudSetFolder], RelativeSource={RelativeSource AncestorType=Window}}"
@@ -524,7 +525,7 @@
                                                             CommandParameter="{Binding}"
                                                             IsEnabled="{Binding CanSetFolder}"
                                                             ToolTip="{Binding DataContext.Lang[BtnCloudSetFolderTooltip], RelativeSource={RelativeSource AncestorType=Window}}"
-                                                            Padding="8,2" />
+                                                            MinHeight="28" MinWidth="85" Padding="10,4" />
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
@@ -551,9 +552,15 @@
                                         Command="{Binding MigrateCommand}"
                                         IsEnabled="{Binding CanMigrate}"
                                         HorizontalAlignment="Left"
-                                        Margin="0,0,0,10" Padding="14,7"
+                                        Margin="0,0,0,12" Padding="16,8" MinHeight="36" MinWidth="140"
                                         Background="#16A34A" Foreground="White" BorderThickness="0"
-                                        FontWeight="Bold" />
+                                        FontWeight="SemiBold">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="6" />
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
 
                                 <DataGrid ItemsSource="{Binding Mappings}"
                                           AutoGenerateColumns="False" CanUserAddRows="False"
@@ -567,15 +574,15 @@
                                         <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudSource], Mode=OneWay}" Binding="{Binding SourcePath}" Width="1.5*" />
                                         <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudTarget], Mode=OneWay}" Binding="{Binding TargetPath}" Width="1.5*" />
                                         <DataGridTextColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudCreated], Mode=OneWay}" Binding="{Binding CreatedDisplay}" Width="110" />
-                                        <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudAction], Mode=OneWay}" Width="130">
+                                        <DataGridTemplateColumn Header="{Binding Source={x:Static services:LanguageManager.Instance}, Path=[ColCloudAction], Mode=OneWay}" Width="140">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <Button Content="{Binding DataContext.Lang[BtnCloudRestore], RelativeSource={RelativeSource AncestorType=Window}}"
                                                                 Command="{Binding DataContext.CloudRestoreCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                                 CommandParameter="{Binding}"
-                                                                Padding="8,2" Margin="0,0,6,0" />
-                                                        <Button Content="✕" Padding="6,2" FontWeight="Bold" Foreground="#DC2626"
+                                                                MinHeight="26" Padding="8,3" Margin="0,0,6,0" />
+                                                        <Button Content="✕" MinWidth="28" MinHeight="26" Padding="6,2" FontWeight="Bold" Foreground="#DC2626" Background="#FEE2E2" BorderBrush="#FCA5A5" BorderThickness="1"
                                                                 Command="{Binding DataContext.CloudRemoveMappingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                                 CommandParameter="{Binding}" />
                                                     </StackPanel>
@@ -691,10 +698,10 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Content="{Binding Lang[BtnOpenLogFolder], Mode=OneWay}"
                                         Command="{Binding OpenLogFolderCommand}"
-                                        Margin="0,0,6,0" Padding="10,4" />
+                                        MinWidth="110" MinHeight="34" Margin="0,0,6,0" Padding="12,6" />
                                 <Button Content="{Binding Lang[BtnRefresh], Mode=OneWay}"
                                         Command="{Binding RefreshLogsCommand}"
-                                        Padding="10,4" />
+                                        MinWidth="90" MinHeight="34" Padding="12,6" />
                             </StackPanel>
                         </Grid>
 
@@ -725,13 +732,13 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Button Content="{Binding Lang[BtnCheckUpdates], Mode=OneWay}"
-                                    Padding="12,6"
+                                    MinWidth="130" MinHeight="36" Padding="14,7"
                                     Margin="0,0,8,0"
                                     Command="{Binding CheckForUpdatesCommand}"
                                     IsEnabled="{Binding CanCheckUpdates}" />
                             <Button Content="{Binding Lang[BtnDownloadUpdate], Mode=OneWay}"
                                     Style="{StaticResource PrimaryButtonStyle}"
-                                    Padding="12,6"
+                                    MinWidth="130" MinHeight="36" Padding="14,7"
                                     Command="{Binding DownloadAndApplyUpdateCommand}"
                                     IsEnabled="{Binding CanCheckUpdates}"
                                     Visibility="{Binding HasUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
@@ -761,8 +768,8 @@
                                         Content="{Binding Lang[BtnPatreonSupport], Mode=OneWay}"
                                         Command="{Binding OpenPatreonCommand}"
                                         Background="#FF424D" Foreground="White"
-                                        FontWeight="Bold" FontSize="12.5"
-                                        Padding="14,8" BorderThickness="0"
+                                        FontWeight="SemiBold" FontSize="13"
+                                        MinHeight="36" Padding="16,8" BorderThickness="0"
                                         Cursor="Hand"
                                         VerticalAlignment="Center">
                                     <Button.Resources>
@@ -783,7 +790,7 @@
         <Button Grid.Row="1"
                 Margin="0,12,0,0"
                 HorizontalAlignment="Right"
-                Width="90"
+                MinWidth="100" MinHeight="36" Padding="16,8"
                 Content="{Binding Lang[BtnClose], Mode=OneWay}"
                 IsDefault="True"
                 Click="CloseButton_Click" />

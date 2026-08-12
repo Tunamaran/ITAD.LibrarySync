@@ -148,7 +148,7 @@
         <Button Grid.Row="3"
                 Margin="0,14,0,0"
                 HorizontalAlignment="Right"
-                Width="90"
+                MinWidth="100" MinHeight="36" Padding="16,8"
                 Content="{Binding Lang[BtnClose], Mode=OneWay}"
                 IsDefault="True"
                 IsCancel="True"
