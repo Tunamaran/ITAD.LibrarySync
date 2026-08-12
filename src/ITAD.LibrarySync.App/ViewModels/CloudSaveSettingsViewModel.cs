@@ -71,6 +71,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                 string.Equals(candidate.Provider.ToString(), settings.CloudSaveProvider, StringComparison.OrdinalIgnoreCase))
             ?? Providers.FirstOrDefault();
         StatusText = Providers.Count == 0 ? Lang["CloudNoProvider"] : Lang["CloudStatusReady"];
+        Games.CollectionChanged += (_, _) => NotifyButtonStates();
 
         _ = RefreshMappingsAsync();
     }
@@ -112,11 +113,23 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
 
     public bool CanLookupSelected => !IsBusy && Games.Any(game => game.IsSelected && !game.HasSaveFolder);
 
-    partial void OnSelectedProviderChanged(CloudProviderOption? value)
+    public void NotifyButtonStates()
     {
         OnPropertyChanged(nameof(IsProviderAvailable));
+        OnPropertyChanged(nameof(CanDetect));
         OnPropertyChanged(nameof(CanMigrate));
         OnPropertyChanged(nameof(CanPreview));
+        OnPropertyChanged(nameof(CanLookupSelected));
+
+        DetectGamesCommand.NotifyCanExecuteChanged();
+        LookupSelectedCommand.NotifyCanExecuteChanged();
+        MigrateCommand.NotifyCanExecuteChanged();
+        PreviewCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnSelectedProviderChanged(CloudProviderOption? value)
+    {
+        NotifyButtonStates();
 
         // Remember the user's choice until they change it again.
         if (value is not null)
@@ -125,13 +138,10 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
 
     partial void OnIsBusyChanged(bool value)
     {
-        OnPropertyChanged(nameof(CanDetect));
-        OnPropertyChanged(nameof(CanMigrate));
-        OnPropertyChanged(nameof(CanPreview));
-        OnPropertyChanged(nameof(CanLookupSelected));
+        NotifyButtonStates();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanDetect))]
     private async Task DetectGamesAsync()
     {
         IsBusy = true;
@@ -179,9 +189,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                 summary += " " + Lang["CloudStatusLookupLimit"];
             StatusText = summary;
             SaveScanState();
-            OnPropertyChanged(nameof(CanMigrate));
-            OnPropertyChanged(nameof(CanPreview));
-            OnPropertyChanged(nameof(CanLookupSelected));
+            NotifyButtonStates();
         }
         finally
         {
@@ -248,7 +256,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
     /// have no save folder — no API calls are made for anything else, so traffic
     /// stays exactly as large as the user asked for.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanLookupSelected))]
     private async Task LookupSelectedAsync()
     {
         var selected = Games.Where(game => game.IsSelected && !game.HasSaveFolder).ToList();
@@ -301,9 +309,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
                 summary += " " + Lang["CloudStatusLookupLimit"];
             StatusText = summary;
             SaveScanState();
-            OnPropertyChanged(nameof(CanMigrate));
-            OnPropertyChanged(nameof(CanPreview));
-            OnPropertyChanged(nameof(CanLookupSelected));
+            NotifyButtonStates();
         }
         finally
         {
@@ -311,7 +317,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanPreview))]
     private async Task PreviewAsync()
     {
         if (SelectedProvider is null)
@@ -348,7 +354,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanMigrate))]
     private async Task MigrateAsync()
     {
         if (SelectedProvider is null)
@@ -401,6 +407,9 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
     {
         foreach (var game in Games)
             game.IsSelected = true;
+
+        NotifyButtonStates();
+        SaveScanState();
     }
 
     [RelayCommand]
@@ -408,6 +417,9 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
     {
         foreach (var game in Games)
             game.IsSelected = false;
+
+        NotifyButtonStates();
+        SaveScanState();
     }
 
     /// <summary>Lets the user pick a save folder for a game that has none.</summary>
@@ -431,9 +443,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
         row.StatusText = info.Exists ? Lang["CloudStatusFound"] : Lang["CloudStatusMissing"];
         row.StatusColor = info.Exists ? "#16A34A" : "#EA580C";
         SaveScanState();
-        OnPropertyChanged(nameof(CanMigrate));
-        OnPropertyChanged(nameof(CanPreview));
-        OnPropertyChanged(nameof(CanLookupSelected));
+        NotifyButtonStates();
     }
 
     [RelayCommand]
@@ -514,9 +524,7 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
             Games.Add(TrackSelection(row));
         }
 
-        OnPropertyChanged(nameof(CanMigrate));
-        OnPropertyChanged(nameof(CanPreview));
-        OnPropertyChanged(nameof(CanLookupSelected));
+        NotifyButtonStates();
     }
 
     /// <summary>
@@ -547,11 +555,11 @@ public sealed partial class CloudSaveSettingsViewModel : ObservableObject
     {
         item.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(CloudSaveGameViewModel.IsSelected))
+            if (args.PropertyName == nameof(CloudSaveGameViewModel.IsSelected) ||
+                args.PropertyName == nameof(CloudSaveGameViewModel.HasSaveFolder) ||
+                args.PropertyName == nameof(CloudSaveGameViewModel.SourcePath))
             {
-                OnPropertyChanged(nameof(CanMigrate));
-                OnPropertyChanged(nameof(CanPreview));
-                OnPropertyChanged(nameof(CanLookupSelected));
+                NotifyButtonStates();
                 SaveScanState();
             }
         };
